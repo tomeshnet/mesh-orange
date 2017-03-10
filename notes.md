@@ -28,3 +28,20 @@ Future things I think should exist:
 * debian root filesystem autobuilder, generating initramfs images
 * u-boot rules to boot of one or the other of the initramfs images
 
+Disk image layout
+-----------------
+
+This information has been mostly taken from pulling apart the armbian build
+scripts, but it also matches the various other references on allwinner chips
+I remember reading in the past.
+
+Micro-SD card disk image:
+* 0x000000 - 0x00004f Some Intel 8086 machine code to boot first active MBR
+* 0x0001b8 - 0x0001bb MBR PTUUID - a 32bit little-endian "disk id"
+* 0x0001be - 0x0001fd Standard MBR partition table
+* 0x0001fe - 0x0001ff 0x55 0xaa - magic number for the boot block
+* 0x002000 - 0x06fdcf SPL and U-Boot  - From the armbian deb linux-u-boot-orangepizero-dev use file $DIR/u-boot-sunxi-with-spl.bin
+* 0x088000 - 0x088003 crc32(0, data, ENV_SIZE) - checksum of the env
+* 0x088004 - 0x0a8000 saved environment (\0 terminated name=values, \0\0 ended)
+* 0x100000 - end      data partition (ext4 in armbian, the U-Boot also supports FAT)
+
