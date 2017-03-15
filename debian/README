@@ -1,0 +1,27 @@
+Debian ramdisk builder
+----------------------
+
+This directory contains an auto-build system for making initrd images.  There
+is nothing particularly Orange PI Zero specific about the created image,
+it should work on any system supported by the Debian armhf architecture.
+
+It currently only creates a very minimal system (the config file
+multistrap.conf contains the list of repositories and additional packages
+to install)
+
+It also does not yet produce a bootable disk image, just the ramdisk.
+
+Usage:
+
+    make build-depends
+
+    make build/uInitrd
+
+The ramdisk should have been created in the file build/uInitrd
+
+To test the raw ramdisk image, first create a bootable armbian sdcard.
+Mount this card and overwrite the boot/uInitrd file with the one built
+above.  You will need a serial console to log in, but if the ethernet
+port is plugged into a network, it should autoconfigure an IP address
+which can be pinged.
+
