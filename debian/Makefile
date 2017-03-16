@@ -2,9 +2,14 @@
 # Build a debian and armbian based initramfs system
 #
 
+# which uboot and device tree is this being built for
+CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
+CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
+
 BUILD = build
-DEBOOT = $(BUILD)/debian
 TAG = $(BUILD)/tags
+DEBOOT = $(BUILD)/debian
+BOOT = $(BUILD)/boot
 
 BUILD_DEPENDS = \
     multistrap \
@@ -12,6 +17,9 @@ BUILD_DEPENDS = \
     qemu-user-static \
     u-boot-tools \
     xz-utils \
+
+SRC_SPL = $(DEBOOT)/usr/lib/$(CONFIG_UBOOT)/u-boot-sunxi-with-spl.bin
+SRC_FDT = $(DEBOOT)/usr/lib/linux-image-dev-sun8i/$(CONFIG_FDT)
 
 all:
 	echo until this makefile is complete, this fails here
@@ -71,17 +79,76 @@ $(TAG)/fixup: $(TAG)/multistrap
 
 # FIXME: obviously, an empty password should not go live
 
-$(BUILD)/initrd.lzma: $(TAG)/fixup
+debian: $(TAG)/debian
+$(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
+	$(call tag,debian)
+
+$(BUILD)/initrd.lzma: $(TAG)/debian
 	( \
             cd $(DEBOOT); \
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o -V \
 	) | lzma > $@
 
-$(BUILD)/uInitrd: $(BUILD)/initrd.lzma
+$(BOOT): $(TAG)/boot_dir
+$(TAG)/boot_dir:
+	mkdir -p $(BOOT)
+	$(call tag,boot_dir)
+
+$(BOOT)/uInitrd: $(TAG)/boot_dir
+$(BOOT)/uInitrd: $(BUILD)/initrd.lzma
 	mkimage -C lzma -A arm -T ramdisk -d $< $@
 
+# Everything above this line is a generic Debian armhf builder
+
+# Everything below this line is HW specific Armbian u-Boot startup code
+
+$(BOOT)/.next: $(TAG)/boot_dir
+	touch $@
+
+$(SRC_SPL): $(TAG)/multistrap
+$(SRC_FDT): $(TAG)/multistrap
+$(DEBOOT)/boot/zImage: $(TAG)/multistrap
+
+# If we install the linux-jessie-root-dev-orangepizero package, we get these
+# two boot pre-requisites, but we also get a heap of other junk
+#$(DEBOOT)/usr/share/armbian/boot.cmd: $(TAG)/multistrap
+#$(DEBOOT)/usr/share/armbian/armbianEnv.txt: $(TAG)/multistrap
+
+$(BOOT)/boot.scr: $(TAG)/boot_dir
+$(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
+	mkimage -A arm -T script -C none -d $< $@
+
+$(BOOT)/armbianEnv.txt: $(TAG)/boot_dir
+$(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
+	cp $< $@
+
+zImage: $(TAG)/zImage
+$(TAG)/zImage: $(TAG)/boot_dir
+$(TAG)/zImage: $(DEBOOT)/boot/zImage
+	cp `realpath $<` $(BOOT)/`readlink $<`
+	cp -d $< $(BOOT)/zImage
+	$(call tag,zImage)
+
+dtb_suffix = $(shell readlink $(BOOT)/zImage |sed -e 's/vmlinuz-//')
+dtb_dir: $(TAG)/dtb_dir
+$(TAG)/dtb_dir: $(TAG)/zImage
+	mkdir -p $(BOOT)/dtb-$(dtb_suffix)
+	ln -sf dtb-$(dtb_suffix) $(BOOT)/dtb
+	$(call tag,dtb_dir)
+
+$(BOOT)/dtb/$(CONFIG_FDT): $(TAG)/dtb_dir
+$(BOOT)/dtb/$(CONFIG_FDT): $(SRC_FDT)
+	cp $< $@
+
+boot: \
+    $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
+    $(BOOT)/.next \
+    dtb_dir $(BOOT)/dtb/$(CONFIG_FDT) \
+    zImage \
+    $(BOOT)/uInitrd
+
 clean:
-	sudo rm -rf $(DEBOOT) $(TAG)
+	sudo rm -rf $(DEBOOT) $(BOOT) $(TAG)
 
 define tag
 	@echo Touching tag $1
