@@ -75,6 +75,10 @@ $(TAG)/multistrap: $(TAG)/multistrap-pre $(TAG)/multistrap-post
 # want to complicate things too much (at first)
 minimise: $(TAG)/minimise
 $(TAG)/minimise: $(TAG)/multistrap
+	sudo rm -rf $(DEBOOT)/usr/share/locale/*
+	sudo rm -rf $(DEBOOT)/usr/share/zoneinfo/*
+	sudo rm -f $(DEBOOT)/lib/udev/hwdb.bin
+	sudo rm -rf $(DEBOOT)/boot
 	sudo rm -f $(DEBOOT)/multistrap.configscript $(DEBOOT)/dev/mmcblk0
 	#sudo rm -f $(DEBOOT)/usr/bin/qemu-arm-static
 	$(call tag,minimise)
