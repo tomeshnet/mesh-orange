@@ -141,16 +141,15 @@ $(BOOT)/armbianEnv.txt: $(TAG)/boot_dir
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
 	cp $< $@
 
-zImage: $(TAG)/zImage
-$(TAG)/zImage: $(TAG)/boot_dir
-$(TAG)/zImage: $(DEBOOT)/boot/zImage
+$(BOOT)/zImage: $(TAG)/boot_dir
+$(BOOT)/zImage: $(DEBOOT)/boot/zImage
 	cp `realpath $<` $(BOOT)/`readlink $<`
+	cp $(DEBOOT)/boot/config-* $(BOOT)
 	cp -d $< $(BOOT)/zImage
-	$(call tag,zImage)
 
 dtb_suffix = $(shell readlink $(BOOT)/zImage |sed -e 's/vmlinuz-//')
 dtb_dir: $(TAG)/dtb_dir
-$(TAG)/dtb_dir: $(TAG)/zImage
+$(TAG)/dtb_dir: $(BOOT)/zImage
 	mkdir -p $(BOOT)/dtb-$(dtb_suffix)
 	ln -sf dtb-$(dtb_suffix) $(BOOT)/dtb
 	$(call tag,dtb_dir)
@@ -162,8 +161,8 @@ $(BOOT)/dtb/$(CONFIG_FDT): $(SRC_FDT)
 boot: \
     $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
     $(BOOT)/.next \
-    dtb_dir $(BOOT)/dtb/$(CONFIG_FDT) \
-    zImage \
+    $(BOOT)/dtb/$(CONFIG_FDT) \
+    $(BOOT)/zImage \
     $(BOOT)/uInitrd
 
 clean:
