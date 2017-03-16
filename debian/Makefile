@@ -2,6 +2,12 @@
 # Build a debian and armbian based initramfs system
 #
 
+# TODO:
+# - Actually pack the boot dir into a sdcard disk image file
+# - Add a real minimalisation engine
+# - Add the same for fixups
+# - Add config file list / save to sdcard / load from sdcard package
+
 # which uboot and device tree is this being built for
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
 CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
@@ -63,7 +69,10 @@ multistrap: $(TAG)/multistrap
 $(TAG)/multistrap: $(TAG)/multistrap-pre $(TAG)/multistrap-post
 	$(call tag,multistrap)
 
-# very basic minimalisation
+# very basic minimalisation of the image size
+# This just hits the very basic directories.  A more comprehensive system
+# could use a specific hit-list for each package - this exists, but I dont
+# want to complicate things too much (at first)
 minimise: $(TAG)/minimise
 $(TAG)/minimise: $(TAG)/multistrap
 	sudo rm -f $(DEBOOT)/multistrap.configscript $(DEBOOT)/dev/mmcblk0
@@ -71,6 +80,9 @@ $(TAG)/minimise: $(TAG)/multistrap
 	$(call tag,minimise)
 
 # very basic fixup
+# This is the changes needed to make the image actually bootable, or to
+# fix error conditions caused by the minimalisation.  Similar to the
+# minimiser, this could be improved.
 fixup: $(TAG)/fixup
 $(TAG)/fixup: $(TAG)/multistrap
 	sudo ln -sf lib/systemd/systemd $(DEBOOT)/init       # allow booting
@@ -78,6 +90,13 @@ $(TAG)/fixup: $(TAG)/multistrap
 	$(call tag,fixup)
 
 # FIXME: obviously, an empty password should not go live
+
+# TODO:
+# basic customisation
+# A make task to add/remove/edit config files in the image to configure
+# it to be useful (in contrast to fixing what is broken in the "fixup"
+# above).  E.G: configuring daemons to start on bootup, or installing
+# a set of ssh authorised keys
 
 debian: $(TAG)/debian
 $(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
