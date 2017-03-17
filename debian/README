@@ -21,6 +21,11 @@ Usage:
     make build/boot/uInitrd     # build the u-boot initrd
     make boot                   # build a full /boot dir in build/boot
 
+You just need to run the one of the last three that generates the output
+you want to use as the dependancies between these three targets are
+all working - so that asking for the "boot" target will automatically
+generate the uInitrd and the debian base install" as needed.
+
 To test the ramdisk image (build/boot/uInitrd), first create a bootable
 armbian sdcard.  Mount this card and overwrite the boot/uInitrd file
 with the one built above.
