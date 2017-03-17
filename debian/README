@@ -42,3 +42,11 @@ You will need a serial console to log in, but if the ethernet port is
 plugged into a network, it should autoconfigure an IP address which can
 be pinged.
 
+NOTE: uncompressing the (currently approximately 120Meg uncompressed) initrd
+will take a noticable amount of time.  The network will not be setup until
+that has been done, so nothing will happen for a while.  For some reason, this
+also applies to the kernel messages.
+
+Tests on one orange pi zero show that the time from power on until a login
+prompt on the serial console is about 1 minute.
+
