@@ -78,7 +78,6 @@ $(TAG)/minimise: $(TAG)/multistrap
 	sudo rm -rf $(DEBOOT)/usr/share/locale/*
 	sudo rm -rf $(DEBOOT)/usr/share/zoneinfo/*
 	sudo rm -f $(DEBOOT)/lib/udev/hwdb.bin
-	sudo rm -rf $(DEBOOT)/boot
 	sudo rm -f $(DEBOOT)/multistrap.configscript $(DEBOOT)/dev/mmcblk0
 	#sudo rm -f $(DEBOOT)/usr/bin/qemu-arm-static
 	$(call tag,minimise)
@@ -130,6 +129,10 @@ $(BOOT)/.next: $(TAG)/boot_dir
 
 $(SRC_SPL): $(TAG)/multistrap
 $(SRC_FDT): $(TAG)/multistrap
+
+# FIXME - we would like the minimise step to remove the DEBOOT/boot dir, but
+# we have this dependancy on that dir, so it means we break things. (I think
+# we need an exclude list for the cpio files list)
 $(DEBOOT)/boot/zImage: $(TAG)/multistrap
 
 # If we install the linux-jessie-root-dev-orangepizero package, we get these
