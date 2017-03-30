@@ -1,42 +1,32 @@
 Debian ramdisk builder
 ----------------------
 
-This directory contains an auto-build system for making initrd images.
+This directory contains an auto-build system for making bootable disk
+images using a ramdisk images.
+
 There is nothing particularly Orange PI Zero specific about the created
-ramdisk image, it should work on any system supported by the Debian
-armhf architecture.
+ramdisk image, it should work on any system supported by the Debian armhf
+architecture, however the bootable disk is specific to the Allwinner
+boot loader layout (It might be usable on other Allwinner CPUs if the
+right device-tree is added, but testing is needed)
 
-It currently only creates a very minimal system (the config file
-multistrap.conf contains the list of repositories and additional packages
+It currently only creates a very minimal debian system (the config
+file multistrap.conf contains the list of repositories and the packages
 to install)
-
-It also does not yet produce a bootable disk image, just the ramdisk and
-the /boot dir.
 
 Usage:
 
     make build-depends          # install needed build packages
 
-    make debian                 # build a Debian armhf chroot in build/debian
-    make build/boot/uInitrd     # build the u-boot initrd
-    make boot                   # build a full /boot dir in build/boot
+    make                        # full build
+                                # - creates build/allwinner-h2.raw
 
-You just need to run the one of the last three that generates the output
-you want to use as the dependancies between these three targets are
-all working - so that asking for the "boot" target will automatically
-generate the uInitrd and the debian base install" as needed.
+After making sure the needed packages are installed, you just need to
+run the full build.  Once the full disk image output file is generated,
+use "dd" (or similar) to write the image to the raw sdcard.
 
-To test the ramdisk image (build/boot/uInitrd), first create a bootable
-armbian sdcard.  Mount this card and overwrite the boot/uInitrd file
-with the one built above.
-
-To test the boot dir, first create a bootable armbian sdcard.  Mount this
-card and remove the boot dir from it, copy the build/boot dir onto
-the card.
-
-
-Using the ramdisk
------------------
+Booting and using the system
+----------------------------
 
 You will need a serial console to log in, but if the ethernet port is
 plugged into a network, it should autoconfigure an IP address which can
@@ -49,4 +39,26 @@ also applies to the kernel messages.
 
 Tests on one orange pi zero show that the time from power on until a login
 prompt on the serial console is about 1 minute.
+
+
+Optional partial build targets:
+-------------------------------
+
+    make debian                 # build a Debian armhf chroot in build/debian
+    make build/boot/uInitrd     # build the u-boot initrd
+    make boot                   # build a full /boot dir in build/boot
+
+For testing purposes, it might be useful to create a partial build using
+one of these targets.  The dependancies between these three targets are
+all working - so that asking for the "boot" target will automatically
+generate the uInitrd and the debian base install" as needed.
+
+To test the ramdisk image (build/boot/uInitrd), first create a bootable
+armbian sdcard.  Mount this card and overwrite the boot/uInitrd file
+with the one built above.
+
+To test the boot dir, first create a bootable armbian sdcard.  Mount this
+card and remove the boot dir from it, copy the build/boot dir onto
+the card.
+
 

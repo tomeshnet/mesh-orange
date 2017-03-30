@@ -3,7 +3,8 @@
 #
 
 # TODO:
-# - Actually pack the boot dir into a sdcard disk image file
+# - Convert the minimalisation step into an excludes file generator
+#   and use that file in the cpio step
 # - Add a real minimalisation engine
 # - Add the same for fixups
 # - Add config file list / save to sdcard / load from sdcard package
@@ -12,6 +13,9 @@
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
 CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
 
+DISK_IMAGE = $(BUILD)/allwinner-h2.raw
+
+# Directories
 BUILD = build
 TAG = $(BUILD)/tags
 DEBOOT = $(BUILD)/debian
@@ -23,13 +27,12 @@ BUILD_DEPENDS = \
     qemu-user-static \
     u-boot-tools \
     xz-utils \
+    mtools \
 
 SRC_SPL = $(DEBOOT)/usr/lib/$(CONFIG_UBOOT)/u-boot-sunxi-with-spl.bin
 SRC_FDT = $(DEBOOT)/usr/lib/linux-image-dev-sun8i/$(CONFIG_FDT)
 
-all:
-	echo until this makefile is complete, this fails here
-	false
+all: $(DISK_IMAGE)
 
 # install any packages needed for this builder
 build-depends: $(TAG)/build-depends
@@ -105,7 +108,7 @@ debian: $(TAG)/debian
 $(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
 	$(call tag,debian)
 
-$(BUILD)/initrd.lzma: $(TAG)/debian
+$(BUILD)/debian.stretch.lzma: $(TAG)/debian
 	( \
             cd $(DEBOOT); \
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o -V \
@@ -117,7 +120,7 @@ $(TAG)/boot_dir:
 	$(call tag,boot_dir)
 
 $(BOOT)/uInitrd: $(TAG)/boot_dir
-$(BOOT)/uInitrd: $(BUILD)/initrd.lzma
+$(BOOT)/uInitrd: $(BUILD)/debian.stretch.lzma
 	mkimage -C lzma -A arm -T ramdisk -d $< $@
 
 # Everything above this line is a generic Debian armhf builder
@@ -127,7 +130,6 @@ $(BOOT)/uInitrd: $(BUILD)/initrd.lzma
 $(BOOT)/.next: $(TAG)/boot_dir
 	touch $@
 
-$(SRC_SPL): $(TAG)/multistrap
 $(SRC_FDT): $(TAG)/multistrap
 
 # FIXME - we would like the minimise step to remove the DEBOOT/boot dir, but
@@ -165,12 +167,39 @@ $(BOOT)/dtb/$(CONFIG_FDT): $(TAG)/dtb_dir
 $(BOOT)/dtb/$(CONFIG_FDT): $(SRC_FDT)
 	cp $< $@
 
-boot: \
+BOOT_FILES = \
     $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
     $(BOOT)/.next \
-    $(BOOT)/dtb/$(CONFIG_FDT) \
     $(BOOT)/zImage \
-    $(BOOT)/uInitrd
+    $(BOOT)/uInitrd \
+
+BOOT_DTB_FILES = \
+    $(BOOT)/dtb/$(CONFIG_FDT) \
+
+boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
+
+# Everything below this line is packing the built boot dir into a disk image
+
+$(SRC_SPL): $(TAG)/multistrap
+
+PART_SIZE_MEGS = 1000
+
+$(BUILD)/mtoolsrc:
+	echo 'drive z: file="$(DISK_IMAGE)" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
+
+$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
+	truncate --size=$$((0x2000)) $@ # skip to correct offset for SPL
+	cat $(SRC_SPL) >>$@             # add the SPL+uboot binary
+	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
+	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
+	truncate --size=1025K $@        # ensure the FAT bootblock is mapped
+	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
+	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot
+	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:boot
+	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb
+	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:boot/dtb
+
+# Misc make infrastructure below here
 
 clean:
 	sudo rm -rf $(DEBOOT) $(BOOT) $(TAG)
