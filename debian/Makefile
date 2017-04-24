@@ -9,18 +9,20 @@
 # - Add the same for fixups
 # - Add config file list / save to sdcard / load from sdcard package
 
+CONFIG_DEBIAN = stretch
+
 # which uboot and device tree is this being built for
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
-CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
-
-DEBIAN_VER = stretch
-DISK_IMAGE = $(BUILD)/sun8i-h2plus-orangepi-zero.raw
+CONFIG_BOARD = sun8i-h2plus-orangepi-zero
+# FIXME - it would be nice if the uboot name was related to the dtb name
 
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
-DEBOOT = $(BUILD)/debian
+DEBOOT = $(BUILD)/debian.$(CONFIG_DEBIAN)
+BOARD_DIR = $(BUILD)/$(CONFIG_BOARD)
 BOOT = $(BUILD)/boot
+DISK_IMAGE = $(BUILD)/$(CONFIG_BOARD).raw
 
 BUILD_DEPENDS = \
     multistrap \
@@ -30,8 +32,8 @@ BUILD_DEPENDS = \
     xz-utils \
     mtools \
 
-SRC_SPL = $(DEBOOT)/usr/lib/$(CONFIG_UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_FDT = $(DEBOOT)/usr/lib/linux-image-dev-sun8i/$(CONFIG_FDT)
+SRC_SPL = $(BOARD_DIR)/usr/lib/$(CONFIG_UBOOT)/u-boot-sunxi-with-spl.bin
+SRC_FDT = $(BOARD_DIR)/usr/lib/linux-image-dev-sun8i/$(CONFIG_BOARD).dtb
 
 all: $(DISK_IMAGE)
 
@@ -109,40 +111,42 @@ debian: $(TAG)/debian
 $(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
 	$(call tag,debian)
 
-$(BUILD)/debian.$(DEBIAN_VER).cpio: $(TAG)/debian
+$(BUILD)/debian.$(CONFIG_DEBIAN).cpio: $(TAG)/debian
 	( \
             cd $(DEBOOT); \
-            sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o -V \
+            sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
-%.lzma: %.cpio
-	lzma <$< >$@
+# Everything above this line is a generic Debian armhf builder
+
+# Everything below this line is HW specific Armbian u-Boot startup code
+
+$(BOARD_DIR): $(TAG)/$(CONFIG_BOARD)_dir
+$(TAG)/$(CONFIG_BOARD)_dir: $(CONFIG_BOARD).multistrap
+	mkdir -p $(BOARD_DIR)
+	sudo /usr/sbin/multistrap -d $(BOARD_DIR) -f $<
+	$(call tag,$(CONFIG_BOARD)_dir)
+
+# Add the kernel specific binaries to this cpio file
+$(BUILD)/$(CONFIG_BOARD).cpio: $(TAG)/$(CONFIG_BOARD)_dir
+	( \
+            cd $(BOARD_DIR); \
+            sudo find lib -print0 | sudo cpio -0 -H newc -R 0:0 -o \
+	) > $@
+
+$(SRC_FDT): $(TAG)/$(CONFIG_BOARD)_dir
 
 $(BOOT): $(TAG)/boot_dir
 $(TAG)/boot_dir:
 	mkdir -p $(BOOT)
 	$(call tag,boot_dir)
 
-$(BOOT)/uInitrd: $(TAG)/boot_dir
-$(BOOT)/uInitrd: $(BUILD)/debian.stretch.lzma
-	mkimage -C lzma -A arm -T ramdisk -d $< $@
-
-# Everything above this line is a generic Debian armhf builder
-
-# Everything below this line is HW specific Armbian u-Boot startup code
-
 $(BOOT)/.next: $(TAG)/boot_dir
 	touch $@
 
-$(SRC_FDT): $(TAG)/multistrap
-
-# FIXME - we would like the minimise step to remove the DEBOOT/boot dir, but
-# we have this dependancy on that dir, so it means we break things. (I think
-# we need an exclude list for the cpio files list)
-$(DEBOOT)/boot/zImage: $(TAG)/multistrap
-
 # If we install the linux-jessie-root-dev-orangepizero package, we get these
 # two boot pre-requisites, but we also get a heap of other junk
+# FIXME - could install that package now that the armbian part is split out
 #$(DEBOOT)/usr/share/armbian/boot.cmd: $(TAG)/multistrap
 #$(DEBOOT)/usr/share/armbian/armbianEnv.txt: $(TAG)/multistrap
 
@@ -154,22 +158,28 @@ $(BOOT)/armbianEnv.txt: $(TAG)/boot_dir
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
 	cp $< $@
 
-$(BOOT)/zImage: $(TAG)/boot_dir
-$(BOOT)/zImage: $(DEBOOT)/boot/zImage
-	cp `realpath $<` $(BOOT)/`readlink $<`
-	cp $(DEBOOT)/boot/config-* $(BOOT)
-	cp -d $< $(BOOT)/zImage
+kernel_suffix = $(shell ls $(BOOT)/vmlinuz-* |sed -e 's/vmlinuz-//')
 
-dtb_suffix = $(shell readlink $(BOOT)/zImage |sed -e 's/vmlinuz-//')
+$(BOOT)/zImage: $(TAG)/boot_dir $(TAG)/$(CONFIG_BOARD)_dir
+	cp $(BOARD_DIR)/boot/vmlinuz-* $(BOOT)/zImage
+	cp $(BOARD_DIR)/boot/config-* $(BOOT)
+
 dtb_dir: $(TAG)/dtb_dir
 $(TAG)/dtb_dir: $(BOOT)/zImage
-	mkdir -p $(BOOT)/dtb-$(dtb_suffix)
-	ln -sf dtb-$(dtb_suffix) $(BOOT)/dtb
+	mkdir -p $(BOOT)/dtb
 	$(call tag,dtb_dir)
 
-$(BOOT)/dtb/$(CONFIG_FDT): $(TAG)/dtb_dir
-$(BOOT)/dtb/$(CONFIG_FDT): $(SRC_FDT)
+$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(TAG)/dtb_dir
+$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
 	cp $< $@
+
+# Combine the various modules to make one big cpio file
+$(BUILD)/combined.lzma: $(BUILD)/debian.$(CONFIG_DEBIAN).lzma $(BUILD)/$(CONFIG_BOARD).lzma
+	cat $^ >$@
+
+$(BOOT)/uInitrd: $(TAG)/boot_dir
+$(BOOT)/uInitrd: $(BUILD)/combined.lzma
+	mkimage -C lzma -A arm -T ramdisk -d $< $@
 
 BOOT_FILES = \
     $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
@@ -178,13 +188,13 @@ BOOT_FILES = \
     $(BOOT)/uInitrd \
 
 BOOT_DTB_FILES = \
-    $(BOOT)/dtb/$(CONFIG_FDT) \
+    $(BOOT)/dtb/$(CONFIG_BOARD).dtb \
 
 boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
-$(SRC_SPL): $(TAG)/multistrap
+$(SRC_SPL): $(TAG)/$(CONFIG_BOARD)_dir
 
 PART_SIZE_MEGS = 1000
 
@@ -205,8 +215,11 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
 
 # Misc make infrastructure below here
 
+%.lzma: %.cpio
+	lzma <$< >$@
+
 clean:
-	sudo rm -rf $(DEBOOT) $(BOOT) $(TAG)
+	sudo rm -rf $(DEBOOT) $(BOOT) $(TAG) $(BOARD_DIR)
 
 define tag
 	@echo Touching tag $1
