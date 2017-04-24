@@ -14,7 +14,7 @@ CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
 CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
 
 DEBIAN_VER = stretch
-DISK_IMAGE = $(BUILD)/allwinner-h2.raw
+DISK_IMAGE = $(BUILD)/sun8i-h2plus-orangepi-zero.raw
 
 # Directories
 BUILD = build
