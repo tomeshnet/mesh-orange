@@ -13,6 +13,7 @@
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
 CONFIG_FDT = sun8i-h2plus-orangepi-zero.dtb
 
+DEBIAN_VER = stretch
 DISK_IMAGE = $(BUILD)/allwinner-h2.raw
 
 # Directories
@@ -108,11 +109,14 @@ debian: $(TAG)/debian
 $(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
 	$(call tag,debian)
 
-$(BUILD)/debian.stretch.lzma: $(TAG)/debian
+$(BUILD)/debian.$(DEBIAN_VER).cpio: $(TAG)/debian
 	( \
             cd $(DEBOOT); \
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o -V \
-	) | lzma > $@
+	) > $@
+
+%.lzma: %.cpio
+	lzma <$< >$@
 
 $(BOOT): $(TAG)/boot_dir
 $(TAG)/boot_dir:
