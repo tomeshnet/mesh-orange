@@ -50,9 +50,9 @@ $(DEBOOT)/dev/urandom:
 
 # multistrap-pre runs the basic multistrap program, installing the packages
 # until they need to run native code
-$(TAG)/multistrap-pre: multistrap.conf multistrap.configscript
+$(TAG)/multistrap-pre: debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
 $(TAG)/multistrap-pre: $(DEBOOT)/dev/urandom
-	sudo /usr/sbin/multistrap -d $(DEBOOT) -f multistrap.conf
+	sudo /usr/sbin/multistrap -d $(DEBOOT) -f debian.$(CONFIG_DEBIAN).multistrap
 	$(call tag,multistrap-pre)
 
 # TODO: if TARGET_ARCH == BUILD_ARCH, dont need to copy qemu
