@@ -1,5 +1,4 @@
 [General]
-arch=armhf
 bootstrap=Stretch
 aptsources=Stretch
 configscript=multistrap.configscript

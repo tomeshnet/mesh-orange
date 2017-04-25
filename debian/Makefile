@@ -10,6 +10,7 @@
 # - Add config file list / save to sdcard / load from sdcard package
 
 CONFIG_DEBIAN = stretch
+CONFIG_DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
@@ -19,7 +20,7 @@ CONFIG_BOARD = sun8i-h2plus-orangepi-zero
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
-DEBOOT = $(BUILD)/debian.$(CONFIG_DEBIAN)
+DEBOOT = $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH)
 BOARD_DIR = $(BUILD)/$(CONFIG_BOARD)
 BOOT = $(BUILD)/boot
 DISK_IMAGE = $(BUILD)/$(CONFIG_BOARD).raw
@@ -52,7 +53,7 @@ $(DEBOOT)/dev/urandom:
 # until they need to run native code
 $(TAG)/multistrap-pre: debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
 $(TAG)/multistrap-pre: $(DEBOOT)/dev/urandom
-	sudo /usr/sbin/multistrap -d $(DEBOOT) -f debian.$(CONFIG_DEBIAN).multistrap
+	sudo /usr/sbin/multistrap -d $(DEBOOT) --arch $(CONFIG_DEBIAN_ARCH) -f debian.$(CONFIG_DEBIAN).multistrap
 	$(call tag,multistrap-pre)
 
 # TODO: if TARGET_ARCH == BUILD_ARCH, dont need to copy qemu
@@ -111,7 +112,7 @@ debian: $(TAG)/debian
 $(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
 	$(call tag,debian)
 
-$(BUILD)/debian.$(CONFIG_DEBIAN).cpio: $(TAG)/debian
+$(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian
 	( \
             cd $(DEBOOT); \
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o \
@@ -174,7 +175,7 @@ $(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.lzma: $(BUILD)/debian.$(CONFIG_DEBIAN).lzma $(BUILD)/$(CONFIG_BOARD).lzma
+$(BUILD)/combined.lzma: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).lzma $(BUILD)/$(CONFIG_BOARD).lzma
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot_dir
