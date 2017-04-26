@@ -145,11 +145,14 @@ $(TAG)/boot_dir:
 $(BOOT)/.next: $(TAG)/boot_dir
 	touch $@
 
-# If we install the linux-jessie-root-dev-orangepizero package, we get these
-# two boot pre-requisites, but we also get a heap of other junk
-# FIXME - could install that package now that the armbian part is split out
-#$(DEBOOT)/usr/share/armbian/boot.cmd: $(TAG)/multistrap
-#$(DEBOOT)/usr/share/armbian/armbianEnv.txt: $(TAG)/multistrap
+# TODO
+# - stop using our local version of these files.
+# These two files ( boot-sunxi.cmd and armbianEnv.txt ) are copied from the
+# armbian git repo.  They are also found in one of the armbian packages
+# ( linux-jessie-root-dev-orangepizero ) this package has dependancies that
+# make it annoying to install in the BOARD_DIR and has a rather annoying mix
+# of installed files that meant that it was not suitable to be installed in
+# the DEBOOT either.
 
 $(BOOT)/boot.scr: $(TAG)/boot_dir
 $(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
