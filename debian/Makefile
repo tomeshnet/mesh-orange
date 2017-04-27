@@ -206,6 +206,9 @@ $(BUILD)/mtoolsrc:
 	echo 'drive z: file="$(DISK_IMAGE)" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
+	truncate --size=$$((0x200)) $@  # skip past the MBR
+	date -u "+%FT%TZ " >>$@         # add a build date
+	git describe --long --dirty >>$@ # and describe the repo
 	truncate --size=$$((0x2000)) $@ # skip to correct offset for SPL
 	cat $(SRC_SPL) >>$@             # add the SPL+uboot binary
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
