@@ -10,9 +10,9 @@ architecture, however the bootable disk is specific to the Allwinner
 boot loader layout (It might be usable on other Allwinner CPUs if the
 right device-tree is added, but testing is needed)
 
-It currently only creates a very minimal debian system (the config
-file multistrap.conf contains the list of repositories and the packages
-to install)
+It currently only creates a very minimal debian system (the config file
+debian.stretch.multistrap contains the list of repositories and the
+packages to install)
 
 Usage:
 
