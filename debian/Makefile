@@ -99,6 +99,7 @@ $(TAG)/fixup: $(TAG)/multistrap
 	sudo perl -pi -e 's/:\*:/::/' $(DEBOOT)/etc/shadow   # empty password
 	$(call tag,fixup)
 
+# FIXME: dropbear does not let root login with an empty password
 # FIXME: obviously, an empty password should not go live
 
 # TODO:

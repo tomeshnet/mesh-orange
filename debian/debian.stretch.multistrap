@@ -21,7 +21,7 @@ packages= dhcpcd5
 packages= openssh-client
 
 # allow the rest of the world to reach us
-#packages= dropbear
+#packages= dropbear-bin
 
 # local-net only network management
 #packages= mactelnet-server
