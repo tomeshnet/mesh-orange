@@ -19,7 +19,7 @@ Usage:
     make build-depends          # install needed build packages
 
     make                        # full build
-                                # - creates build/sun8i-h2plus-orangepi-zero.raw
+                                # - creates build/sun8i-h2plus-orangepi-zero.img
 
 After making sure the needed packages are installed, you just need to
 run the full build.  Once the full disk image output file is generated,
