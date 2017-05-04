@@ -132,11 +132,11 @@ $(TAG)/arm_virt_dir:
 	$(call tag,arm_virt_dir)
 
 $(BUILD)/arm_virt/vmlinuz: $(TAG)/arm_virt_dir
-	wget -O $@ http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/vmlinuz
+	wget -O $@ http://httpredir.debian.org/debian/dists/stretch/main/installer-armhf/current/images/netboot/vmlinuz
 	touch $@
 
 $(BUILD)/arm_virt/initrd.gz: $(TAG)/arm_virt_dir
-	wget -O $@ http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/initrd.gz
+	wget -O $@ http://httpredir.debian.org/debian/dists/stretch/main/installer-armhf/current/images/netboot/initrd.gz
 	touch $@
 
 $(BUILD)/arm_virt.cpio: $(BUILD)/arm_virt/initrd.gz
