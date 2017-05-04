@@ -125,17 +125,32 @@ $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian
 
 # Quick and dirty emulated environment to test debian images
 #
-# TODO
-# - ethernet device drivers
 
 $(BUILD)/arm_virt: $(TAG)/arm_virt_dir
 $(TAG)/arm_virt_dir:
 	mkdir -p $(BUILD)/arm_virt
-	wget -O $(BUILD)/arm_virt/vmlinuz http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/vmlinuz
 	$(call tag,arm_virt_dir)
 
-test-arm_virt: $(TAG)/arm_virt_dir
-test-arm_virt: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio
+$(BUILD)/arm_virt/vmlinuz: $(TAG)/arm_virt_dir
+	wget -O $@ http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/vmlinuz
+	touch $@
+
+$(BUILD)/arm_virt/initrd.gz: $(TAG)/arm_virt_dir
+	wget -O $@ http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/initrd.gz
+	touch $@
+
+$(BUILD)/arm_virt.cpio: $(BUILD)/arm_virt/initrd.gz
+	( \
+            cd $(BUILD)/arm_virt; \
+            gzip -dc | cpio --make-directories -i lib/modules/*; \
+            find lib -print0 | cpio -0 -H newc -R 0:0 -o \
+	) <$< >$@
+
+$(BUILD)/arm_virt.initrd: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio $(BUILD)/arm_virt.cpio
+	cat $^ >$@
+
+test-arm_virt: $(BUILD)/arm_virt/vmlinuz $(BUILD)/arm_virt.cpio
+test-arm_virt: $(BUILD)/arm_virt.initrd
 	qemu-system-arm -M virt -m 512 \
 		-kernel $(BUILD)/arm_virt/vmlinuz \
 		-initrd $< \
