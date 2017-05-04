@@ -61,4 +61,9 @@ To test the boot dir, first create a bootable armbian sdcard.  Mount this
 card and remove the boot dir from it, copy the build/boot dir onto
 the card.
 
+Test the debian image in an emulator:
+-------------------------------------
+It is possible to perform some basic testing of the debian image using the
+Qemu emulator.  Ensure you have the "qemu-system-arm" package installed and
+run "make test-arm_virt"
 

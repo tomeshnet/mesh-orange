@@ -121,6 +121,28 @@ $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian
 
 # Everything above this line is a generic Debian armhf builder
 
+# Everything below this line is HW specific virtual qemu test environment
+
+# Quick and dirty emulated environment to test debian images
+#
+# TODO
+# - ethernet device drivers
+
+$(BUILD)/arm_virt: $(TAG)/arm_virt_dir
+$(TAG)/arm_virt_dir:
+	mkdir -p $(BUILD)/arm_virt
+	wget -O $(BUILD)/arm_virt/vmlinuz http://httpredir.debian.org/debian/dists/jessie/main/installer-armhf/current/images/netboot/vmlinuz
+	$(call tag,arm_virt_dir)
+
+test-arm_virt: $(TAG)/arm_virt_dir
+test-arm_virt: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio
+	qemu-system-arm -M virt -m 512 \
+		-kernel $(BUILD)/arm_virt/vmlinuz \
+		-initrd $< \
+		-netdev user,id=net0 \
+		-device virtio-net-device,netdev=net0 \
+		-nographic
+
 # Everything below this line is HW specific Armbian u-Boot startup code
 
 $(BOARD_DIR): $(TAG)/$(CONFIG_BOARD)_dir
