@@ -240,7 +240,7 @@ $(SRC_SPL): $(TAG)/$(CONFIG_BOARD)_dir
 
 PART_SIZE_MEGS = 1000
 
-$(BUILD)/mtoolsrc:
+$(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE)" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
