@@ -201,11 +201,11 @@ $(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.lzma: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).lzma $(BUILD)/$(CONFIG_BOARD).lzma
+$(BUILD)/$(CONFIG_BOARD).initrd: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).lzma $(BUILD)/$(CONFIG_BOARD).lzma
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot_dir
-$(BOOT)/uInitrd: $(BUILD)/combined.lzma
+$(BOOT)/uInitrd: $(BUILD)/$(CONFIG_BOARD).initrd
 	mkimage -C lzma -A arm -T ramdisk -d $< $@
 
 BOOT_FILES = \
