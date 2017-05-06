@@ -96,11 +96,10 @@ $(TAG)/minimise: $(TAG)/multistrap
 fixup: $(TAG)/fixup
 $(TAG)/fixup: $(TAG)/multistrap
 	sudo ln -sf lib/systemd/systemd $(DEBOOT)/init       # allow booting
-	sudo perl -pi -e 's/:\*:/::/' $(DEBOOT)/etc/shadow   # empty password
+	echo root:root | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
 	$(call tag,fixup)
 
-# FIXME: dropbear does not let root login with an empty password
-# FIXME: obviously, an empty password should not go live
+# TODO: consider what password should be default
 
 # TODO:
 # basic customisation
