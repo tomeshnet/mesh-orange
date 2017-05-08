@@ -12,6 +12,8 @@
 CONFIG_DEBIAN = stretch
 CONFIG_DEBIAN_ARCH = armhf
 
+CONFIG_ROOT_PASS = root
+
 # which uboot and device tree is this being built for
 CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
 CONFIG_BOARD = sun8i-h2plus-orangepi-zero
@@ -96,7 +98,7 @@ $(TAG)/minimise: $(TAG)/multistrap
 fixup: $(TAG)/fixup
 $(TAG)/fixup: $(TAG)/multistrap
 	sudo ln -sf lib/systemd/systemd $(DEBOOT)/init       # allow booting
-	echo root:root | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
+	echo root:$(CONFIG_ROOT_PASS) | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
 	$(call tag,fixup)
 
 # TODO: consider what password should be default
