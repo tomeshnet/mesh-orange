@@ -53,20 +53,20 @@ $(DEBOOT)/dev/urandom:
 
 # multistrap-pre runs the basic multistrap program, installing the packages
 # until they need to run native code
-$(TAG)/multistrap-pre: debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
-$(TAG)/multistrap-pre: $(DEBOOT)/dev/urandom
+$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
+$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/dev/urandom
 	sudo /usr/sbin/multistrap -d $(DEBOOT) --arch $(CONFIG_DEBIAN_ARCH) -f debian.$(CONFIG_DEBIAN).multistrap
-	$(call tag,multistrap-pre)
+	$(call tag,multistrap-pre.$(CONFIG_DEBIAN_ARCH))
 
 # TODO: if TARGET_ARCH == BUILD_ARCH, dont need to copy qemu
+# TODO: the qemu arch is not always the debian arch, handle this
 $(DEBOOT)/usr/bin/qemu-arm-static: /usr/bin/qemu-arm-static
 	sudo cp /usr/bin/qemu-arm-static $(DEBOOT)/usr/bin/qemu-arm-static
 
 # multistrap-post runs the package configure scripts under emulation
-multistrap-post: $(TAG)/multistrap-post
-$(TAG)/multistrap-post: $(DEBOOT)/usr/bin/qemu-arm-static $(TAG)/multistrap-pre
+$(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/usr/bin/qemu-arm-static $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH)
 	sudo chroot $(DEBOOT) ./multistrap.configscript
-	$(call tag,multistrap-post)
+	$(call tag,multistrap-post.$(CONFIG_DEBIAN_ARCH))
 
 # TODO
 # - search for and kill any daemons started by the dpkg configure:
@@ -74,32 +74,29 @@ $(TAG)/multistrap-post: $(DEBOOT)/usr/bin/qemu-arm-static $(TAG)/multistrap-pre
 #       sudo umount $(DEBOOT)/proc
 
 # perform the debian install
-multistrap: $(TAG)/multistrap
-$(TAG)/multistrap: $(TAG)/multistrap-pre $(TAG)/multistrap-post
-	$(call tag,multistrap)
+$(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH) $(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH)
+	$(call tag,multistrap.$(CONFIG_DEBIAN_ARCH))
 
 # very basic minimalisation of the image size
 # This just hits the very basic directories.  A more comprehensive system
 # could use a specific hit-list for each package - this exists, but I dont
 # want to complicate things too much (at first)
-minimise: $(TAG)/minimise
-$(TAG)/minimise: $(TAG)/multistrap
+$(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo rm -rf $(DEBOOT)/usr/share/locale/*
 	sudo rm -rf $(DEBOOT)/usr/share/zoneinfo/*
 	sudo rm -f $(DEBOOT)/lib/udev/hwdb.bin
 	sudo rm -f $(DEBOOT)/multistrap.configscript $(DEBOOT)/dev/mmcblk0
 	#sudo rm -f $(DEBOOT)/usr/bin/qemu-arm-static
-	$(call tag,minimise)
+	$(call tag,minimise.$(CONFIG_DEBIAN_ARCH))
 
 # very basic fixup
 # This is the changes needed to make the image actually bootable, or to
 # fix error conditions caused by the minimalisation.  Similar to the
 # minimiser, this could be improved.
-fixup: $(TAG)/fixup
-$(TAG)/fixup: $(TAG)/multistrap
+$(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ln -sf lib/systemd/systemd $(DEBOOT)/init       # allow booting
 	echo root:$(CONFIG_ROOT_PASS) | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
-	$(call tag,fixup)
+	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
 
 # TODO: consider what password should be default
 
@@ -110,11 +107,11 @@ $(TAG)/fixup: $(TAG)/multistrap
 # above).  E.G: configuring daemons to start on bootup, or installing
 # a set of ssh authorised keys
 
-debian: $(TAG)/debian
-$(TAG)/debian: $(TAG)/minimise $(TAG)/fixup
-	$(call tag,debian)
+debian: $(TAG)/debian.$(CONFIG_DEBIAN_ARCH)
+$(TAG)/debian.$(CONFIG_DEBIAN_ARCH): $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH) $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH)
+	$(call tag,debian.$(CONFIG_DEBIAN_ARCH))
 
-$(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian
+$(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian.$(CONFIG_DEBIAN_ARCH)
 	( \
             cd $(DEBOOT); \
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o \
