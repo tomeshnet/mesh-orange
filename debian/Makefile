@@ -158,27 +158,27 @@ test-arm_virt: $(BUILD)/arm_virt.initrd
 
 # Everything below this line is HW specific Armbian u-Boot startup code
 
-$(BOARD_DIR): $(TAG)/$(CONFIG_BOARD)_dir
-$(TAG)/$(CONFIG_BOARD)_dir: $(CONFIG_BOARD).multistrap
+$(BOARD_DIR): $(TAG)/$(CONFIG_BOARD)
+$(TAG)/$(CONFIG_BOARD): $(CONFIG_BOARD).multistrap
 	mkdir -p $(BOARD_DIR)
 	sudo /usr/sbin/multistrap -d $(BOARD_DIR) -f $<
-	$(call tag,$(CONFIG_BOARD)_dir)
+	$(call tag,$(CONFIG_BOARD))
 
 # Add the kernel specific binaries to this cpio file
-$(BUILD)/$(CONFIG_BOARD).cpio: $(TAG)/$(CONFIG_BOARD)_dir
+$(BUILD)/$(CONFIG_BOARD).cpio: $(TAG)/$(CONFIG_BOARD)
 	( \
             cd $(BOARD_DIR); \
             sudo find lib -print0 | sudo cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
-$(SRC_FDT): $(TAG)/$(CONFIG_BOARD)_dir
+$(SRC_FDT): $(TAG)/$(CONFIG_BOARD)
 
-$(BOOT): $(TAG)/boot_dir
-$(TAG)/boot_dir:
+$(BOOT): $(TAG)/boot
+$(TAG)/boot:
 	mkdir -p $(BOOT)
-	$(call tag,boot_dir)
+	$(call tag,boot)
 
-$(BOOT)/.next: $(TAG)/boot_dir
+$(BOOT)/.next: $(TAG)/boot
 	touch $@
 
 # TODO
@@ -190,26 +190,26 @@ $(BOOT)/.next: $(TAG)/boot_dir
 # of installed files that meant that it was not suitable to be installed in
 # the DEBOOT either.
 
-$(BOOT)/boot.scr: $(TAG)/boot_dir
+$(BOOT)/boot.scr: $(TAG)/boot
 $(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
 	mkimage -A arm -T script -C none -d $< $@
 
-$(BOOT)/armbianEnv.txt: $(TAG)/boot_dir
+$(BOOT)/armbianEnv.txt: $(TAG)/boot
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
 	cp $< $@
 
 kernel_suffix = $(shell ls $(BOOT)/vmlinuz-* |sed -e 's/vmlinuz-//')
 
-$(BOOT)/zImage: $(TAG)/boot_dir $(TAG)/$(CONFIG_BOARD)_dir
+$(BOOT)/zImage: $(TAG)/boot $(TAG)/$(CONFIG_BOARD)
 	cp $(BOARD_DIR)/boot/vmlinuz-* $(BOOT)/zImage
 	cp $(BOARD_DIR)/boot/config-* $(BOOT)
 
-dtb_dir: $(TAG)/dtb_dir
-$(TAG)/dtb_dir: $(BOOT)/zImage
+dtb: $(TAG)/dtb
+$(TAG)/dtb: $(BOOT)/zImage
 	mkdir -p $(BOOT)/dtb
-	$(call tag,dtb_dir)
+	$(call tag,dtb)
 
-$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(TAG)/dtb_dir
+$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(TAG)/dtb
 $(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
 	cp $< $@
 
@@ -217,7 +217,7 @@ $(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
 $(BUILD)/$(CONFIG_BOARD).initrd: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).lzma $(BUILD)/$(CONFIG_BOARD).lzma
 	cat $^ >$@
 
-$(BOOT)/uInitrd: $(TAG)/boot_dir
+$(BOOT)/uInitrd: $(TAG)/boot
 $(BOOT)/uInitrd: $(BUILD)/$(CONFIG_BOARD).initrd
 	mkimage -C lzma -A arm -T ramdisk -d $< $@
 
@@ -234,7 +234,7 @@ boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
-$(SRC_SPL): $(TAG)/$(CONFIG_BOARD)_dir
+$(SRC_SPL): $(TAG)/$(CONFIG_BOARD)
 
 PART_SIZE_MEGS = 1000
 
