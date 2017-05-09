@@ -64,6 +64,20 @@ the card.
 Test the debian image in an emulator:
 -------------------------------------
 It is possible to perform some basic testing of the debian image using the
-Qemu emulator.  Ensure you have the "qemu-system-arm" package installed and
-run "make test-arm_virt"
+Qemu emulator.
+
+* Testing with armhf
+
+  Ensure you have the "qemu-system-arm" package installed and then:
+
+    make test-arm_virt
+
+* Testing with i386
+
+  This emulation is much faster, which is why it is worth using on a project
+  that is expected to not normally run on i386
+
+  Ensure you have the "qemu-system-x86" package installed and then:
+
+    make CONFIG_DEBIAN_ARCH=i386 test-i386_virt
 
