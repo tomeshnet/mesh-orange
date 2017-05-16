@@ -30,9 +30,14 @@ use "dd" (or similar) to write the image to the raw sdcard.
 Booting and using the system
 ----------------------------
 
-You will need a serial console to log in, but if the ethernet port is
-plugged into a network, it should autoconfigure an IP address which can
-be pinged.
+The image has a default root password of "root" - however, this is
+expected to change before use in production (probably by adding a
+boot-time configuration script)
+
+It is very helpful to use a serial console to log in, but if the ethernet
+port is plugged into a network, it should autoconfigure an IP address
+which can be pinged and sshed to.  During testing, it might be useful
+to read the section below on running this image in an emulator.
 
 NOTE: uncompressing the (currently approximately 120Meg uncompressed) initrd
 will take a noticable amount of time.  The network will not be setup until
