@@ -2,7 +2,9 @@ Debian ramdisk builder
 ----------------------
 
 This directory contains an auto-build system for making bootable disk
-images using a ramdisk images.
+images using a ramdisk images.  It is tested and known to work when run
+on a Debian system.  It requires that you are running a system with the
+apt and dpkg software.  See below for building on Debian.
 
 There is nothing particularly Orange PI Zero specific about the created
 ramdisk image, it should work on any system supported by the Debian armhf
@@ -40,6 +42,16 @@ also applies to the kernel messages.
 Tests on one orange pi zero show that the time from power on until a login
 prompt on the serial console is about 1 minute.
 
+
+Building on Ubuntu
+------------------
+
+During building, all downloaded Debian packages are verified before use.  This
+verification requires the Debian keyring to work.  When using Ubuntu, the
+Debian keyring is not installed by default.  The following command will install
+the Debian keyring package and allow the verification:
+
+    sudo apt-get install debian-archive-keyring
 
 Optional partial build targets:
 -------------------------------
