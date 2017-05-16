@@ -265,22 +265,23 @@ $(SRC_SPL): $(TAG)/$(CONFIG_BOARD)
 PART_SIZE_MEGS = 1000
 
 $(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE)" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
+	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
-	truncate --size=$$((0x200)) $@  # skip past the MBR
-	date -u "+%FT%TZ " >>$@         # add a build date
-	git describe --long --dirty >>$@ # and describe the repo
-	truncate --size=$$((0x2000)) $@ # skip to correct offset for SPL
-	cat $(SRC_SPL) >>$@             # add the SPL+uboot binary
+	truncate --size=$$((0x200)) $@.tmp   # skip past the MBR
+	date -u "+%FT%TZ " >>$@.tmp          # add a build date
+	git describe --long --dirty >>$@.tmp # and describe the repo
+	truncate --size=$$((0x2000)) $@.tmp  # skip to correct offset for SPL
+	cat $(SRC_SPL) >>$@.tmp              # add the SPL+uboot binary
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
-	truncate --size=1025K $@        # ensure the FAT bootblock is mapped
+	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:boot
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:boot/dtb
+	mv $@.tmp $@
 
 # Misc make infrastructure below here
 
