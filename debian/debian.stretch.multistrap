@@ -14,14 +14,14 @@ keyring=debian-archive-keyring
 # Base system needs these three packages
 packages= systemd udev kmod
 
-# simple autoconfiguring of any network device
-packages= dhcpcd5
+# network configuration tools
+packages= iproute2
 
 # allow us to reach the rest of the world
 packages= openssh-client
 
 # allow the rest of the world to reach us
-#packages= dropbear-bin
+packages= dropbear-bin
 
 # local-net only network management
 #packages= mactelnet-server

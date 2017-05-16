@@ -1,0 +1,34 @@
+This directory contains files named after debian packages.  These files
+are all named as "${package}.${stage}"
+
+The "package.stage" scripts are responsible for any image
+customisations.  These customisations are applied in several phases,
+and each package that is found installed in the rescue system will
+attempt to run its matching script during each phase.
+
+Curently the phases are:
+
+"minimise"
+    During this phase, files can be removed to minimise the
+    installed size.
+
+"fixup"
+    This phase performs the changes needed to make the image actually
+    bootable.  Any service startup warnings and errors are also addressed
+    here.
+
+"customise"
+    Add, remove or edit config files in the image to configure it to be
+    useful (in contrast to fixing what is broken in the "fixup" above).
+    E.G: configuring daemons to start on bootup or setting the default
+    network configuration
+
+Output and exit codes:
+
+These scripts are expected to be silent on their output unless they encounter
+an error.  The exit codes are interpreted as follows:
+
+    0       all successful
+    1       the requested stage is not supported by this script (not an error)
+    other   an error was encountered - stop the build
+

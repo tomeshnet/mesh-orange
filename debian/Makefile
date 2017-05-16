@@ -77,11 +77,14 @@ $(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/usr/bin/qemu-arm-static 
 $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH) $(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH)
 	$(call tag,multistrap.$(CONFIG_DEBIAN_ARCH))
 
-# very basic minimalisation of the image size
-# This just hits the very basic directories.  A more comprehensive system
-# could use a specific hit-list for each package - this exists, but I dont
-# want to complicate things too much (at first)
+# TODO
+# - the make targets using the ./packages.runscripts system should
+#   be depending on all the packages.d/ scripts.  Need to add a auto
+#   dep system to do this.
+
+# minimise the image size
 $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
+	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) minimise
 	sudo rm -rf $(DEBOOT)/usr/share/locale/*
 	sudo rm -rf $(DEBOOT)/usr/share/zoneinfo/*
 	sudo rm -f $(DEBOOT)/lib/udev/hwdb.bin
@@ -89,26 +92,21 @@ $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	#sudo rm -f $(DEBOOT)/usr/bin/qemu-arm-static
 	$(call tag,minimise.$(CONFIG_DEBIAN_ARCH))
 
-# very basic fixup
-# This is the changes needed to make the image actually bootable, or to
-# fix error conditions caused by the minimalisation.  Similar to the
-# minimiser, this could be improved.
+# fixup the image to actually boot
 $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
-	sudo ln -sf lib/systemd/systemd $(DEBOOT)/init       # allow booting
-	echo root:$(CONFIG_ROOT_PASS) | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
+	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
 	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
+
+# image customisation - setting the default config.
+$(TAG)/customise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
+	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) customise
+	echo root:$(CONFIG_ROOT_PASS) | sudo chpasswd -c SHA256 -R $(realpath $(DEBOOT))
+	$(call tag,customise.$(CONFIG_DEBIAN_ARCH))
 
 # TODO: consider what password should be default
 
-# TODO:
-# basic customisation
-# A make task to add/remove/edit config files in the image to configure
-# it to be useful (in contrast to fixing what is broken in the "fixup"
-# above).  E.G: configuring daemons to start on bootup, or installing
-# a set of ssh authorised keys
-
 debian: $(TAG)/debian.$(CONFIG_DEBIAN_ARCH)
-$(TAG)/debian.$(CONFIG_DEBIAN_ARCH): $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH) $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH)
+$(TAG)/debian.$(CONFIG_DEBIAN_ARCH): $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH) $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH) $(TAG)/customise.$(CONFIG_DEBIAN_ARCH)
 	$(call tag,debian.$(CONFIG_DEBIAN_ARCH))
 
 $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian.$(CONFIG_DEBIAN_ARCH)
@@ -154,6 +152,7 @@ test-armhf_virt: $(BUILD)/armhf_virt.initrd
 	qemu-system-arm -M virt -m 512 \
 		-kernel $(BUILD)/armhf_virt/vmlinuz \
 		-initrd $< \
+		-netdev type=user,id=e0 -device virtio-net-device,netdev=e0 \
 		-nographic
 
 # Quick and dirty emulated i386 version - for speed
@@ -178,6 +177,7 @@ test-i386_virt: $(BUILD)/i386_virt.initrd
 	qemu-system-i386 -enable-kvm -m 512 \
 		-kernel $(BUILD)/i386_virt/vmlinuz \
 		-initrd $< \
+		-netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
 		-append console=ttyS0 \
 		-nographic
 

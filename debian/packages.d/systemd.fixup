@@ -1,0 +1,36 @@
+#!/bin/bash
+# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+
+
+DEBOOT="$1"
+ARCH="$2"
+
+
+# TODO
+# - figure out where to put common fragments like this
+wants() {
+    local WANTS="$1"
+    local THIS="$2"
+
+    local WANTSDIR="${DEBOOT}/etc/systemd/system/${WANTS}.wants"
+    mkdir -p "${WANTSDIR}"
+    ln -sf "${THIS}" "${WANTSDIR}"
+}
+
+
+# the initrd looks for a different file to start as init than
+# a normal bootup.  # so, we need to specifically create a link
+# for it.
+# TODO - when we use a script as /init remove this
+ln -fs /lib/systemd/systemd $DEBOOT/init
+
+# Set the correct systemd components to run automatically
+wants multi-user.target /lib/systemd/system/systemd-networkd.service
+wants multi-user.target /lib/systemd/system/systemd-networkd.socket
+wants multi-user.target /lib/systemd/system/systemd-resolved.service
+
+# point our default resolver at systemd-resolved
+cat <<EOF >${DEBOOT}/etc/resolv.conf
+nameserver 127.0.0.53
+EOF
+
