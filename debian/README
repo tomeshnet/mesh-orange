@@ -30,13 +30,27 @@ use "dd" (or similar) to write the image to the raw sdcard.
 Booting and using the system
 ----------------------------
 
-The image has a default root password of "root" - however, this is
-expected to change before use in production (probably by adding a
-boot-time configuration script)
+A wireless access point will be automatically started on all detected
+wifi adaptors - including those hotplugged after bootup.  Any internet
+connection plugged into the ethernet port will be shared out over the
+access point.
 
-It is very helpful to use a serial console to log in, but if the ethernet
-port is plugged into a network, it should autoconfigure an IP address
-which can be pinged and sshed to.  During testing, it might be useful
+(Note: There is currently a bug with stopping/restarting the hostapd,
+so if you unplug an adaptor, it will not automatically work again until
+a reboot is done)
+
+During testing the following default settings are used:
+    wifi ssid: "test2"
+    wifi passphrase: "bbbbbbbb"
+
+    user: "root"
+    pass: "root"
+
+An ssh server is started on bootup, so the simplest way to login is to
+connect to the wifi and use the root password.
+
+During development and debugging, it is very helpful to use a serial
+console to see the boot messages and login.  It is also might be useful
 to read the section below on running this image in an emulator.
 
 NOTE: uncompressing the (currently approximately 120Meg uncompressed) initrd
