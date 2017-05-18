@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Check the newly installed debian root dir and run any packages.d script
+# found for each package.
+#
+# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+
+if [ $# -lt 3 ]; then
+    echo "Usage: $0 DEBOOT ARCH STAGE"
+    exit 1
+fi
+
+DEBOOT="$1"
+ARCH="$2"
+STAGE="$3"
+
+if [ "$4" = "verbose" ]; then
+    VERBOSE=1
+else
+    unset VERBOSE
+fi
+
+PACKAGEDIR=packages.d
+PACKAGES=$(dpkg-query --admindir="${DEBOOT}/var/lib/dpkg" --show --showformat='${Package}\n')
+
+do_package() {
+    local package=$1
+
+    if [ ! -x "$PACKAGEDIR/$package.${STAGE}" ]; then
+        return
+    fi
+
+    if [ -n "$VERBOSE" ]; then
+        echo -n "$package "
+    fi
+    "$PACKAGEDIR/$package.${STAGE}" "${DEBOOT}" "${ARCH}"
+    S=$?
+
+    if [ $S -eq 1 ]; then
+        return 1
+    fi
+    if [ $S -gt 1 ]; then
+        echo "Error: package script $package failed"
+        exit $S
+    fi
+}
+
+echo "Running package scripts for $STAGE phase"
+if [ -n "$VERBOSE" ]; then
+    echo 
+    echo "Processing:"
+    echo -e -n "\t"
+fi
+
+for package in $PACKAGES; do
+    do_package "$package"
+    S=$?
+    if [ $S -gt 1 ]; then
+        exit $S
+    fi
+done
+
+if [ -n "$VERBOSE" ]; then
+    echo
+fi
+
