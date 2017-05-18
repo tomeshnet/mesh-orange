@@ -41,6 +41,7 @@ LLDP=true
 EmitLLDP=true
 EOF
 
+cat <<EOF >${DEBOOT}/etc/systemd/system/fix-eth0-linkup.service
 # FIXME
 # - on the orange pi zero I am testing (and armbian kernel 4.10.0-sun8i #8),
 #   if the system boots up without the ethernet plugged in, it goes into
@@ -51,9 +52,8 @@ EOF
 #   "link set up" commands (with the first incurring a kernel error)
 #   before the link state actually comes - so this might be related.
 #   Either way, need to add a shim that does a ip link set up...
-cat <<EOF >${DEBOOT}/etc/systemd/system/fix-eth0-linkup.service
 [Unit]
-Description=The fix for link issues is to bring it up twice
+Description=the fix for link issues on some hardware
 After=sys-subsystem-net-devices-eth0.device
 Before=systemd-networkd.service
 
@@ -65,24 +65,7 @@ ExecStart=-/sbin/ip link set eth0 up
 EOF
 wants systemd-networkd.service /etc/systemd/system/fix-eth0-linkup.service
 
-cat <<EOF >${DEBOOT}/etc/systemd/network/95-defaultwlan.network 
-# By default, all wlan interfaces will be access points
-# TODO - wire up hostapd
-[Match]
-Type=wlan
-
-[Network]
-DHCPServer=yes
-LLMNR=true
-MulticastDNS=true
-LLDP=true
-EmitLLDP=true
-Address=0.0.0.0/24
-IPForward=true
-IPMasquerade=true
-EOF
-
-cat <<EOF >${DEBOOT}/etc/systemd/network/85-mesh.network
+cat <<EOF >${DEBOOT}/etc/systemd/network/85-wlan-mesh.network
 # By default, any of these type of wifi cards are used for mesh networking
 # TODO - wire up a script to set that up
 [Match]

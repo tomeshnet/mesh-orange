@@ -14,6 +14,9 @@ keyring=debian-archive-keyring
 # Base system needs these three packages
 packages= systemd udev kmod
 
+# allow scripts to read .init style files
+packages= confget
+
 # network configuration tools
 packages= iproute2
 
@@ -22,6 +25,9 @@ packages= openssh-client
 
 # allow the rest of the world to reach us
 packages= dropbear-bin
+
+# wireless management
+packages= iw hostapd crda
 
 # local-net only network management
 #packages= mactelnet-server
