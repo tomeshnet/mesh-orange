@@ -24,7 +24,7 @@ packages= iproute2
 packages= openssh-client
 
 # allow the rest of the world to reach us
-packages= dropbear-bin
+packages= dropbear-run dropbear-bin
 
 # wireless management
 packages= iw hostapd crda
