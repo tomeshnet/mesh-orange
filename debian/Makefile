@@ -14,31 +14,18 @@ CONFIG_DEBIAN_ARCH = armhf
 
 CONFIG_ROOT_PASS = root
 
-# which uboot and device tree is this being built for
-CONFIG_UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
-CONFIG_BOARD = sun8i-h2plus-orangepi-zero
-# FIXME - it would be nice if the uboot name was related to the dtb name
-
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
 DEBOOT = $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH)
-BOARD_DIR = $(BUILD)/$(CONFIG_BOARD)
-BOOT = $(BUILD)/boot
-DISK_IMAGE = $(BUILD)/$(CONFIG_BOARD).img
 
 BUILD_DEPENDS = \
     multistrap \
     binfmt-support \
     qemu-user-static \
-    u-boot-tools \
-    xz-utils \
-    mtools \
 
-SRC_SPL = $(BOARD_DIR)/usr/lib/$(CONFIG_UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_FDT = $(BOARD_DIR)/usr/lib/linux-image-dev-sun8i/$(CONFIG_BOARD).dtb
 
-all: $(DISK_IMAGE)
+all: $(BUILD)/debian.cpio
 
 # install any packages needed for this builder
 build-depends: $(TAG)/build-depends
@@ -115,116 +102,13 @@ $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian.$(CON
             sudo find . -print0 | sudo cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
-# Everything above this line is a generic Debian armhf builder
-
-# Everything below this line is HW specific Armbian u-Boot startup code
-
-$(BOARD_DIR): $(TAG)/$(CONFIG_BOARD)
-$(TAG)/$(CONFIG_BOARD): $(CONFIG_BOARD).multistrap
-	mkdir -p $(BOARD_DIR)
-	sudo /usr/sbin/multistrap -d $(BOARD_DIR) -f $<
-	$(call tag,$(CONFIG_BOARD))
-
-# Add the kernel specific binaries to this cpio file
-$(BUILD)/$(CONFIG_BOARD).cpio: $(TAG)/$(CONFIG_BOARD)
-	( \
-            cd $(BOARD_DIR); \
-            sudo find lib -print0 | sudo cpio -0 -H newc -R 0:0 -o \
-	) > $@
-
-$(SRC_FDT): $(TAG)/$(CONFIG_BOARD)
-
-$(BOOT): $(TAG)/boot
-$(TAG)/boot:
-	mkdir -p $(BOOT)
-	$(call tag,boot)
-
-$(BOOT)/.next: $(TAG)/boot
-	touch $@
-
-# TODO
-# - stop using our local version of these files.
-# These two files ( boot-sunxi.cmd and armbianEnv.txt ) are copied from the
-# armbian git repo.  They are also found in one of the armbian packages
-# ( linux-jessie-root-dev-orangepizero ) this package has dependancies that
-# make it annoying to install in the BOARD_DIR and has a rather annoying mix
-# of installed files that meant that it was not suitable to be installed in
-# the DEBOOT either.
-
-$(BOOT)/boot.scr: $(TAG)/boot
-$(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
-	mkimage -A arm -T script -C none -d $< $@
-
-$(BOOT)/armbianEnv.txt: $(TAG)/boot
-$(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
-	cp $< $@
-
-kernel_suffix = $(shell ls $(BOOT)/vmlinuz-* |sed -e 's/vmlinuz-//')
-
-$(BOOT)/zImage: $(TAG)/boot $(TAG)/$(CONFIG_BOARD)
-	cp $(BOARD_DIR)/boot/vmlinuz-* $(BOOT)/zImage
-	cp $(BOARD_DIR)/boot/config-* $(BOOT)
-
-dtb: $(TAG)/dtb
-$(TAG)/dtb: $(BOOT)/zImage
-	mkdir -p $(BOOT)/dtb
-	$(call tag,dtb)
-
-$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(TAG)/dtb
-$(BOOT)/dtb/$(CONFIG_BOARD).dtb: $(SRC_FDT)
-	cp $< $@
-
-# Combine the various modules to make one big cpio file
-$(BUILD)/$(CONFIG_BOARD).initrd: $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).lzma $(BUILD)/$(CONFIG_BOARD).lzma
-	cat $^ >$@
-
-$(BOOT)/uInitrd: $(TAG)/boot
-$(BOOT)/uInitrd: $(BUILD)/$(CONFIG_BOARD).initrd
-	mkimage -C lzma -A arm -T ramdisk -d $< $@
-
-BOOT_FILES = \
-    $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
-    $(BOOT)/.next \
-    $(BOOT)/zImage \
-    $(BOOT)/uInitrd \
-
-BOOT_DTB_FILES = \
-    $(BOOT)/dtb/$(CONFIG_BOARD).dtb \
-
-boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
-
-# Everything below this line is packing the built boot dir into a disk image
-
-$(SRC_SPL): $(TAG)/$(CONFIG_BOARD)
-
-PART_SIZE_MEGS = 1000
-
-$(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
-
-$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc boot
-	truncate --size=$$((0x200)) $@.tmp   # skip past the MBR
-	date -u "+%FT%TZ " >>$@.tmp          # add a build date
-	git describe --long --dirty >>$@.tmp # and describe the repo
-	truncate --size=$$((0x2000)) $@.tmp  # skip to correct offset for SPL
-	cat $(SRC_SPL) >>$@.tmp              # add the SPL+uboot binary
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:boot/dtb
-	mv $@.tmp $@
-
 # Misc make infrastructure below here
 
-%.lzma: %.cpio
-	lzma <$< >$@
-
 clean:
-	sudo rm -rf $(DEBOOT) $(BOOT) $(TAG) $(BOARD_DIR)
+	sudo rm -rf $(DEBOOT) $(TAG)
+
+reallyclean:
+	rm -rf $(BUILD)
 
 define tag
 	@echo Touching tag $1

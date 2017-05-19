@@ -1,16 +1,10 @@
 Debian ramdisk builder
 ----------------------
 
-This directory contains an auto-build system for making bootable disk
-images using a ramdisk images.  It is tested and known to work when run
-on a Debian system.  It requires that you are running a system with the
-apt and dpkg software.  See below for building on Debian.
-
-There is nothing particularly Orange PI Zero specific about the created
-ramdisk image, it should work on any system supported by the Debian armhf
-architecture, however the bootable disk is specific to the Allwinner
-boot loader layout (It might be usable on other Allwinner CPUs if the
-right device-tree is added, but testing is needed)
+This directory contains an auto-build system for making a minimal Debian
+system, suitable for including in a ramdisk.  It is tested and known to
+build when run on a Debian system.  It requires that you are running a
+system with the apt and dpkg software.  See below for building on Ubuntu.
 
 It currently only creates a very minimal debian system (the config file
 debian.stretch.multistrap contains the list of repositories and the
@@ -20,47 +14,15 @@ Usage:
 
     make build-depends          # install needed build packages
 
-    make                        # full build
-                                # - creates build/sun8i-h2plus-orangepi-zero.img
+    make                        # creates build/debian.cpio
 
 After making sure the needed packages are installed, you just need to
-run the full build.  Once the full disk image output file is generated,
-use "dd" (or similar) to write the image to the raw sdcard.
+run the full build.  The resulting image can be used to build a ramdisk
+install - see the boards directory for various builders
 
-Booting and using the system
-----------------------------
-
-A wireless access point will be automatically started on all detected
-wifi adaptors - including those hotplugged after bootup.  Any internet
-connection plugged into the ethernet port will be shared out over the
-access point.
-
-(Note: There is currently a bug with stopping/restarting the hostapd,
-so if you unplug an adaptor, it will not automatically work again until
-a reboot is done)
-
-During testing the following default settings are used:
-    wifi ssid: "test2"
-    wifi passphrase: "bbbbbbbb"
-
-    user: "root"
-    pass: "root"
-
-An ssh server is started on bootup, so the simplest way to login is to
-connect to the wifi and use the root password.
-
-During development and debugging, it is very helpful to use a serial
-console to see the boot messages and login.  It is also might be useful
-to read the section below on running this image in an emulator.
-
-NOTE: uncompressing the (currently approximately 120Meg uncompressed) initrd
-will take a noticable amount of time.  The network will not be setup until
-that has been done, so nothing will happen for a while.  For some reason, this
-also applies to the kernel messages.
-
-Tests on one orange pi zero show that the time from power on until a login
-prompt on the serial console is about 1 minute.
-
+The various fixups and customisation that are applied to the basic Debian
+installation can be seen in the packages.d directory.  See the README
+in that dir for more information.
 
 Building on Ubuntu
 ------------------
@@ -71,44 +33,4 @@ Debian keyring is not installed by default.  The following command will install
 the Debian keyring package and allow the verification:
 
     sudo apt-get install debian-archive-keyring
-
-Optional partial build targets:
--------------------------------
-
-    make debian                 # build a Debian armhf chroot in build/debian
-    make build/boot/uInitrd     # build the u-boot initrd
-    make boot                   # build a full /boot dir in build/boot
-
-For testing purposes, it might be useful to create a partial build using
-one of these targets.  The dependancies between these three targets are
-all working - so that asking for the "boot" target will automatically
-generate the uInitrd and the debian base install" as needed.
-
-To test the ramdisk image (build/boot/uInitrd), first create a bootable
-armbian sdcard.  Mount this card and overwrite the boot/uInitrd file
-with the one built above.
-
-To test the boot dir, first create a bootable armbian sdcard.  Mount this
-card and remove the boot dir from it, copy the build/boot dir onto
-the card.
-
-Test the debian image in an emulator:
--------------------------------------
-It is possible to perform some basic testing of the debian image using the
-Qemu emulator.
-
-* Testing with armhf
-
-  Ensure you have the "qemu-system-arm" package installed and then:
-
-    make -C ../boards/qemu_armhf test
-
-* Testing with i386
-
-  This emulation is much faster, which is why it is worth using on a project
-  that is expected to not normally run on i386
-
-  Ensure you have the "qemu-system-x86" package installed and then:
-
-    make -C ../boards/qemu_i386 test
 

@@ -12,7 +12,9 @@ DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio
 # Directories
 BUILD = build
 
-all:
+all: image
+
+image:
 	echo as a virtual system, there is no way to build an image
 	false
 
