@@ -54,11 +54,10 @@ a reboot is done)
 
 During testing the following default settings are used:
 
-    wifi ssid: `test2`
-    wifi passphrase: `bbbbbbbb`
-
-    user: `root`
-    pass: `root`
+* wifi ssid: `test2`
+* wifi passphrase: `bbbbbbbb`
+* user: `root`
+* pass: `root`
 
 An ssh server is started on bootup, so the simplest way to login is to
 connect to the wifi and use the root password.
@@ -111,6 +110,8 @@ configuration and customisation is the same as the armhf architecture.
     make -C boards/qemu_i386 build-depends
 
     make -C boards/qemu_i386 test
+
+To exit the emulator, use Ctrl-A then "x"
 
 Debian ramdisk builder
 ----------------------
