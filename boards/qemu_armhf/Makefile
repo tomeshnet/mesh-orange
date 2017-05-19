@@ -9,6 +9,8 @@ DEBIAN_ARCH = armhf
 # TODO - this is unwieldly
 DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio
 
+BUILD_DEPENDS = qemu-system-arm
+
 # Directories
 BUILD = build
 
@@ -20,7 +22,7 @@ image:
 
 # install any packages needed for this builder
 build-depends:
-	true
+	sudo apt-get -y install $(BUILD_DEPENDS)
 
 # we might need to go and make the debian
 # Note: this has no dependancy checking, and will simply use what ever
