@@ -101,7 +101,7 @@ Qemu emulator.
 
   Ensure you have the "qemu-system-arm" package installed and then:
 
-    make test-arm_virt
+    make -C ../boards/qemu_armhf test
 
 * Testing with i386
 
@@ -110,5 +110,5 @@ Qemu emulator.
 
   Ensure you have the "qemu-system-x86" package installed and then:
 
-    make CONFIG_DEBIAN_ARCH=i386 test-i386_virt
+    make -C ../boards/qemu_i386 test
 
