@@ -4,7 +4,7 @@ A Small ramdisk system running modern Debian
 This project will create system images for installing a Debian-based
 router.
 
-The initial hardwre target is to run on an Orange Pi Zero Single Board
+The initial hardware target is to run on an Orange Pi Zero Single Board
 Computer and use the TOP-GS07 RT5572 WiFi adapter for mesh traffic.
 
 In the future, it will create a fully working mesh node, with cjdns
@@ -23,7 +23,7 @@ process.  The following commands will build for the Orange Pi Zero
     make -C boards/sun8i-h2plus-orangepi-zero image
 
 First, any packages required to complete the build are installed -
-this needs to be done for both the debian environment and the specific
+this needs to be done for both the Debian environment and the specific
 board environment, which is why there are two lines.
 
 Next, the image is built.  Once the disk image is completed, it will placed
@@ -38,13 +38,13 @@ use "dd" (or similar) to write the image to the raw sdcard.
     lsblk -d -o NAME,SIZE,LABEL
     echo sudo dd if=output/$IMAGE of=$DISK
 
-Warning: dont overwrite the wrong disk!
+Warning: don't overwrite the wrong disk!
 
 Booting and using the system
 ----------------------------
 
 A wireless access point will be automatically started on all detected
-wifi adaptors - including those hotplugged after bootup.  Any internet
+wifi adaptors - including those hot-plugged after bootup.  Any internet
 connection plugged into the ethernet port will be shared out over the
 access point.
 
@@ -67,7 +67,7 @@ console to see the boot messages and login.  It is also might be useful
 to read the section below on running this image in an emulator.
 
 NOTE: uncompressing the (currently approximately 120Meg uncompressed) initrd
-will take a noticable amount of time.  The network will not be setup until
+will take a noticeable amount of time.  The network will not be setup until
 that has been done, so nothing will happen for a while.  For some reason, this
 also applies to the kernel messages.
 
