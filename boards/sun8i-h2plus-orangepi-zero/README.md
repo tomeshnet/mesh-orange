@@ -1,4 +1,5 @@
-This is the rough set of notes for the steps I followed:
+This is the rough set of notes for the steps I originally followed to make
+a working orange pi zero build (before this autobuilder was done)
 
 * install armbian image
     FIXME - link
