@@ -32,9 +32,11 @@ it will placed in the `output` dir.
 Using the image
 ---------------
 
-Once the image is built, and you have the disk image file from above, write
-the image to the raw sdcard with a tool like [Etcher](https://etcher.io),
-or use `dd`:
+Once the image is built, and you have the disk image file from above,
+write to the raw sdcard with a command line tool like `dd` or a
+graphical tool like [Etcher](https://etcher.io).
+
+For `dd`:
 
     lsblk -d -o NAME,SIZE,LABEL
     echo "Verify and run: sudo dd if=output/$IMAGE of=$DISK"
