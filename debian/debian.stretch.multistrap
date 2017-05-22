@@ -17,6 +17,9 @@ packages= systemd udev kmod
 # allow scripts to read .init style files
 packages= confget
 
+# package management
+packages= apt
+
 # network configuration tools
 packages= iproute2
 
