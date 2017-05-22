@@ -104,6 +104,9 @@ $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian.$(CON
 
 # Misc make infrastructure below here
 
+%.lzma: %.cpio
+	lzma <$< >$@
+
 clean:
 	sudo rm -rf $(DEBOOT) $(TAG)
 
