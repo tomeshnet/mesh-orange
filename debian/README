@@ -34,6 +34,8 @@ the Debian keyring package and allow the verification:
 
     sudo apt-get install debian-archive-keyring
 
-Note:  Ubuntu 14.04 appears to have a broken version of multistrap, and will
-probably not work.
+Note:  Ubuntu 14.04 is shipping a broken version of multistrap (version
+2.2.0), and will fail with compile errors.  The fix for this appears to
+be to edit the line in /usr/sbin/multistrap that has error (line 989 in
+v2.2.0) and remove any occurance to "$forceyes".
 
