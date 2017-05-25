@@ -5,8 +5,6 @@
 # TODO:
 # - Convert the minimalisation step into an excludes file generator
 #   and use that file in the cpio step
-# - Add a real minimalisation engine
-# - Add the same for fixups
 # - Add config file list / save to sdcard / load from sdcard package
 
 CONFIG_DEBIAN = stretch
