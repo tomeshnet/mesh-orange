@@ -14,7 +14,7 @@ DEBIAN_ARCH = i386
 # TODO - this is unwieldly
 DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio
 
-BUILD_DEPENDS = qemu-system-x86_64
+BUILD_DEPENDS = qemu-system-x86
 
 # Directories
 BUILD = build
