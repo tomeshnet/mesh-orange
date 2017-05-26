@@ -1,7 +1,15 @@
-This directory contains files named after debian packages.  These files
-are all named as "${package}.${stage}"
+This directory contains files named after debian packages.  There are
+several types of files:
 
-The "package.stage" scripts are responsible for any image
+* "${package}.${stage}.add"     - directory with files to add
+* "${package}.${stage}"         - scripts for complex changes
+
+The ".add" directories contain a directory structure that is added
+to the build area if the named package is installed.  This is done
+before any scripts are run in that stage, allowing the scripts to
+make modifications if needed.
+
+The "package.stage" scripts are responsible for any more complex
 customisations.  These customisations are applied in several phases,
 and each package that is found installed in the rescue system will
 attempt to run its matching script during each phase.
@@ -9,8 +17,8 @@ attempt to run its matching script during each phase.
 Curently the phases are:
 
 "minimise"
-    During this phase, files can be removed to minimise the
-    installed size.
+    During this phase, anything that can be removed to minimise the
+    installed size is removed.
 
 "fixup"
     This phase performs the changes needed to make the image actually

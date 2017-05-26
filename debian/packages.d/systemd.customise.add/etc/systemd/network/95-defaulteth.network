@@ -1,0 +1,11 @@
+# By default, all ethernet ports are clients trying to become our upstream
+[Match]
+Name=eth* en*
+
+[Network]
+DHCP=yes
+IPv4LLRoute=yes
+LLMNR=true
+MulticastDNS=true
+LLDP=true
+EmitLLDP=true

@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# For each package in the install dir, check to see if the directory
+# "packages.d/$PACKAGE.$STAGE.add" exists and, if so, copy those files
+# into the install dir.
+#
+# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+
+if [ $# -lt 3 ]; then
+    echo "Usage: $0 DEBOOT ARCH STAGE"
+    exit 1
+fi
+
+DEBOOT="$1"
+ARCH="$2"
+STAGE="$3"
+
+if [ "$4" = "verbose" ]; then
+    VERBOSE=1
+else
+    unset VERBOSE
+fi
+
+PACKAGEDIR=packages.d
+PACKAGES=$(dpkg-query --admindir="${DEBOOT}/var/lib/dpkg" --show --showformat='${Package}\n')
+
+do_package() {
+    local package=$1
+
+    if [ ! -d "$PACKAGEDIR/$package.${STAGE}.add" ]; then
+        return
+    fi
+
+    if [ -n "$VERBOSE" ]; then
+        echo -n "$package "
+    fi
+    cp -r "$PACKAGEDIR/$package.${STAGE}.add/." "${DEBOOT}"
+    S=$?
+
+    if [ $S -ne 0 ]; then
+        echo "Error: add extra files for $package failed"
+        exit $S
+    fi
+}
+
+echo "Adding extra files for $STAGE phase"
+if [ -n "$VERBOSE" ]; then
+    echo 
+    echo "Processing:"
+    echo -e -n "\t"
+fi
+
+for package in $PACKAGES; do
+    do_package "$package"
+    S=$?
+    if [ $S -gt 1 ]; then
+        exit $S
+    fi
+done
+
+if [ -n "$VERBOSE" ]; then
+    echo
+fi
+

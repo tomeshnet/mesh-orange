@@ -1,0 +1,5 @@
+# This filename is hardcoded in /lib/udev/rules.d/73-usb-net-by-mac.rules :-(
+# just use the simple old kernel names for all interfaces
+[Link]
+NamePolicy=kernel database
+MACAddressPolicy=persistent
