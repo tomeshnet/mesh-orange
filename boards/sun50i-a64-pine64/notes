@@ -1,0 +1,7 @@
+
+https://github.com/armbian/build/blob/master/config/bootscripts/boot-pine64-default.cmd
+
+https://github.com/armbian/build/blob/master/config/bootenv/pine64-default.txt
+
+http://apt.armbian.com/pool/main/l/linux-u-boot-pine64-dev/
+
