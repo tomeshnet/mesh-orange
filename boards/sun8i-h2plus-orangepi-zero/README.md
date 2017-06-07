@@ -1,5 +1,38 @@
 This file collects notes and information relevant to the Orange Pi Zero board.
 
+Power Usage
+-----------
+
+During testing, I measured the power used for several scenarios using the
+Orange Pi Zero.
+
+| Setup                                                 | Bootup | Idle   |
+|-------------------------------------------------------|-------:|-------:|
+| Ramdisk, Ethernet plugged in, Wifi AP, TOP-GS07 mesh  |  793mA |  548mA |
+| Ramdisk, Ethernet plugged in, Wifi AP                 |  417mA |  266mA |
+| Ramdisk, Ethernet unplugged and if down, Wifi AP      |        |  250mA |
+| Ramdisk, Ethernet plugged in, Wifi if down            |        |  163mA |
+| Ramdisk, Ethernet if down, Wifi if down               |        |  145mA |
+| Ramdisk, all if down, cpufreq 120Mhz                  |        |  109mA |
+| Ramdisk, all if down, cpufreq 120Mhz, 3 CPUs offline  |        |   97mA |
+
+* Bootup is the current that must be available for a successful boot
+  without crashing.  "Not crashing" is defined as can login and run status
+  commands with no error or freeze for 5 minutes.  If the test was done
+  with changes after bootup, this value will be blank.  Note that this
+  is a bare minimum measured value - add at least 10% for safe normal use.
+* Idle is the average current that the board uses after completing booting.
+  (Mean value over 10 seconds)
+* All tests were done at 5v using a power supply that lowers this
+  voltage if the configured current limit is reached (This is expected
+  to be similar to what your usual Micro-USB plug pack will do, but
+  probably not exactly the same)
+  More specifically, a CC/CV (Constant-Current/Constant-Voltage) bench
+  power supply was used with the current limit adjusted to find the
+  bootup minimum current.  It was not configured to trip if the max
+  current was reached, thus allowing occasional opperation in CC mode.
+
+
 Disk image layout
 -----------------
 
