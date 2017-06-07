@@ -39,3 +39,16 @@ Note:  Ubuntu 14.04 is shipping a broken version of multistrap (version
 be to edit the line in /usr/sbin/multistrap that has error (line 989 in
 v2.2.0) and remove any occurance to "$forceyes".
 
+TODO
+----
+
+A quick list of things that probably need doing:
+
+* config storage - some magic files in /conf.d (what about SPI flash?)
+* automatic hostname
+* cjdns
+* IPFS
+* u-boot rules to boot of one or the other of the initramfs images on fallback
+* maybe add udev persistent-net-generator.rules - style network interface naming
+* use a known prefix for tunnel names to allow stable iptables rules and
+  coexistance with other tunnel systems

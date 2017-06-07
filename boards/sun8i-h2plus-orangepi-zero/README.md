@@ -17,18 +17,6 @@ a working orange pi zero build (before this autobuilder was done)
 * mactelnet (I used this, possibly not needed for a standard image)
 * bunches of tools installed
 
-Future things I think should exist:
-* config storage (spi flash?, just a magic file in /boot?)
-* auto hostname
-* change initial password
-* add udev persistent-net-generator.rules - style network interface naming
-* autoconfiguration for plugged in wifi devices
-* use a known prefix for tunnel names to allow stable iptables rules and
-  coexistance with other tunnel systems
-* IPFS
-* debian root filesystem autobuilder, generating initramfs images
-* u-boot rules to boot of one or the other of the initramfs images
-
 Disk image layout
 -----------------
 
