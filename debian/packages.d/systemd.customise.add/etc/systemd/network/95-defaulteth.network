@@ -4,7 +4,6 @@ Name=eth* en*
 
 [Network]
 DHCP=yes
-IPv4LLRoute=yes
 LLMNR=true
 MulticastDNS=true
 LLDP=true

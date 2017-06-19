@@ -6,7 +6,6 @@ Driver=rt2800usb
 
 [Network]
 LinkLocalAddressing=yes
-IPv4LLRoute=yes
 LLMNR=true
 MulticastDNS=true
 LLDP=true
