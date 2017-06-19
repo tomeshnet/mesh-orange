@@ -117,6 +117,11 @@ $(BOOT)/dtb/$(BOARD).dtb: $(TAG)/dtb
 $(BOOT)/dtb/$(BOARD).dtb: $(SRC_FDT)
 	cp $< $@
 
+# Since the uboot and kernel versions are mismatched, we have this
+# hack here to line up the two names. TODO - remove when possible
+$(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb: $(BOOT)/dtb/$(BOARD).dtb
+	cp $< $@
+
 # Combine the various modules to make one big cpio file
 $(BUILD)/combined.initrd: $(DEBIAN) $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
 	cat $^ >$@
@@ -131,8 +136,10 @@ BOOT_FILES = \
     $(BOOT)/zImage \
     $(BOOT)/uInitrd \
 
+# This should use the $(BOARD).dtb when we can upgrade to the current
+# kernel TODO - remove when possible
 BOOT_DTB_FILES = \
-    $(BOOT)/dtb/$(BOARD).dtb \
+    $(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb \
 
 boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
