@@ -9,8 +9,8 @@ DEBIAN_ARCH = armhf
 DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).lzma
 
 # which uboot and device tree is this being built for
-UBOOT = linux-u-boot-dev-orangepizero_5.25_armhf
-BOARD = sun8i-h2plus-orangepi-zero
+UBOOT = linux-u-boot-dev-orangepizero_5.31_armhf
+BOARD = sun8i-h2-plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
