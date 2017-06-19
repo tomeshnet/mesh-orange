@@ -13,5 +13,6 @@ NamePolicy=kernel database
 MACAddressPolicy=persistent
 
 [mesh]
+country_code=HK
 ssid=hkmesh
 freq=5200 HT20

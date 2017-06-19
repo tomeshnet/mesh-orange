@@ -22,8 +22,11 @@ fi
 [ -n "$conf_ssid" ] || exit 1
 [ -n "$conf_freq" ] || exit 1
 
-# TODO
-# - build a way to confirm that iw reg set $something has been done
+if [ -n "$conf_country_code" ]; then
+    # if one is configured, just set it - dont check if it is already set
+    # or make any other assumptions
+    iw reg set $conf_country_code
+fi
 
 ip link set $INT down
 iw dev $INT set type mp
