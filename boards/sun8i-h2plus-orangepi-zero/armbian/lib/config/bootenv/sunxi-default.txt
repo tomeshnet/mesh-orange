@@ -1,3 +1,6 @@
 verbosity=7
 console=both
 disp_mode=1920x1080p60
+
+# Most boards are expected to have the USB hat, so enable these ports
+overlays=sun8i-h3-usbhost0 sun8i-h3-usbhost2 sun8i-h3-usbhost3

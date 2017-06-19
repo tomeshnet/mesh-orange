@@ -14,7 +14,9 @@ BOARD = sun8i-h2plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_FDT = $(ARMBIAN)/usr/lib/linux-image-dev-sun8i/$(BOARD).dtb
+SRC_DTBDIR = $(ARMBIAN)/usr/lib/linux-image-dev-sun8i
+SRC_FDT = $(SRC_DTBDIR)/$(BOARD).dtb
+SRC_DTBO = $(SRC_DTBDIR)/overlay
 
 PART_SIZE_MEGS = 1000
 
@@ -122,6 +124,14 @@ $(BOOT)/dtb/$(BOARD).dtb: $(SRC_FDT)
 $(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb: $(BOOT)/dtb/$(BOARD).dtb
 	cp $< $@
 
+dtbo: $(TAG)/dtbo
+$(TAG)/dtbo: $(TAG)/dtb
+	mkdir -p $(BOOT)/dtb/overlay
+	$(call tag,dtbo)
+
+$(BOOT)/dtb/overlay/%.dtbo: $(SRC_DTBO)/%.dtbo $(TAG)/dtbo
+	cp $< $@
+
 # Combine the various modules to make one big cpio file
 $(BUILD)/combined.initrd: $(DEBIAN) $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
 	cat $^ >$@
@@ -141,7 +151,12 @@ BOOT_FILES = \
 BOOT_DTB_FILES = \
     $(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb \
 
-boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
+BOOT_DTBO_FILES = \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost0.dtbo \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost2.dtbo \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost3.dtbo \
+
+boot: $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
@@ -150,7 +165,7 @@ $(SRC_SPL): $(TAG)/armbian
 $(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
-$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
+$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 	truncate --size=$$((0x200)) $@.tmp   # skip past the MBR
 	date -u "+%FT%TZ " >>$@.tmp          # add a build date
 	git describe --long --dirty >>$@.tmp # and describe the repo
@@ -164,6 +179,8 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:boot
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:boot/dtb
+	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
+	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay
 	mv $@.tmp $@
 
 # Misc make infrastructure below here
