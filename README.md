@@ -10,6 +10,15 @@ Computer and use the TOP-GS07 RT5572 WiFi adapter for mesh traffic.
 In the future, it will create a fully working mesh node, with cjdns
 and IPFS software installed.
 
+TOP-GS07 RT5572 WiFi adapter Note
+---------------------------------
+
+During the testing of this adaptor, it was found to get very hot.  If
+insufficient cooling is provided, this adaptor could overheat and fail
+to work properly.  In a subtropical summer environment, it was found
+that this would occur within a couple of minutes of use.  Removing the
+plastic cover allows some cooling and was enough to complete at least
+half an hour of successful light testing.
 
 Building the image
 ------------------
