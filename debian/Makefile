@@ -82,6 +82,7 @@ $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.addextra $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
 	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
+	sudo rm $(DEBOOT)/etc/machine-id
 	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
 
 # image customisation - setting the default config.
