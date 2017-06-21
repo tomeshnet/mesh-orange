@@ -13,6 +13,11 @@ UBOOT = linux-u-boot-dev-orangepizero_5.31_armhf
 BOARD = sun8i-h2plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
+# Armbian appears to be in the process of changing the board name for
+# the orange pi zero.  Since we are using a mix of the older kernel and
+# the newer uboot, this makes life difficult
+BOARD_HACK = sun8i-h2-plus-orangepi-zero
+
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
 SRC_DTBDIR = $(ARMBIAN)/usr/lib/linux-image-dev-sun8i
 SRC_FDT = $(SRC_DTBDIR)/$(BOARD).dtb
@@ -121,7 +126,7 @@ $(BOOT)/dtb/$(BOARD).dtb: $(SRC_FDT)
 
 # Since the uboot and kernel versions are mismatched, we have this
 # hack here to line up the two names. TODO - remove when possible
-$(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb: $(BOOT)/dtb/$(BOARD).dtb
+$(BOOT)/dtb/$(BOARD_HACK).dtb: $(BOOT)/dtb/$(BOARD).dtb
 	cp $< $@
 
 dtbo: $(TAG)/dtbo
@@ -147,9 +152,9 @@ BOOT_FILES = \
     $(BOOT)/uInitrd \
 
 # This should use the $(BOARD).dtb when we can upgrade to the current
-# kernel TODO - remove when possible
+# kernel TODO - remove the HACK when possible
 BOOT_DTB_FILES = \
-    $(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb \
+    $(BOOT)/dtb/$(BOARD_HACK).dtb \
 
 BOOT_DTBO_FILES = \
     $(BOOT)/dtb/overlay/sun8i-h3-usbhost0.dtbo \
