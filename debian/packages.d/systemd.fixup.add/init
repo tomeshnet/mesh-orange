@@ -1,1 +1,13 @@
-/lib/systemd/systemd
+#!/bin/sh
+#
+# This script gets run by linux when starting an initrd
+#
+# We simply iterate through a directory of shell fragments
+
+for i in /init.d/*.sh; do
+    . $i
+done
+
+# Failsafe: If something has gone wrong, avoid a kernel panic
+echo ERROR: pre-init scripts finished without starting systemd
+exec /bin/sh
