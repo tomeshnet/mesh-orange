@@ -39,8 +39,13 @@ $(DEBOOT)/dev/urandom:
 	mkdir -p $(DEBOOT)/dev
 	sudo mknod $(DEBOOT)/dev/urandom c 1 9
 
+$(DEBOOT)/usr/sbin/policy-rc.d: policy-rc.d
+	mkdir -p $(dir $@)
+	cp $< $@
+
 # multistrap-pre runs the basic multistrap program, installing the packages
 # until they need to run native code
+$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/usr/sbin/policy-rc.d
 $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
 $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/dev/urandom
 	sudo /usr/sbin/multistrap -d $(DEBOOT) --arch $(CONFIG_DEBIAN_ARCH) -f debian.$(CONFIG_DEBIAN).multistrap
@@ -55,11 +60,6 @@ $(DEBOOT)/usr/bin/qemu-arm-static: /usr/bin/qemu-arm-static
 $(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/usr/bin/qemu-arm-static $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH)
 	sudo chroot $(DEBOOT) ./multistrap.configscript
 	$(call tag,multistrap-post.$(CONFIG_DEBIAN_ARCH))
-
-# TODO
-# - search for and kill any daemons started by the dpkg configure:
-#       sudo killall dropbear
-#       sudo umount $(DEBOOT)/proc
 
 # perform the debian install
 $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH) $(TAG)/multistrap-post.$(CONFIG_DEBIAN_ARCH)
