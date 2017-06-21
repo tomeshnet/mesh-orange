@@ -14,7 +14,7 @@ Usage:
 
     make build-depends          # install needed build packages
 
-    make                        # creates build/debian.cpio
+    make build/debian.stretch.armhf.cpio  # creates the root filesystem archive
 
 After making sure the needed packages are installed, you just need to
 run the full build.  The resulting image can be used to build a ramdisk

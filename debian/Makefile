@@ -22,8 +22,11 @@ BUILD_DEPENDS = \
     binfmt-support \
     qemu-user-static \
 
-
-all: $(BUILD)/debian.cpio
+# A default target to tell you what other targets might work
+all:
+	$(info Build a platform neutral debian install)
+	$(info Try: $(MAKE) build/debian.stretch.armhf.cpio CONFIG_DEBIAN_ARCH=armhf)
+	$(info or other variations for i386)
 
 # install any packages needed for this builder
 build-depends: $(TAG)/build-depends
