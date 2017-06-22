@@ -134,7 +134,7 @@ $(TAG)/dtbo: $(TAG)/dtb
 	mkdir -p $(BOOT)/dtb/overlay
 	$(call tag,dtbo)
 
-$(BOOT)/dtb/overlay/%.dtbo: $(SRC_DTBO)/%.dtbo $(TAG)/dtbo
+$(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
