@@ -38,6 +38,25 @@ board environment, which is why there are two lines.
 The last command builds the image.  Once the disk image is completed,
 it will placed in the `output` dir.
 
+Starting a clean build
+----------------------
+
+During development, not all the makefile dependancies are always working.
+Whilst this should always be considered a bug, it is important to know
+how to do a clean build from scratch.
+
+One simple answer is to completely delete your repository and do a new
+clone from upstream, however that can be a little excessive.  The following
+commands will remove all the build artifacts:
+
+    make -C debian clean reallyclean
+    make -C boards/sun8i-h2plus-orangepi-zero clean reallyclean
+
+The "clean" target removes some files one-by-one from the build dir, wheras
+the "reallyclean" target just nukes the whole build dir - so this is kind of
+a belt-and-suspender approach.
+
+
 Using the image
 ---------------
 
