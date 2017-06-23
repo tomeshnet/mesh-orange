@@ -87,6 +87,7 @@ $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
 	sudo rm $(DEBOOT)/etc/machine-id
 	sudo rm $(DEBOOT)/usr/sbin/policy-rc.d
+	sudo rm $(DEBOOT)/lib/systemd/system/getty-static.service
 	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
 
 # image customisation - setting the default config.
