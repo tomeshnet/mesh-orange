@@ -33,5 +33,5 @@ packages= dropbear-run
 packages= iw hostapd crda
 
 # local-net only network management
-#packages= mactelnet-server
+packages= mactelnet-server
 
