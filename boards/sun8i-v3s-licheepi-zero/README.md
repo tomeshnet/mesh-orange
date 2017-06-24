@@ -18,9 +18,9 @@ TODO
 ----
 * Make the hostname less unclear (currently has prefix "ramdisk")
 * Add support for USB gadget bits (serial console, ethernet, maybe blockdev)
-** gadget is pre-configured for console+ethernet
-** add ttyGS0 to securetty and start serial-getty@ttyGS0
-** cdc ether is as simple as using netdev usb0 - need to decide how is best
+    * gadget is pre-configured for console+ethernet
+    * add ttyGS0 to securetty and start serial-getty@ttyGS0
+    * cdc ether is as simple as using netdev usb0 - need to decide how is best
 * Try using the armbian allwinner kernel with the licheepi-zero dtb
 * Ensure that the lichee official SDIO WIFI works
 * Add drivers and firmware for TOP-GS07 WIFI
