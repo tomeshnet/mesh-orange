@@ -119,7 +119,7 @@ $(TAG)/dtbo: $(TAG)/dtb
 	mkdir -p $(BOOT)/dtb/overlay
 	$(call tag,dtbo)
 
-$(BOOT)/dtb/overlay/%.dtbo: $(SRC_DTBO)/%.dtbo $(TAG)/dtbo
+$(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
@@ -136,18 +136,15 @@ BOOT_FILES = \
     $(BOOT)/zImage \
     $(BOOT)/uInitrd \
 
-# This should use the $(BOARD).dtb when we can upgrade to the current
-# kernel TODO - remove when possible
 BOOT_DTB_FILES = \
     $(BOOT)/dtb/$(BOARD).dtb
 
-#BOOT_DTBO_FILES = \
-#    $(BOOT)/dtb/overlay/sun8i-h3-usbhost0.dtbo \
-#    $(BOOT)/dtb/overlay/sun8i-h3-usbhost2.dtbo \
-#    $(BOOT)/dtb/overlay/sun8i-h3-usbhost3.dtbo \
+BOOT_DTBO_FILES = \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost0.dtbo \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost2.dtbo \
+    $(BOOT)/dtb/overlay/sun8i-h3-usbhost3.dtbo \
 
-boot: $(BOOT_FILES) $(BOOT_DTB_FILES) 
-#$(BOOT_DTBO_FILES)
+boot: $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
