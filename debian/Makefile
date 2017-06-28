@@ -40,8 +40,8 @@ $(DEBOOT)/dev/urandom:
 	sudo mknod $(DEBOOT)/dev/urandom c 1 9
 
 $(DEBOOT)/usr/sbin/policy-rc.d: policy-rc.d
-	mkdir -p $(dir $@)
-	cp $< $@
+	sudo mkdir -p $(dir $@)
+	sudo cp $< $@
 
 # multistrap-pre runs the basic multistrap program, installing the packages
 # until they need to run native code
@@ -85,9 +85,9 @@ $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.addextra $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
 	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
-	sudo rm $(DEBOOT)/etc/machine-id
+	sudo rm -f $(DEBOOT)/etc/machine-id
+	sudo rm -f $(DEBOOT)/lib/systemd/system/getty-static.service
 	sudo rm $(DEBOOT)/usr/sbin/policy-rc.d
-	sudo rm $(DEBOOT)/lib/systemd/system/getty-static.service
 	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
 
 # image customisation - setting the default config.
