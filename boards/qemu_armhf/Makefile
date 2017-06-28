@@ -8,10 +8,6 @@ DEBIAN_ARCH = armhf
 
 BUILD_DEPENDS = qemu-system-arm
 
-# Directories
-BUILD = build
-TAG = $(BUILD)/tags
-
 CLEAN_FILES = $(BUILD)/orig.initrd.gz $(BUILD)/modules $(BUILD)/modules.cpio
 
 all: image

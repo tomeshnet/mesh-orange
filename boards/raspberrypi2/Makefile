@@ -32,10 +32,7 @@ PART_SIZE_MEGS = 1000
 CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
-BUILD = build
-TAG = $(BUILD)/tags
 RASPBERRYPI = $(BUILD)/raspberrypi
-BOOT = $(BUILD)/boot
 
 DISK_IMAGE = $(BUILD)/disk.img
 

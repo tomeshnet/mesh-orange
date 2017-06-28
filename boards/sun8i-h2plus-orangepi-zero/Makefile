@@ -25,10 +25,7 @@ PART_SIZE_MEGS = 1000
 CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
-BUILD = build
-TAG = $(BUILD)/tags
 ARMBIAN = $(BUILD)/armbian
-BOOT = $(BUILD)/boot
 
 DISK_IMAGE = $(BUILD)/disk.img
 

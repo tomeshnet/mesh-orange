@@ -6,6 +6,11 @@
 DEBIAN_BASENAME = debian.$(DEBIAN_VER).$(DEBIAN_ARCH)
 DEBIAN = ../../debian/build/$(DEBIAN_BASENAME)
 
+# Standardised directory names
+BUILD = build
+TAG = $(BUILD)/tags
+BOOT = $(BUILD)/boot
+
 # install any packages needed for the builder
 build-depends: $(TAG)/build-depends
 $(TAG)/build-depends: Makefile

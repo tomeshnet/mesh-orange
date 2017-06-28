@@ -13,10 +13,6 @@ DEBIAN_ARCH = i386
 
 BUILD_DEPENDS = qemu-system-x86
 
-# Directories
-BUILD = build
-TAG = $(BUILD)/tags
-
 CLEAN_FILES = $(BUILD)/orig.initrd.gz $(BUILD)/modules $(BUILD)/modules.cpio
 
 all: image

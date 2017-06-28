@@ -27,10 +27,7 @@ PART3_BEGIN_SEC = $$(( $(PART2_BEGIN_SEC) + ($(PART2_SIZE_MEGS) *1024*1024) /512
 IMAGE_SIZE_MEGS = $$(( 0x100000/1024/1024 + $(PART1_SIZE_MEGS) + $(PART2_SIZE_MEGS) + $(PART3_SIZE_MEGS) ))
 
 # Directories
-BUILD = build
-TAG = $(BUILD)/tags
 ZIP = $(BUILD)/zero_imager
-BOOT = $(BUILD)/boot
 
 DISK_IMAGE = $(BUILD)/disk.img
 
