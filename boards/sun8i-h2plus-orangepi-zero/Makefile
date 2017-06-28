@@ -25,6 +25,8 @@ SRC_DTBO = $(SRC_DTBDIR)/overlay
 
 PART_SIZE_MEGS = 1000
 
+include ../common-allwinner.mk
+
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
@@ -171,11 +173,7 @@ $(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
-	truncate --size=$$((0x200)) $@.tmp   # skip past the MBR
-	date -u "+%FT%TZ " >>$@.tmp          # add a build date
-	git describe --long --dirty >>$@.tmp # and describe the repo
-	truncate --size=$$((0x2000)) $@.tmp  # skip to correct offset for SPL
-	cat $(SRC_SPL) >>$@.tmp              # add the SPL+uboot binary
+	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
