@@ -13,6 +13,7 @@ BUILD_DEPENDS = qemu-system-arm
 
 # Directories
 BUILD = build
+TAG = $(BUILD)/tags
 
 CLEAN_FILES = $(BUILD)/orig.initrd.gz $(BUILD)/modules $(BUILD)/modules.cpio
 
@@ -23,10 +24,6 @@ include ../common.mk
 image:
 	echo as a virtual system, there is no way to build an image
 	false
-
-# install any packages needed for this builder
-build-depends:
-	sudo apt-get -y install $(BUILD_DEPENDS)
 
 # we might need to go and make the debian
 # Note: this has no dependancy checking, and will simply use what ever

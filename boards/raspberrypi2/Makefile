@@ -62,12 +62,6 @@ test:
 	echo this board must be tested by flashing the output
 	false
 
-# install any packages needed for this builder
-build-depends: $(TAG)/build-depends
-$(TAG)/build-depends:
-	sudo apt-get -y install $(BUILD_DEPENDS)
-	$(call tag,build-depends)
-
 # we might need to go and make the debian
 # Note: this has no dependancy checking, and will simply use what ever
 # file is there
