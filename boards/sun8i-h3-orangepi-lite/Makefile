@@ -1,5 +1,5 @@
 #
-# Build a Orange Pi Zero install
+# Build a Orange Pi Lite install
 #
 
 DEBIAN_VER = stretch
@@ -88,13 +88,8 @@ $(BOOT)/.next: $(TAG)/boot
 	touch $@
 
 # TODO
-# - stop using our local version of these files.
-# These two files ( boot-sunxi.cmd and armbianEnv.txt ) are copied from the
-# armbian git repo.  They are also found in one of the armbian packages
-# ( linux-jessie-root-dev-orangepizero ) this package has dependancies that
-# make it annoying to install in the ARMBIAN dir and has a rather annoying mix
-# of installed files that meant that it was not suitable to be installed in
-# the DEBOOT either.
+# - stop using our local version of these files. (See the Makefile in
+#   boards/sun8i-h2plus-orangepi-zero/ for more details)
 
 $(BOOT)/boot.scr: $(TAG)/boot
 $(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
@@ -117,11 +112,6 @@ $(SRC_FDT): $(TAG)/armbian
 
 $(BOOT)/dtb/$(BOARD).dtb: $(TAG)/dtb
 $(BOOT)/dtb/$(BOARD).dtb: $(SRC_FDT)
-	cp $< $@
-
-# Since the uboot and kernel versions are mismatched, we have this
-# hack here to line up the two names. TODO - remove when possible
-$(BOOT)/dtb/sun8i-h2-plus-orangepi-zero.dtb: $(BOOT)/dtb/$(BOARD).dtb
 	cp $< $@
 
 dtbo: $(TAG)/dtbo
