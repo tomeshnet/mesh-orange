@@ -1,0 +1,30 @@
+[General]
+arch=armhf
+bootstrap=Armbian
+aptsources=Armbian
+
+cleanup=true
+
+# FIXME
+# - it doesnt look like armbian has followed the standard debian process of
+#   packaging the public keys for their build system into a package (this is
+#   what "debian-archive-keyring" does for the debian archives) and thus we
+#   cannot authenticate their install.
+#   There is a signing key, and I expect that closer examination of their
+#   build process will show that they rely on baking it into their one true
+#   built boot image.
+#   Which would still be incompatible with multistrap.  So we need to do an
+#   insecure build :-(
+noauth=true
+
+[Armbian]
+source=http://apt.armbian.com
+suite=jessie
+omitdebsrc=true
+
+# the U-boot
+packages= linux-u-boot-orangepilite-dev
+# the linux kernel
+packages= linux-image-dev-sun8i=5.26
+# firmware for lots of devices
+packages= armbian-firmware
