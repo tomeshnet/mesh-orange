@@ -32,6 +32,8 @@ BOARD = raspberrypi2
 
 PART_SIZE_MEGS = 1000
 
+CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
+
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
@@ -47,6 +49,8 @@ BUILD_DEPENDS = \
     mtools \
 
 all: $(DISK_IMAGE)
+
+include ../common.mk
 
 image: ../../output/$(BOARD).img
 
@@ -176,21 +180,3 @@ $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
 	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:
 	mv $@.tmp $@
-
-# Misc make infrastructure below here
-
-%.lzma: %.cpio
-	lzma <$< >$@
-
-clean:
-	rm -rf $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
-
-reallyclean:
-	rm -rf $(BUILD)
-
-define tag
-	@echo Touching tag $1
-	@mkdir -p $(TAG)
-	@touch $(TAG)/$1
-endef
-

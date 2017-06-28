@@ -29,8 +29,6 @@ PART3_BEGIN_SEC = $$(( $(PART2_BEGIN_SEC) + ($(PART2_SIZE_MEGS) *1024*1024) /512
 
 IMAGE_SIZE_MEGS = $$(( 0x100000/1024/1024 + $(PART1_SIZE_MEGS) + $(PART2_SIZE_MEGS) + $(PART3_SIZE_MEGS) ))
 
-include ../common-allwinner.mk
-
 # Directories
 BUILD = build
 TAG = $(BUILD)/tags
@@ -45,6 +43,10 @@ BUILD_DEPENDS = \
     mtools \
 
 all: $(DISK_IMAGE)
+
+include ../common.mk
+include ../common-uboot.mk
+include ../common-allwinner.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -136,14 +138,8 @@ $(BUILD)/mtoolsrc: Makefile
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BUILD)/root.fs
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $(PART1_BEGIN_SEC) z:
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:/boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:/boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:/boot/dtb
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:/boot/dtb
+	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$(PART1_BEGIN_SEC),$(BOOT_FILES),$(BOOT_DTB_FILES))
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x82 -b $(PART2_BEGIN_SEC) y:
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x83 -b $(PART3_BEGIN_SEC) x:
 	truncate --size=$$(( $(PART3_BEGIN_SEC)*512 )) $@.tmp
@@ -155,13 +151,4 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BU
 clean:
 	rm -rf $(TAG) $(ZIP) $(BOOT) $(BUILD)/mtoolsrc $(BUILD)/root.fs.tmp
 	sudo rm -rf $(BUILD)/root.fs.dir
-
-reallyclean:
-	rm -rf $(BUILD)
-
-define tag
-	@echo Touching tag $1
-	@mkdir -p $(TAG)
-	@touch $(TAG)/$1
-endef
 

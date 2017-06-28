@@ -25,7 +25,7 @@ SRC_DTBO = $(SRC_DTBDIR)/overlay
 
 PART_SIZE_MEGS = 1000
 
-include ../common-allwinner.mk
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 BUILD = build
@@ -43,6 +43,10 @@ BUILD_DEPENDS = \
     mtools \
 
 all: $(DISK_IMAGE)
+
+include ../common.mk
+include ../common-uboot.mk
+include ../common-allwinner.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -174,32 +178,9 @@ $(BUILD)/mtoolsrc: Makefile
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:boot
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTB_FILES) z:boot/dtb
+	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay
 	mv $@.tmp $@
-
-# Misc make infrastructure below here
-
-%.lzma: %.cpio
-	lzma <$< >$@
-
-clean:
-	rm -rf $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
-
-reallyclean:
-	rm -rf $(BUILD)
-
-define tag
-	@echo Touching tag $1
-	@mkdir -p $(TAG)
-	@touch $(TAG)/$1
-endef
 

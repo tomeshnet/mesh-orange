@@ -14,7 +14,11 @@ BUILD_DEPENDS = qemu-system-arm
 # Directories
 BUILD = build
 
+CLEAN_FILES = $(BUILD)/orig.initrd.gz $(BUILD)/modules $(BUILD)/modules.cpio
+
 all: image
+
+include ../common.mk
 
 image:
 	echo as a virtual system, there is no way to build an image
@@ -57,12 +61,3 @@ test: $(BUILD)/vmlinuz $(BUILD)/combined.cpio
 		-initrd $(BUILD)/combined.cpio \
 		-netdev type=user,id=e0 -device virtio-net-device,netdev=e0 \
 		-nographic
-
-# Misc make infrastructure below here
-
-clean:
-	rm -rf $(BUILD)/orig.initrd.gz $(BUILD)/modules $(BUILD)/modules.cpio
-
-reallyclean:
-	rm -rf $(BUILD)
-
