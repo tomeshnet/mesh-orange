@@ -11,9 +11,6 @@
 DEBIAN_VER = stretch
 DEBIAN_ARCH = i386
 
-# TODO - this is unwieldly
-DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio
-
 BUILD_DEPENDS = qemu-system-x86
 
 # Directories
@@ -29,12 +26,6 @@ include ../common.mk
 image:
 	echo as a virtual system, there is no way to build an image
 	false
-
-# we might need to go and make the debian
-# Note: this has no dependancy checking, and will simply use what ever
-# file is there
-$(DEBIAN):
-	$(MAKE) -C ../../debian build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio  CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 $(BUILD)/vmlinuz:
 	mkdir -p build
@@ -54,7 +45,7 @@ $(BUILD)/modules.cpio: $(BUILD)/orig.initrd.gz
             find lib -print0 | cpio -0 -H newc -R 0:0 -o \
 	) <$< >$@
 
-$(BUILD)/combined.cpio: $(DEBIAN) $(BUILD)/modules.cpio
+$(BUILD)/combined.cpio: $(DEBIAN).cpio $(BUILD)/modules.cpio
 	cat $^ >$@
 
 test: $(BUILD)/vmlinuz $(BUILD)/combined.cpio

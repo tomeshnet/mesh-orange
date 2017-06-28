@@ -8,9 +8,6 @@
 DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
-# TODO - this is unwieldly
-DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio
-
 # which uboot and device tree is this being built for
 UBOOT = u-boot-sunxi-with-spl_480800.bin
 BOARD = sun8i-v3s-licheepi-zero
@@ -56,12 +53,6 @@ test:
 	echo this board must be tested by flashing the output
 	false
 
-# we might need to go and make the debian
-# Note: this has no dependancy checking, and will simply use what ever
-# file is there
-$(DEBIAN):
-	$(MAKE) -C ../../debian build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).cpio  CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
-
 # Everything below this line is HW specific setup
 
 $(BUILD)/zero_imager.zip:
@@ -72,12 +63,12 @@ $(BUILD)/zero_imager.zip:
 $(ZIP): $(BUILD)/zero_imager.zip
 	unzip -o $(BUILD)/zero_imager.zip -d $(BUILD)
 
-$(BUILD)/root.fs: $(DEBIAN) $(ZIP)
+$(BUILD)/root.fs: $(DEBIAN).cpio $(ZIP)
 	truncate --size=$$(( $(PART3_SIZE_MEGS)*1 ))M $@.tmp
 	/sbin/mkfs.ext4 -L root $@.tmp
 	mkdir -p $@.dir
 	sudo mount -oloop $@.tmp $@.dir
-	cat $(DEBIAN) | ( \
+	cat $(DEBIAN).cpio | ( \
             cd $@.dir; \
             sudo cpio --make-directories -i; \
 	)

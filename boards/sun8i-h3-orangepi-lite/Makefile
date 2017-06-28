@@ -5,9 +5,6 @@
 DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
-# TODO - this is unwieldly
-DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).lzma
-
 # which uboot and device tree is this being built for
 UBOOT = linux-u-boot-dev-orangepilite_5.31_armhf
 BOARD = sun8i-h3-orangepi-lite
@@ -50,12 +47,6 @@ image: $(DISK_IMAGE)
 test:
 	echo this board must be tested by flashing the output
 	false
-
-# we might need to go and make the debian
-# Note: this has no dependancy checking, and will simply use what ever
-# file is there
-$(DEBIAN):
-	$(MAKE) -C ../../debian build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).lzma  CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 # Everything below this line is HW specific Armbian u-Boot startup code
 
@@ -123,7 +114,7 @@ $(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN) $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot

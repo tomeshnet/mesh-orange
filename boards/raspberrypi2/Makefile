@@ -25,9 +25,6 @@
 DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
-# TODO - this is unwieldly
-DEBIAN = ../../debian/build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).lzma
-
 BOARD = raspberrypi2
 
 PART_SIZE_MEGS = 1000
@@ -62,13 +59,6 @@ test:
 	echo this board must be tested by flashing the output
 	false
 
-# we might need to go and make the debian
-# Note: this has no dependancy checking, and will simply use what ever
-# file is there
-$(DEBIAN):
-	$(MAKE) -C ../../debian build/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).lzma  CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
-
-
 $(RASPBERRYPI): $(TAG)/raspberrypi
 $(TAG)/raspberrypi: raspberrypi.multistrap
 	mkdir -p $(RASPBERRYPI)
@@ -102,7 +92,7 @@ $(BOOT)/kernel7.img: $(TAG)/boot $(TAG)/raspberrypi
 	cp $(RASPBERRYPI)/boot/kernel7.img $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN) $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
 	cat $^ >$@
 
 $(BOOT)/initrd: $(TAG)/boot
