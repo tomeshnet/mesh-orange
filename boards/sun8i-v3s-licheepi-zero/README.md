@@ -26,5 +26,5 @@ TODO
 * Add drivers and firmware for TOP-GS07 WIFI
 * Maybe automatically detect and use the swap partition?
 * config for onboard LED:
-    gpio (Blue 1982, Green 193, Red 194)
-    Device Tree overlay registering these as a linux led device..?
+    gpio (Blue 192, Green 193, Red 194)
+    The mainline kernel already has a dts that correctly defines these leds
