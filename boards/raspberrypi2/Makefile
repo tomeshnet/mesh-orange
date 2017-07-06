@@ -34,15 +34,13 @@ CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
 
-DISK_IMAGE = $(BUILD)/disk.img
-
 BUILD_DEPENDS = \
     multistrap \
     fakeroot \
     xz-utils \
     mtools \
 
-all: $(DISK_IMAGE)
+all: image
 
 include ../common.mk
 

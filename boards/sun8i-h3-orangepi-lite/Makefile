@@ -22,8 +22,6 @@ CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BU
 # Directories
 ARMBIAN = $(BUILD)/armbian
 
-DISK_IMAGE = $(BUILD)/disk.img
-
 BUILD_DEPENDS = \
     multistrap \
     fakeroot \
@@ -31,7 +29,7 @@ BUILD_DEPENDS = \
     xz-utils \
     mtools \
 
-all: $(DISK_IMAGE)
+all: image
 
 include ../common.mk
 include ../common-uboot.mk

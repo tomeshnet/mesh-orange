@@ -29,14 +29,12 @@ IMAGE_SIZE_MEGS = $$(( 0x100000/1024/1024 + $(PART1_SIZE_MEGS) + $(PART2_SIZE_ME
 # Directories
 ZIP = $(BUILD)/zero_imager
 
-DISK_IMAGE = $(BUILD)/disk.img
-
 BUILD_DEPENDS = \
     u-boot-tools \
     xz-utils \
     mtools \
 
-all: $(DISK_IMAGE)
+all: image
 
 include ../common.mk
 include ../common-uboot.mk

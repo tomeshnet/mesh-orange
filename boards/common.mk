@@ -11,6 +11,8 @@ BUILD = build
 TAG = $(BUILD)/tags
 BOOT = $(BUILD)/boot
 
+DISK_IMAGE = $(BUILD)/disk.img
+
 # install any packages needed for the builder
 build-depends: $(TAG)/build-depends
 $(TAG)/build-depends: Makefile
