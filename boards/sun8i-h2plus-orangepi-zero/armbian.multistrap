@@ -24,7 +24,14 @@ omitdebsrc=true
 
 # the U-boot
 packages= linux-u-boot-orangepizero-dev
+
 # the linux kernel
 packages= linux-image-dev-sun8i=5.26
+# This is pinned here to get their 4.10 kernel version - the next armbian
+# release disabled the orangepizero wifi driver (because of too many
+# complaints)
+# - https://github.com/armbian/build/ commit 05fdf419
+# - https://forum.armbian.com/index.php?/topic/4245-orange-pi-zero-4110-sun8i-wlan0-is-gone
+
 # firmware for lots of devices
 packages= armbian-firmware
