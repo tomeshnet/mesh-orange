@@ -75,7 +75,7 @@ $(BOOT)/.next: $(TAG)/boot
 
 # TODO
 # - stop using our local version of these files. (See the Makefile in
-#   boards/sun8i-h2plus-orangepi-zero/ for more details)
+#   boards/sun8i-h2-plus-orangepi-zero/ for more details)
 
 $(BOOT)/boot.scr: $(TAG)/boot
 $(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd

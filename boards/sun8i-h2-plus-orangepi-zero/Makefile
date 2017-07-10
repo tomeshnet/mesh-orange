@@ -10,9 +10,10 @@ UBOOT = linux-u-boot-dev-orangepizero_5.31_armhf
 BOARD = sun8i-h2plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
-# Armbian appears to be in the process of changing the board name for
-# the orange pi zero.  Since we are using a mix of the older kernel and
-# the newer uboot, this makes life difficult
+# Mainline Linux ended up using a different devicetree name than the out
+# of tree patches did.  Since we are using a mix of the older kernel and
+# the newer uboot, this makes life difficult, and we need a hack until
+# that all shakes out
 BOARD_HACK = sun8i-h2-plus-orangepi-zero
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
@@ -42,7 +43,7 @@ include ../common-allwinner.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
-	cp $< ../../output/$(BOARD).img
+	cp $< ../../output/$(BOARD_HACK).img
 
 test:
 	echo this board must be tested by flashing the output

@@ -27,9 +27,9 @@ Multiple board targets are supported, but they all use the same basic
 process.  The following commands will build for the Orange Pi Zero:
 
     make -C debian build-depends
-    make -C boards/sun8i-h2plus-orangepi-zero build-depends
+    make -C boards/sun8i-h2-plus-orangepi-zero build-depends
 
-    make -C boards/sun8i-h2plus-orangepi-zero image
+    make -C boards/sun8i-h2-plus-orangepi-zero image
 
 First, any packages required to complete the build are installed -
 this needs to be done for both the Debian environment and the specific
@@ -50,7 +50,7 @@ clone from upstream, however that can be a little excessive.  The following
 commands will remove all the build artifacts:
 
     make -C debian clean reallyclean
-    make -C boards/sun8i-h2plus-orangepi-zero clean reallyclean
+    make -C boards/sun8i-h2-plus-orangepi-zero clean reallyclean
 
 The "clean" target removes some files one-by-one from the build dir, wheras
 the "reallyclean" target just nukes the whole build dir - so this is kind of

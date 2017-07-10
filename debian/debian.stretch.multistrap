@@ -35,3 +35,4 @@ packages= iw hostapd crda
 # local-net only network management
 packages= mactelnet-server
 
+# libreadline7 ? gets /etc/inputrc, which should make ctrl-arrows work
