@@ -2,6 +2,12 @@
 # Download a pre-built Linux kernel
 #
 
+# TODO
+# - Add a submodule for the kernel repo and allow a local build to produce the
+#   expected tar.xz file
+# - have a tool that takes the tar.xz file and can publish it as a release
+#   on github using API calls
+
 # FIXME
 # - this is currently single arch - need to rename the tar file and the
 #   extraction dir
