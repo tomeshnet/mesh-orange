@@ -7,23 +7,15 @@ DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 UBOOT = linux-u-boot-dev-orangepizero_5.31_armhf
-BOARD = sun8i-h2plus-orangepi-zero
+BOARD = sun8i-h2-plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
-# Mainline Linux ended up using a different devicetree name than the out
-# of tree patches did.  Since we are using a mix of the older kernel and
-# the newer uboot, this makes life difficult, and we need a hack until
-# that all shakes out
-BOARD_HACK = sun8i-h2-plus-orangepi-zero
-
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_DTBDIR = $(ARMBIAN)/usr/lib/linux-image-dev-sun8i
-SRC_FDT = $(SRC_DTBDIR)/$(BOARD).dtb
-SRC_DTBO = $(SRC_DTBDIR)/overlay
+SRC_DTB = ../../linux/build/linux/dtb/$(BOARD).dtb
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -40,29 +32,23 @@ all: image
 include ../common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
+include ../common-kernel-local.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
-	cp $< ../../output/$(BOARD_HACK).img
+	cp $< ../../output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output
 	false
 
-# Everything below this line is HW specific Armbian u-Boot startup code
+# Everything below this line is HW specific u-Boot startup code
 
 $(ARMBIAN): $(TAG)/armbian
 $(TAG)/armbian: armbian.multistrap
 	mkdir -p $(ARMBIAN)
 	fakeroot /usr/sbin/multistrap -d $(ARMBIAN) -f $<
 	$(call tag,armbian)
-
-# Add the kernel specific binaries to this cpio file
-$(BUILD)/modules.cpio: $(TAG)/armbian
-	( \
-            cd $(ARMBIAN); \
-            find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
-	) > $@
 
 # Add the kernel specific binaries to this cpio file
 $(BUILD)/firmware.cpio: $(TAG)/armbian
@@ -80,13 +66,7 @@ $(BOOT)/.next: $(TAG)/boot
 	touch $@
 
 # TODO
-# - stop using our local version of these files.
-# These two files ( boot-sunxi.cmd and armbianEnv.txt ) are copied from the
-# armbian git repo.  They are also found in one of the armbian packages
-# ( linux-jessie-root-dev-orangepizero ) this package has dependancies that
-# make it annoying to install in the ARMBIAN dir and has a rather annoying mix
-# of installed files that meant that it was not suitable to be installed in
-# the DEBOOT either.
+# - rewrite or cleanup these two files for our specific use cases
 
 $(BOOT)/boot.scr: $(TAG)/boot
 $(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
@@ -96,36 +76,12 @@ $(BOOT)/armbianEnv.txt: $(TAG)/boot
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
 	cp $< $@
 
-$(BOOT)/zImage: $(TAG)/boot $(TAG)/armbian
-	cp $(ARMBIAN)/boot/vmlinuz-* $(BOOT)/zImage
-	cp $(ARMBIAN)/boot/config-* $(BOOT)
-
-dtb: $(TAG)/dtb
-$(TAG)/dtb: $(TAG)/boot
-	mkdir -p $(BOOT)/dtb
-	$(call tag,dtb)
-
-$(SRC_FDT): $(TAG)/armbian
-
-$(BOOT)/dtb/$(BOARD).dtb: $(TAG)/dtb
-$(BOOT)/dtb/$(BOARD).dtb: $(SRC_FDT)
+$(BOOT)/zImage: $(LOCAL_KERNEL)
 	cp $< $@
-
-# Since the uboot and kernel versions are mismatched, we have this
-# hack here to line up the two names. TODO - remove when possible
-$(BOOT)/dtb/$(BOARD_HACK).dtb: $(BOOT)/dtb/$(BOARD).dtb
-	cp $< $@
-
-dtbo: $(TAG)/dtbo
-$(TAG)/dtbo: $(TAG)/dtb
-	mkdir -p $(BOOT)/dtb/overlay
-	$(call tag,dtbo)
-
-$(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
-	cp $< $@
+	cp $(dir $<)/.config $(dir $@)
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(LOCAL_MODULES) $(BUILD)/firmware.lzma
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot
@@ -138,17 +94,16 @@ BOOT_FILES = \
     $(BOOT)/zImage \
     $(BOOT)/uInitrd \
 
-# This should use the $(BOARD).dtb when we can upgrade to the current
-# kernel TODO - remove the HACK when possible
 BOOT_DTB_FILES = \
-    $(BOOT)/dtb/$(BOARD_HACK).dtb \
+    $(BOOT)/dtb/$(BOARD).dtb \
 
+# FIXME - add these to the linux build
 BOOT_DTBO_FILES = \
     $(BOOT)/dtb/overlay/sun8i-h3-usbhost0.dtbo \
     $(BOOT)/dtb/overlay/sun8i-h3-usbhost2.dtbo \
     $(BOOT)/dtb/overlay/sun8i-h3-usbhost3.dtbo \
 
-boot: $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
+boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
@@ -157,11 +112,9 @@ $(SRC_SPL): $(TAG)/armbian
 $(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
-$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
+$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay
 	mv $@.tmp $@
 
