@@ -2,9 +2,6 @@
 # Download the armbian firmware package
 #
 
-DEBIAN_VER = stretch
-DEBIAN_ARCH = armhf
-
 CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma
 
 # Directories
