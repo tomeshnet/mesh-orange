@@ -6,6 +6,7 @@ DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
+ARMBIAN_UBOOT_PKG = linux-u-boot-orangepizero-dev
 UBOOT = linux-u-boot-dev-orangepizero_5.31_armhf
 BOARD = sun8i-h2-plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
@@ -34,6 +35,7 @@ include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-kernel-local.mk
 include ../common-firmware-armbian.mk
+include ../common-armbian.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -45,10 +47,8 @@ test:
 
 # Everything below this line is HW specific u-Boot startup code
 
-$(ARMBIAN): $(TAG)/armbian
-$(TAG)/armbian: armbian.multistrap
-	mkdir -p $(ARMBIAN)
-	fakeroot /usr/sbin/multistrap -d $(ARMBIAN) -f $<
+$(TAG)/armbian:
+	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG)
 	$(call tag,armbian)
 
 $(BOOT): $(TAG)/boot

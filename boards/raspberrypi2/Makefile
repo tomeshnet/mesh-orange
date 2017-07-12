@@ -27,6 +27,9 @@ DEBIAN_ARCH = armhf
 
 BOARD = raspberrypi2
 
+RASPBIAN_BOOT_PKG = raspberrypi-bootloader
+RASPBIAN_KERNEL_PKG = raspberrypi-kernel
+
 PART_SIZE_MEGS = 1000
 
 CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BOOT) $(BUILD)/mtoolsrc
@@ -35,8 +38,6 @@ CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma 
 RASPBERRYPI = $(BUILD)/raspberrypi
 
 BUILD_DEPENDS = \
-    multistrap \
-    fakeroot \
     xz-utils \
     mtools \
 
@@ -44,6 +45,7 @@ all: image
 
 include ../common.mk
 include ../common-firmware-raspbian.mk
+include ../common-raspbian.mk
 
 image: ../../output/$(BOARD).img
 
@@ -55,10 +57,8 @@ test:
 	echo this board must be tested by flashing the output
 	false
 
-$(RASPBERRYPI): $(TAG)/raspberrypi
-$(TAG)/raspberrypi: raspberrypi.multistrap
-	mkdir -p $(RASPBERRYPI)
-	fakeroot /usr/sbin/multistrap -d $(RASPBERRYPI) -f $<
+$(TAG)/raspberrypi:
+	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
 	$(call tag,raspberrypi)
 
 # Add the kernel specific binaries to this cpio file

@@ -2,24 +2,27 @@
 # Download the armbian firmware package
 #
 
+DEBIAN_ARCH ?= armhf
+
 CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma
+
+ARMBIAN_FIRMWARE_PKG = armbian-firmware
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
 
 BUILD_DEPENDS = \
-    multistrap \
-    fakeroot \
     xz-utils \
 
-all: $(BUILD)/firmware.cpio
+all: firmware
 
 include ../common.mk
+include ../common-armbian.mk
 
-$(ARMBIAN): $(TAG)/armbian
-$(TAG)/armbian: armbian.multistrap
-	mkdir -p $(ARMBIAN)
-	fakeroot /usr/sbin/multistrap -d $(ARMBIAN) -f $<
+firmware: $(BUILD)/firmware.cpio
+
+$(TAG)/armbian:
+	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_FIRMWARE_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file

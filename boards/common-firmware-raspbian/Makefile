@@ -2,24 +2,28 @@
 # Download the raspbian firmware package
 #
 
+DEBIAN_ARCH ?= armhf
+
 CLEAN_FILES = $(TAG) $(RASPBIAN) $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma
+
+# firmware for wifi dongle
+RASPBIAN_FIRMWARE_PKG = firmware-ralink
 
 # Directories
 RASPBIAN = $(BUILD)/raspbian
 
 BUILD_DEPENDS = \
-    multistrap \
-    fakeroot \
     xz-utils \
 
-all: $(BUILD)/firmware.cpio
+all: firmware
 
 include ../common.mk
+include ../common-raspbian.mk
 
-$(RASPBIAN): $(TAG)/raspbian
-$(TAG)/raspbian: raspbian.multistrap
-	mkdir -p $(RASPBIAN)
-	fakeroot /usr/sbin/multistrap -d $(RASPBIAN) -f $<
+firmware: $(BUILD)/firmware.cpio
+
+$(TAG)/raspbian:
+	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBIAN) $(RASPBIAN_FIRMWARE_PKG)
 	$(call tag,raspbian)
 
 # Add the kernel specific binaries to this cpio file

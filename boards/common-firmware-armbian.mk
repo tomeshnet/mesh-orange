@@ -5,5 +5,5 @@
 ARMBIAN_FIRMWARE = ../common-firmware-armbian/build/firmware.lzma
 
 $(addsuffix .cpio,$(basename $(ARMBIAN_FIRMWARE))):
-	$(MAKE) -C ../common-firmware-armbian build/firmware.cpio
+	$(MAKE) -C ../common-firmware-armbian DEBIAN_ARCH=$(DEBIAN_ARCH) build/firmware.cpio
 

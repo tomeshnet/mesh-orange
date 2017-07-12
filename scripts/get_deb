@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# Given a repo and a list of packages, go download the latest matching deb
+#
+
+# TODO
+# - repo details
+
+ARCH="$1"
+shift
+
+REPO_URI="$1"
+shift
+
+REPO_SUITE="$1"
+shift
+
+OUTDIR="$1"
+shift
+
+if [ -z "$ARCH" -o -z "$REPO_URI" -o -z "$REPO_SUITE" -o -z "$OUTDIR" -o -z "$1" ]; then
+    echo Usage: $0 arch repo_uri repo_suite unpackdir pkg...
+    exit 1
+fi
+
+mkdir -p $OUTDIR
+cd  $OUTDIR
+
+TMP=./meta
+#rm -rf $TMP
+mkdir -p $TMP
+
+mkdir -p $TMP/etc/apt/sources.list.d
+echo "deb [arch=$ARCH] $REPO_URI $REPO_SUITE main" >$TMP/etc/apt/sources.list.d/repo.list
+
+TRUSTED=$TMP/etc/apt/trusted.gpg
+# It would be nice to fill the keyring..
+
+TRUSTED_PARTS=${TRUSTED}.d/
+mkdir -p $TRUSTED_PARTS
+
+ETC=$TMP/etc/apt
+mkdir -p $ETC
+ETC_PARTS=$ETC/apt.conf.d/
+mkdir -p $ETC_PARTS
+
+ETC_PREFS_PARTS=$ETC/preferences.d/
+mkdir -p $ETC_PREFS_PARTS
+
+STATE=$TMP/var/lib/apt/
+mkdir -p $STATE
+
+STATUS=$TMP/var/lib/dpkg/status
+mkdir -p $(dirname $STATUS)
+touch $STATUS
+
+CACHE=$TMP/var/cache/apt
+mkdir -p $CACHE
+
+export APT_CONFIG=$TMP/apt_config
+cat >$APT_CONFIG <<EOF
+Dir::Etc "$ETC";
+Dir::Etc::Parts "$ETC_PARTS";
+Dir::Etc::PreferencesParts "$ETC_PREFS_PARTS";
+EOF
+
+#    -o APT::Default-Release='*' \
+APT_OPTS="\
+    -o Apt::Architecture=$ARCH \
+    -o Apt::Get::AllowUnauthenticated=true \
+    -o Apt::Get::Download-Only=true \
+    -o Apt::Install-Recommends=false \
+    -o Dir::Etc::TrustedParts=$TRUSTED_PARTS \
+    -o Dir::Etc::Trusted=$TRUSTED \
+    -o Dir=$TMP \
+    -o Dir::Etc=$ETC \
+    -o Dir::Etc::Parts=$ETC_PARTS \
+    -o Dir::Etc::PreferencesParts=$ETC_PREFS_PARTS \
+    -o Dir::State=$STATE \
+    -o Dir::State::Status=$STATUS \
+    -o Dir::Cache=$CACHE \
+"
+
+apt-get $APT_OPTS update
+
+apt-get $APT_OPTS --print-uris download $* | while read URI DEB SIZE HASH; do
+    wget -O ${DEB}.tmp $(echo $URI |tr -d "'")
+    if [ $? -ne 0 ]; then
+        echo bad wget
+        exit
+    fi
+    # TODO
+    # - check size and hash
+    mv ${DEB}.tmp ${DEB}
+
+    dpkg -x $DEB ./
+done
+
