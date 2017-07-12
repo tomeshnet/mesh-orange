@@ -2,6 +2,7 @@
 TODO
 ----
 
-* there is a lot of duplicated rules in these board dirs, so it might
-  make sense to factor them out into a common makefile rules file.
-
+* there are stil a lot of duplicated rules in the board dirs, continue
+  factoring these out into common rules or builders
+* Many of the firmware downloads can probably be found in the debian repo,
+  just use that, rather than grabbing them from all over the place

@@ -17,8 +17,5 @@ source=http://archive.raspberrypi.org/debian/
 suite=jessie
 omitdebsrc=true
 
-# their bootloader
-packages= raspberrypi-bootloader
-# the linux kernel
-packages= raspberrypi-kernel
-
+# firmware for wifi dongle
+packages= firmware-ralink

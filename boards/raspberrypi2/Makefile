@@ -29,7 +29,7 @@ BOARD = raspberrypi2
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
@@ -43,6 +43,7 @@ BUILD_DEPENDS = \
 all: image
 
 include ../common.mk
+include ../common-firmware-raspbian.mk
 
 image: ../../output/$(BOARD).img
 
@@ -67,12 +68,6 @@ $(BUILD)/modules.cpio: $(TAG)/raspberrypi
             find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
-$(BUILD)/firmware.cpio: $(TAG)/raspberrypi
-	( \
-            cd $(RASPBERRYPI); \
-            find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
-	) > $@
-
 $(BUILD): $(TAG)/build
 $(TAG)/build:
 	mkdir -p $(BUILD)
@@ -87,7 +82,7 @@ $(BOOT)/kernel7.img: $(TAG)/boot $(TAG)/raspberrypi
 	cp $(RASPBERRYPI)/boot/kernel7.img $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(RASPBIAN_FIRMWARE)
 	cat $^ >$@
 
 $(BOOT)/initrd: $(TAG)/boot
