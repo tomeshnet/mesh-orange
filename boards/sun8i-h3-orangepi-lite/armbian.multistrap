@@ -26,5 +26,3 @@ omitdebsrc=true
 packages= linux-u-boot-orangepilite-dev
 # the linux kernel
 packages= linux-image-dev-sun8i=5.26
-# firmware for lots of devices
-packages= armbian-firmware

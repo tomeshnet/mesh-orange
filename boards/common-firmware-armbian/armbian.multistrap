@@ -22,5 +22,5 @@ source=http://apt.armbian.com
 suite=jessie
 omitdebsrc=true
 
-# the U-boot
-packages= linux-u-boot-orangepizero-dev
+# firmware for lots of devices
+packages= armbian-firmware

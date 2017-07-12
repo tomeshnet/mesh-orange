@@ -17,7 +17,7 @@ SRC_DTBO = $(SRC_DTBDIR)/overlay
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -34,6 +34,7 @@ all: image
 include ../common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
+include ../common-firmware-armbian.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -56,13 +57,6 @@ $(BUILD)/modules.cpio: $(TAG)/armbian
 	( \
             cd $(ARMBIAN); \
             find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
-	) > $@
-
-# Add the kernel specific binaries to this cpio file
-$(BUILD)/firmware.cpio: $(TAG)/armbian
-	( \
-            cd $(ARMBIAN); \
-            find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
 $(BOOT): $(TAG)/boot
@@ -109,7 +103,7 @@ $(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
 	cp $< $@
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(ARMBIAN_FIRMWARE)
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot

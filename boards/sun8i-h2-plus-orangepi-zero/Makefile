@@ -15,7 +15,7 @@ SRC_DTB = ../../linux/build/linux/dtb/$(BOARD).dtb
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/firmware.cpio $(BUILD)/firmware.lzma $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -33,6 +33,7 @@ include ../common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-kernel-local.mk
+include ../common-firmware-armbian.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -49,13 +50,6 @@ $(TAG)/armbian: armbian.multistrap
 	mkdir -p $(ARMBIAN)
 	fakeroot /usr/sbin/multistrap -d $(ARMBIAN) -f $<
 	$(call tag,armbian)
-
-# Add the kernel specific binaries to this cpio file
-$(BUILD)/firmware.cpio: $(TAG)/armbian
-	( \
-            cd $(ARMBIAN); \
-            find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
-	) > $@
 
 $(BOOT): $(TAG)/boot
 $(TAG)/boot:
@@ -81,7 +75,7 @@ $(BOOT)/zImage: $(LOCAL_KERNEL)
 	cp $(dir $<)/.config $(dir $@)
 
 # Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(LOCAL_MODULES) $(BUILD)/firmware.lzma
+$(BUILD)/combined.initrd: $(DEBIAN).lzma $(LOCAL_MODULES) $(ARMBIAN_FIRMWARE)
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot
