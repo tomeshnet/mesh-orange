@@ -19,16 +19,16 @@ OUTDIR="$1"
 shift
 
 if [ -z "$ARCH" -o -z "$REPO_URI" -o -z "$REPO_SUITE" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo Usage: $0 arch repo_uri repo_suite unpackdir pkg...
+    echo "Usage: $0 arch repo_uri repo_suite unpackdir pkg..."
     exit 1
 fi
 
-mkdir -p $OUTDIR
-cd  $OUTDIR
+mkdir -p "$OUTDIR"
+cd  "$OUTDIR"
 
 TMP=./meta
-#rm -rf $TMP
-mkdir -p $TMP
+#rm -rf "$TMP"
+mkdir -p "$TMP"
 
 mkdir -p $TMP/etc/apt/sources.list.d
 echo "deb [arch=$ARCH] $REPO_URI $REPO_SUITE main" >$TMP/etc/apt/sources.list.d/repo.list
@@ -51,7 +51,7 @@ STATE=$TMP/var/lib/apt/
 mkdir -p $STATE
 
 STATUS=$TMP/var/lib/dpkg/status
-mkdir -p $(dirname $STATUS)
+mkdir -p "$(dirname $STATUS)"
 touch $STATUS
 
 CACHE=$TMP/var/cache/apt
@@ -83,16 +83,16 @@ APT_OPTS="\
 
 apt-get $APT_OPTS update
 
-apt-get $APT_OPTS --print-uris download $* | while read URI DEB SIZE HASH; do
-    wget -O ${DEB}.tmp $(echo $URI |tr -d "'")
+apt-get $APT_OPTS --print-uris download "$@" | while read URI DEB SIZE HASH; do
+    wget -O "${DEB}.tmp" $(echo "$URI" |tr -d "'")
     if [ $? -ne 0 ]; then
         echo bad wget
         exit
     fi
     # TODO
     # - check size and hash
-    mv ${DEB}.tmp ${DEB}
+    mv "${DEB}.tmp" "${DEB}"
 
-    dpkg -x $DEB ./
+    dpkg -x "$DEB" ./
 done
 
