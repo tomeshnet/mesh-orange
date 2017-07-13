@@ -50,7 +50,7 @@ test:
 # Everything below this line is HW specific Armbian u-Boot startup code
 
 $(TAG)/armbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
+	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOKEY) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file

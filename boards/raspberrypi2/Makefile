@@ -58,7 +58,7 @@ test:
 	false
 
 $(TAG)/raspberrypi:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
+	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOKEY) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
 	$(call tag,raspberrypi)
 
 # Add the kernel specific binaries to this cpio file

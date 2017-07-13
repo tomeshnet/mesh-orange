@@ -9,6 +9,9 @@
 ARCH="$1"
 shift
 
+REPO_KEY="$1"
+shift
+
 REPO_URI="$1"
 shift
 
@@ -19,7 +22,7 @@ OUTDIR="$1"
 shift
 
 if [ -z "$ARCH" -o -z "$REPO_URI" -o -z "$REPO_SUITE" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo "Usage: $0 arch repo_uri repo_suite unpackdir pkg..."
+    echo "Usage: $0 arch repo_key_uri repo_uri repo_suite unpackdir pkg..."
     exit 1
 fi
 
@@ -63,6 +66,9 @@ Dir::Etc "$ETC";
 Dir::Etc::Parts "$ETC_PARTS";
 Dir::Etc::PreferencesParts "$ETC_PREFS_PARTS";
 EOF
+
+# provide some trust
+wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
 
 #    -o APT::Default-Release='*' \
 APT_OPTS="\
