@@ -105,8 +105,9 @@ $(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(ARMBIAN_FIRMWAR
 	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot
-$(BOOT)/uInitrd: $(BUILD)/combined.initrd
-	mkimage -C lzma -A arm -T ramdisk -d $< $@
+$(BOOT)/uInitrd: $(BUILD)/combined.uInitrd
+	cp $< $@
+CLEAN_FILES += $(BUILD)/combined.uInitrd
 
 BOOT_FILES = \
     $(BOOT)/boot.scr $(BOOT)/armbianEnv.txt \
