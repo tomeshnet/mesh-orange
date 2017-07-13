@@ -24,9 +24,7 @@ ARMBIAN = $(BUILD)/armbian
 BUILD_DEPENDS = \
     multistrap \
     fakeroot \
-    u-boot-tools \
     xz-utils \
-    mtools \
 
 all: image
 
@@ -63,8 +61,9 @@ $(BOOT)/.next: $(TAG)/boot
 # - rewrite or cleanup these two files for our specific use cases
 
 $(BOOT)/boot.scr: $(TAG)/boot
-$(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
-	mkimage -A arm -T script -C none -d $< $@
+$(BOOT)/boot.scr: boot.scr
+	cp $< $@
+CLEAN_FILES += boot.scr
 
 $(BOOT)/armbianEnv.txt: $(TAG)/boot
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt

@@ -1,3 +1,6 @@
 
 # dont track the build dir
 build
+
+# This file is built
+boot.scr

@@ -26,12 +26,12 @@ PART3_BEGIN_SEC = $$(( $(PART2_BEGIN_SEC) + ($(PART2_SIZE_MEGS) *1024*1024) /512
 
 IMAGE_SIZE_MEGS = $$(( 0x100000/1024/1024 + $(PART1_SIZE_MEGS) + $(PART2_SIZE_MEGS) + $(PART3_SIZE_MEGS) ))
 
+CLEAN_FILES = $(TAG) $(ZIP) $(BOOT) $(BUILD)/mtoolsrc $(BUILD)/root.fs.tmp
+
 # Directories
 ZIP = $(BUILD)/zero_imager
 
 BUILD_DEPENDS = \
-    u-boot-tools \
-    xz-utils \
     mtools \
 
 all: image
@@ -81,8 +81,9 @@ $(TAG)/boot:
 	$(call tag,boot)
 
 $(BOOT)/boot.scr: $(TAG)/boot
-$(BOOT)/boot.scr: boot.cmd
-	mkimage -A arm -T script -C none -d $< $@
+$(BOOT)/boot.scr: boot.scr
+	cp $< $@
+CLEAN_FILES += boot.scr
 
 $(BOOT)/zImage: $(TAG)/boot $(ZIP)
 	cp $(ZIP)/zImage $(BOOT)/zImage
@@ -129,6 +130,6 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BU
 # Misc make infrastructure below here
 
 clean:
-	rm -rf $(TAG) $(ZIP) $(BOOT) $(BUILD)/mtoolsrc $(BUILD)/root.fs.tmp
+	rm -rf $(CLEAN_FILES)
 	sudo rm -rf $(BUILD)/root.fs.dir
 

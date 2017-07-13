@@ -25,11 +25,7 @@ CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BO
 ARMBIAN = $(BUILD)/armbian
 
 BUILD_DEPENDS = \
-    multistrap \
-    fakeroot \
-    u-boot-tools \
     xz-utils \
-    mtools \
 
 all: image
 
@@ -73,8 +69,9 @@ $(BOOT)/.next: $(TAG)/boot
 #   boards/sun8i-h2-plus-orangepi-zero/ for more details)
 
 $(BOOT)/boot.scr: $(TAG)/boot
-$(BOOT)/boot.scr: armbian/lib/config/bootscripts/boot-sunxi.cmd
-	mkimage -A arm -T script -C none -d $< $@
+$(BOOT)/boot.scr: boot.scr
+	cp $< $@
+CLEAN_FILES += boot.scr
 
 $(BOOT)/armbianEnv.txt: $(TAG)/boot
 $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt

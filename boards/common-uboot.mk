@@ -2,6 +2,10 @@
 # functions and definitions that are common across users of u-boot
 #
 
+ifneq ($(DEBIAN_ARCH),armhf)
+$(error No infrastructure to support u-boot on non-armhf)
+endif
+
 # There are a lot of assumptions wrapped up in these definitions
 # some of these are:
 # - MBR partitioning
@@ -27,4 +31,12 @@ define uboot_bootdir
     MTOOLSRC=$1 mcopy $4 $2boot
     MTOOLSRC=$1 mcopy $5 $2boot/dtb
 endef
+
+BUILD_DEPENDS += mtools
+
+
+%.scr: %.cmd
+	mkimage -C none -A arm -T script -d $< $@
+
+BUILD_DEPENDS += u-boot-tools
 
