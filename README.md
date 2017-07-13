@@ -26,8 +26,7 @@ Building the image
 Multiple board targets are supported, but they all use the same basic
 process.  The following commands will build for the Orange Pi Zero:
 
-    make -C debian build-depends
-    make -C boards/sun8i-h2-plus-orangepi-zero build-depends
+    make build-depends
 
     make -C boards/sun8i-h2-plus-orangepi-zero image
 
@@ -49,12 +48,11 @@ One simple answer is to completely delete your repository and do a new
 clone from upstream, however that can be a little excessive.  The following
 commands will remove all the build artifacts:
 
-    make -C debian clean reallyclean
-    make -C boards/sun8i-h2-plus-orangepi-zero clean reallyclean
+    make clean reallyclean
 
-The "clean" target removes some files one-by-one from the build dir, wheras
-the "reallyclean" target just nukes the whole build dir - so this is kind of
-a belt-and-suspender approach.
+The "clean" target removes some files one-by-one from the build dir,
+wheras the "reallyclean" target just nukes each build dir - so this is
+kind of a belt-and-suspender approach.
 
 
 Using the image
@@ -121,8 +119,7 @@ Single Board Computers that are expected to be used - and it uses exactly
 the same binaries that would be used on those.  However, it is usually
 a slower emulator.
 
-    make -C debian build-depends
-    make -C boards/qemu_armhf build-depends
+    make build-depends
 
     make -C boards/qemu_armhf test
 
@@ -137,8 +134,7 @@ While this is not the expected architecture for most physical hardware,
 it is a much faster emulation.  Additionally, all the debian packages,
 configuration and customisation is the same as the armhf architecture.
 
-    make -C debian build-depends
-    make -C boards/qemu_i386 build-depends
+    make build-depends
 
     make -C boards/qemu_i386 test
 
