@@ -32,7 +32,10 @@ RASPBIAN_KERNEL_PKG = raspberrypi-kernel
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(RASPBERRYPI) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BOOT) $(BUILD)/mtoolsrc
+INITRD_PARTS += $(BUILD)/modules.lzma
+CLEAN_FILES += $(BUILD)/modules.lzma
+
+CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
@@ -46,6 +49,7 @@ all: image
 include ../common.mk
 include ../common-firmware-raspbian.mk
 include ../common-raspbian.mk
+include ../common-initrd.mk
 
 image: ../../output/$(BOARD).img
 
@@ -67,6 +71,7 @@ $(BUILD)/modules.cpio: $(TAG)/raspberrypi
             cd $(RASPBERRYPI); \
             find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
+CLEAN_FILES += $(BUILD)/modules.cpio
 
 $(BUILD): $(TAG)/build
 $(TAG)/build:
@@ -80,10 +85,6 @@ $(TAG)/boot:
 
 $(BOOT)/kernel7.img: $(TAG)/boot $(TAG)/raspberrypi
 	cp $(RASPBERRYPI)/boot/kernel7.img $@
-
-# Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(RASPBIAN_FIRMWARE)
-	cat $^ >$@
 
 $(BOOT)/initrd: $(TAG)/boot
 $(BOOT)/initrd: $(BUILD)/combined.initrd

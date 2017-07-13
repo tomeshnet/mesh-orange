@@ -19,18 +19,16 @@ all: image
 
 include ../common.mk
 include ../common-kernel-debian.mk
+include ../common-initrd.mk
 
 image:
 	echo as a virtual system, there is no way to build an image
 	false
 
-$(BUILD)/combined.cpio: $(DEBIAN).cpio $(DEBIAN_MODULES)
-	cat $^ >$@
-
-test: $(DEBIAN_KERNEL) $(BUILD)/combined.cpio
+test: $(DEBIAN_KERNEL) $(BUILD)/combined.initrd
 	qemu-system-i386 -enable-kvm -append console=ttyS0 \
 		-m 512 \
 		-kernel $(DEBIAN_KERNEL) \
-		-initrd $(BUILD)/combined.cpio \
+		-initrd $(BUILD)/combined.initrd \
 		-netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
 		-nographic

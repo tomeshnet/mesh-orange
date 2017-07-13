@@ -21,17 +21,13 @@ $(DEBIAN_KERNEL):
 	mkdir -p $(dir $@)
 	wget -O $@ $(DEBIAN_KERNEL_URL)
 	touch $@
-
-CLEAN_FILES += $(DEBIAN_INITRD)
+CLEAN_FILES += $(DEBIAN_KERNEL)
 
 $(DEBIAN_INITRD):
 	mkdir -p $(dir $@)
 	wget -O $@ $(DEBIAN_INITRD_URL)
 	touch $@
-
-CLEAN_FILES += $(DEBIAN_MODULES) $(basename $(DEBIAN_MODULES))
-
-# INITRD_PARTS += $(DEBIAN_MODULES)
+CLEAN_FILES += $(DEBIAN_INITRD)
 
 $(DEBIAN_MODULES): $(DEBIAN_INITRD)
 	( \
@@ -40,4 +36,6 @@ $(DEBIAN_MODULES): $(DEBIAN_INITRD)
 	    gzip -dc | cpio --make-directories -i lib/modules/*; \
 	    find lib -print0 | cpio -0 -H newc -R 0:0 -o \
 	) <$< >$@
+CLEAN_FILES += $(DEBIAN_MODULES) $(basename $(DEBIAN_MODULES))
 
+INITRD_PARTS += $(DEBIAN_MODULES)

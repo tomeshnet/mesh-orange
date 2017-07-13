@@ -17,3 +17,5 @@ $(addsuffix .cpio,$(basename $(LOCAL_MODULES))):
 $(BUILD)/boot/dtb/%.dtb: ../../linux/build/linux/dtb/%.dtb
 	mkdir -p $(dir $@) 
 	cp $< $@
+
+INITRD_PARTS += $(LOCAL_MODULES)

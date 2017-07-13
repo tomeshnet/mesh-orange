@@ -19,7 +19,10 @@ SRC_DTBO = $(SRC_DTBDIR)/overlay
 
 PART_SIZE_MEGS = 1000
 
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BUILD)/modules.cpio $(BUILD)/modules.lzma $(BOOT) $(BUILD)/mtoolsrc
+INITRD_PARTS += $(BUILD)/modules.lzma
+CLEAN_FILES += $(BUILD)/modules.lzma
+
+CLEAN_FILES += $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -34,6 +37,7 @@ include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-firmware-armbian.mk
 include ../common-armbian.mk
+include ../common-initrd.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -55,6 +59,7 @@ $(BUILD)/modules.cpio: $(TAG)/armbian
             cd $(ARMBIAN); \
             find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
+CLEAN_FILES += $(BUILD)/modules.cpio
 
 $(BOOT): $(TAG)/boot
 $(TAG)/boot:
@@ -99,10 +104,6 @@ $(TAG)/dtbo: $(TAG)/dtb
 
 $(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
 	cp $< $@
-
-# Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(BUILD)/modules.lzma $(ARMBIAN_FIRMWARE)
-	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot
 $(BOOT)/uInitrd: $(BUILD)/combined.uInitrd

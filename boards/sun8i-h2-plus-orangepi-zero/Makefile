@@ -22,8 +22,6 @@ CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
 ARMBIAN = $(BUILD)/armbian
 
 BUILD_DEPENDS = \
-    multistrap \
-    fakeroot \
     xz-utils \
 
 all: image
@@ -34,6 +32,7 @@ include ../common-allwinner.mk
 include ../common-kernel-local.mk
 include ../common-firmware-armbian.mk
 include ../common-armbian.mk
+include ../common-initrd.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -72,10 +71,6 @@ $(BOOT)/armbianEnv.txt: armbian/lib/config/bootenv/sunxi-default.txt
 $(BOOT)/zImage: $(LOCAL_KERNEL)
 	cp $< $@
 	cp $(dir $<)/.config $(dir $@)
-
-# Combine the various modules to make one big cpio file
-$(BUILD)/combined.initrd: $(DEBIAN).lzma $(LOCAL_MODULES) $(ARMBIAN_FIRMWARE)
-	cat $^ >$@
 
 $(BOOT)/uInitrd: $(TAG)/boot
 $(BOOT)/uInitrd: $(BUILD)/combined.uInitrd

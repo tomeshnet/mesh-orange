@@ -6,6 +6,8 @@
 DEBIAN_BASENAME = debian.$(DEBIAN_VER).$(DEBIAN_ARCH)
 DEBIAN = ../../debian/build/$(DEBIAN_BASENAME)
 
+INITRD_PARTS += $(DEBIAN).lzma
+
 # Standardised directory names
 BUILD = build
 TAG = $(BUILD)/tags
@@ -24,8 +26,6 @@ $(TAG)/build-depends: Makefile
 # file is there
 $(DEBIAN).cpio:
 	$(MAKE) -C ../../debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
-$(DEBIAN).lzma:
-	$(MAKE) -C ../../debian build/$(DEBIAN_BASENAME).lzma CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 %.lzma: %.cpio
 	lzma <$< >$@
