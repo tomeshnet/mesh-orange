@@ -23,7 +23,7 @@ include ../common-raspbian.mk
 firmware: $(BUILD)/firmware.cpio
 
 $(TAG)/raspbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBIAN) $(RASPBIAN_FIRMWARE_PKG)
+	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_REPOKEY) $(RASPBIAN_REPOURI) $(RASPBIAN_REPOSUITE) $(RASPBIAN) $(RASPBIAN_FIRMWARE_PKG)
 	$(call tag,raspbian)
 
 # Add the kernel specific binaries to this cpio file

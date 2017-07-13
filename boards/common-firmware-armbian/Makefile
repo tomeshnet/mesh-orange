@@ -22,7 +22,7 @@ include ../common-armbian.mk
 firmware: $(BUILD)/firmware.cpio
 
 $(TAG)/armbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_FIRMWARE_PKG)
+	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_REPOKEY) $(ARMBIAN_REPOURI) $(ARMBIAN_REPOSUITE) $(ARMBIAN) $(ARMBIAN_FIRMWARE_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file
