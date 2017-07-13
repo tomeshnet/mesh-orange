@@ -14,8 +14,10 @@ $(LOCAL_KERNEL):
 $(addsuffix .cpio,$(basename $(LOCAL_MODULES))):
 	$(MAKE) -C ../../linux build/modules-$(DEBIAN_ARCH).cpio DEBIAN_ARCH=$(DEBIAN_ARCH)
 
-$(BUILD)/boot/dtb/%.dtb: ../../linux/build/linux/dtb/%.dtb
+# FIXME - this should have a dep on the extracted linux dtbs, but something in
+# that is failing ?!?
+$(BUILD)/boot/dtb/%.dtb: $(LOCAL_KERNEL)
 	mkdir -p $(dir $@) 
-	cp $< $@
+	cp ../../linux/build/linux/dtb/$(notdir $@) $@
 
 INITRD_PARTS += $(LOCAL_MODULES)
