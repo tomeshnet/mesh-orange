@@ -15,7 +15,7 @@ endif
 
 DEBIAN_KERNEL = $(BUILD)/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).kernel
 DEBIAN_INITRD = $(BUILD)/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).initrd.gz
-DEBIAN_MODULES = $(BUILD)/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).modules.cpio
+DEBIAN_MODULES = $(BUILD)/debian.$(DEBIAN_VER).$(DEBIAN_ARCH).modules.lzma
 
 $(DEBIAN_KERNEL):
 	mkdir -p $(dir $@)
@@ -29,13 +29,13 @@ $(DEBIAN_INITRD):
 	touch $@
 CLEAN_FILES += $(DEBIAN_INITRD)
 
-$(DEBIAN_MODULES): $(DEBIAN_INITRD)
+$(addsuffix .cpio,$(basename $(DEBIAN_MODULES))): $(DEBIAN_INITRD)
 	( \
 	    mkdir -p $(basename $@); \
 	    cd $(basename $@); \
 	    gzip -dc | cpio --make-directories -i lib/modules/*; \
 	    find lib -print0 | cpio -0 -H newc -R 0:0 -o \
 	) <$< >$@
-CLEAN_FILES += $(DEBIAN_MODULES) $(basename $(DEBIAN_MODULES))
+CLEAN_FILES += $(DEBIAN_MODULES)
 
 INITRD_PARTS += $(DEBIAN_MODULES)
