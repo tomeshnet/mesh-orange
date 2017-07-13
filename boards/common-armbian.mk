@@ -2,7 +2,6 @@
 # The definitions needed to download packages from the armbian repo
 #
 
-ARMBIAN_REPOKEY = https://apt.armbian.com/armbian.key
-ARMBIAN_REPOURI = http://apt.armbian.com
-ARMBIAN_REPOSUITE = jessie
+ARMBIAN_KEY = https://apt.armbian.com/armbian.key
+ARMBIAN_REPO = "deb [arch=armhf] http://apt.armbian.com jessie main"
 

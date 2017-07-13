@@ -3,26 +3,20 @@
 # Given a repo and a list of packages, go download the latest matching deb
 #
 
-# TODO
-# - repo details
-
 ARCH="$1"
 shift
 
 REPO_KEY="$1"
 shift
 
-REPO_URI="$1"
-shift
-
-REPO_SUITE="$1"
+REPO="$1"
 shift
 
 OUTDIR="$1"
 shift
 
-if [ -z "$ARCH" -o -z "$REPO_URI" -o -z "$REPO_SUITE" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo "Usage: $0 arch repo_key_uri repo_uri repo_suite unpackdir pkg..."
+if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; then
+    echo "Usage: $0 arch repo_key repo unpackdir pkg..."
     exit 1
 fi
 
@@ -34,7 +28,7 @@ TMP=./meta
 mkdir -p "$TMP"
 
 mkdir -p $TMP/etc/apt/sources.list.d
-echo "deb [arch=$ARCH] $REPO_URI $REPO_SUITE main" >$TMP/etc/apt/sources.list.d/repo.list
+echo "$REPO" >$TMP/etc/apt/sources.list.d/repo.list
 
 TRUSTED=$TMP/etc/apt/trusted.gpg
 # It would be nice to fill the keyring..
