@@ -49,6 +49,7 @@ all: image
 include ../common.mk
 include ../common-firmware-raspbian.mk
 include ../common-raspbian.mk
+include ../common-cjdns-hack.mk
 include ../common-initrd.mk
 
 image: ../../output/$(BOARD).img

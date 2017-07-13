@@ -37,6 +37,7 @@ include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-firmware-armbian.mk
 include ../common-armbian.mk
+include ../common-cjdns-hack.mk
 include ../common-initrd.mk
 
 image: $(DISK_IMAGE)

@@ -14,6 +14,7 @@ all: image
 
 include ../common.mk
 include ../common-kernel-debian.mk
+include ../common-cjdns-hack.mk
 include ../common-initrd.mk
 
 image:
