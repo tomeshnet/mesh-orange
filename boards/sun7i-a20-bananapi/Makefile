@@ -128,8 +128,11 @@ $(SRC_SPL): $(TAG)/armbian
 $(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
-$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
+# FIXME - the env file is a hack
+
+$(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) env
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
+	dd if=env of=$@.tmp conv=notrunc bs=$$((0x088000)) seek=1
 	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
 	mv $@.tmp $@
