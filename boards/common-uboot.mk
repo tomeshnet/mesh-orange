@@ -25,6 +25,7 @@ endif
 define uboot_bootdir
     MTOOLSRC=$1 mpartition -I $2
     MTOOLSRC=$1 mpartition -c -b $3 $2
+    MTOOLSRC=$1 mpartition -a $2
     MTOOLSRC=$1 mformat -v boot -N 1 $2
     MTOOLSRC=$1 mmd $2boot
     MTOOLSRC=$1 mmd $2boot/dtb
