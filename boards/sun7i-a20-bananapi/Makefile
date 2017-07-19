@@ -7,19 +7,14 @@ DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 ARMBIAN_UBOOT_PKG = linux-u-boot-bananapi-dev
-ARMBIAN_KERNEL_PKG = linux-image-dev-sunxi
 UBOOT = linux-u-boot-dev-bananapi_5.31_armhf
 BOARD = sun7i-a20-bananapi
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_DTBDIR = $(ARMBIAN)/usr/lib/linux-image-dev-sunxi
-SRC_DTB = $(SRC_DTBDIR)/$(BOARD).dtb
+SRC_DTB = ../../linux/build/linux/dtb/$(BOARD).dtb
 
 PART_SIZE_MEGS = 1000
-
-INITRD_PARTS += $(BUILD)/modules.lzma
-CLEAN_FILES += $(BUILD)/modules.lzma
 
 CLEAN_FILES += $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
 
@@ -34,6 +29,7 @@ all: image
 include ../common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
+include ../common-kernel-local.mk
 include ../common-firmware-armbian.mk
 include ../common-armbian.mk
 include ../common-cjdns-hack.mk
@@ -50,16 +46,8 @@ test:
 # Everything below this line is HW specific Armbian u-Boot startup code
 
 $(TAG)/armbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
+	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG)
 	$(call tag,armbian)
-
-# Add the kernel specific binaries to this cpio file
-$(BUILD)/modules.cpio: $(TAG)/armbian
-	( \
-            cd $(ARMBIAN); \
-            find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
-	) > $@
-CLEAN_FILES += $(BUILD)/modules.cpio
 
 $(BOOT): $(TAG)/boot
 $(TAG)/boot:
@@ -82,28 +70,9 @@ $(BOOT)/armbianEnv.txt: $(TAG)/boot
 $(BOOT)/armbianEnv.txt: armbianEnv.txt
 	cp $< $@
 
-$(BOOT)/zImage: $(TAG)/boot $(TAG)/armbian
-	cp $(ARMBIAN)/boot/vmlinuz-* $(BOOT)/zImage
-	cp $(ARMBIAN)/boot/config-* $(BOOT)
-
-dtb: $(TAG)/dtb
-$(TAG)/dtb: $(TAG)/boot
-	mkdir -p $(BOOT)/dtb
-	$(call tag,dtb)
-
-$(SRC_DTB): $(TAG)/armbian
-
-$(BOOT)/dtb/$(BOARD).dtb: $(TAG)/dtb
-$(BOOT)/dtb/$(BOARD).dtb: $(SRC_DTB)
+$(BOOT)/zImage: $(LOCAL_KERNEL)
 	cp $< $@
-
-dtbo: $(TAG)/dtbo
-$(TAG)/dtbo: $(TAG)/dtb
-	mkdir -p $(BOOT)/dtb/overlay
-	$(call tag,dtbo)
-
-$(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
-	cp $< $@
+	cp $(dir $<)/.config $(dir $@)
 
 $(BOOT)/uInitrd: $(TAG)/boot
 $(BOOT)/uInitrd: $(BUILD)/combined.uInitrd

@@ -18,7 +18,7 @@ DEBIAN_ARCH = armhf
 
 # Where should we look for the linux.tar.gz file?
 REPO = https://github.com/hamishcoleman/linux
-RELEASE_TAG = mvp4.12
+RELEASE_TAG = mvp4.12-a
 
 # Standardised directory names
 BUILD = build
