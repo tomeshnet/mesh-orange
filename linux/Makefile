@@ -8,9 +8,6 @@
 # - have a tool that takes the tar.xz file and can publish it as a release
 #   on github using API calls
 
-# FIXME
-# - the directory name within the linux tar needs to have arch appended
-
 # Its not really "debian" arch, but this is the same var name as elsewhere,
 # the kernel is also really "arm" not armhf - but, again, this is the same
 # arch name as used elsewhere
@@ -18,7 +15,7 @@ DEBIAN_ARCH = armhf
 
 # Where should we look for the linux.tar.gz file?
 REPO = https://github.com/hamishcoleman/linux
-RELEASE_TAG = mvp4.12-a
+RELEASE_TAG = mvp4.12-b
 
 # Standardised directory names
 BUILD = build
@@ -45,14 +42,14 @@ $(BUILD)/linux-$(DEBIAN_ARCH).tar.xz: Makefile
 	wget -c -O $@ $(URL)
 	touch $@
 
-CLEAN_FILES += $(BUILD)/linux # FIXME - arch
-$(BUILD)/linux/zImage $(BUILD)/linux/lib/modules $(addprefix $(BUILD)/linux/dtb/,$(DTBS)): $(BUILD)/linux-$(DEBIAN_ARCH).tar.xz
+CLEAN_FILES += $(BUILD)/linux-$(DEBIAN_ARCH)
+$(BUILD)/linux-$(DEBIAN_ARCH)/zImage $(BUILD)/linux-$(DEBIAN_ARCH)/lib/modules $(addprefix $(BUILD)/linux-$(DEBIAN_ARCH)/dtb/,$(DTBS)): $(BUILD)/linux-$(DEBIAN_ARCH).tar.xz
 	tar -m -x -f $< -C $(BUILD)
 
 # Add the kernel specific binaries to this cpio file
-$(BUILD)/modules-$(DEBIAN_ARCH).cpio: $(BUILD)/linux/lib/modules # FIXME - arch
+$(BUILD)/modules-$(DEBIAN_ARCH).cpio: $(BUILD)/linux-$(DEBIAN_ARCH)/lib/modules
 	( \
-            cd $(BUILD)/linux; \
+            cd $(BUILD)/linux-$(DEBIAN_ARCH); \
             find lib/modules -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
 

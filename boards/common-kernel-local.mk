@@ -5,7 +5,7 @@
 # FIXME
 # - add an arch to the zImage
 
-LOCAL_KERNEL = ../../linux/build/linux/zImage
+LOCAL_KERNEL = ../../linux/build/linux-$(DEBIAN_ARCH)/zImage
 LOCAL_MODULES = ../../linux/build/modules-$(DEBIAN_ARCH).lzma
 
 $(LOCAL_KERNEL):
@@ -18,6 +18,6 @@ $(addsuffix .cpio,$(basename $(LOCAL_MODULES))):
 # that is failing ?!?
 $(BUILD)/boot/dtb/%.dtb: $(LOCAL_KERNEL)
 	mkdir -p $(dir $@) 
-	cp ../../linux/build/linux/dtb/$(notdir $@) $@
+	cp ../../linux/build/linux-$(DEBIAN_ARCH)/dtb/$(notdir $@) $@
 
 INITRD_PARTS += $(LOCAL_MODULES)
