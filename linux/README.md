@@ -37,6 +37,7 @@ Install into build dir:
     cd linux
     cp arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dtb ../build/linux-armhf/dtb
     cp arch/arm/boot/dts/sun7i-a20-bananapi.dtb ../build/linux-armhf/dtb
+    cp arch/arm/boot/dts/sun4i-a10-cubieboard.dtb ../build/linux-armhf/dtb
     cp arch/arm/boot/zImage ../build/linux-armhf
     cp .config ../build/linux-armhf
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
@@ -51,10 +52,17 @@ Kernel features TODO:
 
 bananapi:
     cpufreq not working
+    USB OTG not working
     usb ports not working
-    ethernet untested, but detected
     sata untested, but detected
     video out / audio out - untested, not needed in a router build
+
+cubieboard:
+    cpufreq not working
+    USB OTG not working
+    NAND not detected
+    sata untested, but detected
+    video out / audio in/out - untested, not needed in a router build
 
 orange-pi-zero:
     second and third usb port - device tree needs updating to enable
