@@ -43,12 +43,20 @@ TODO
 ----
 
 A quick list of things that probably need doing:
+(sorted vaguely by importance)
 
-* config storage - some magic files in /conf.d (what about SPI flash?)
-* automatic hostname
-* cjdns
-* IPFS
-* u-boot rules to boot of one or the other of the initramfs images on fallback
-* maybe add udev persistent-net-generator.rules - style network interface naming
+* Ensure ssh keys are not saved in image and are regenerated if needed
+* Complete the config load and config save scripts
+* Add some extra randomness into image
+* Load any extra randomness found on boot media
+* Check all the available 802.11s flags and use the appropropriate ones
 * use a known prefix for tunnel names to allow stable iptables rules and
   coexistance with other tunnel systems
+* Write script for generating a basic config file to merge with image
+* Use a better default access point name and PSK
+* Use a better default root password
+* Look for better options for the cjdns package
+* look for a IPFS package
+* u-boot rules to boot of one or the other of the initramfs images on fallback
+* maybe add udev persistent-net-generator.rules - style network interface naming
+* config storage - what about SPI flash?
