@@ -68,3 +68,7 @@ orange-pi-zero:
     second and third usb port - device tree needs updating to enable
     video out / audio out - untested, not needed in a router build
 
+general:
+    Trial workqueue.power_efficient and possibly enable this by default
+    using WQ_POWER_EFFICIENT_DEFAULT
+
