@@ -9,7 +9,7 @@ LOCAL_KERNEL = ../../linux/build/linux-$(DEBIAN_ARCH)/zImage
 LOCAL_MODULES = ../../linux/build/modules-$(DEBIAN_ARCH).lzma
 
 $(LOCAL_KERNEL):
-	$(MAKE) -C ../../linux build/linux/zImage DEBIAN_ARCH=$(DEBIAN_ARCH)
+	$(MAKE) -C ../../linux build/linux-$(DEBIAN_ARCH)/zImage DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 $(addsuffix .cpio,$(basename $(LOCAL_MODULES))):
 	$(MAKE) -C ../../linux build/modules-$(DEBIAN_ARCH).cpio DEBIAN_ARCH=$(DEBIAN_ARCH)
