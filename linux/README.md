@@ -33,15 +33,19 @@ Build:
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j2 zImage LOADADDR=0x42000000 dtbs modules
 
 Install into build dir:
-    mkdir -p build/linux-armhf/dtb
-    cd linux
-    cp arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dtb ../build/linux-armhf/dtb
-    cp arch/arm/boot/dts/sun7i-a20-bananapi.dtb ../build/linux-armhf/dtb
-    cp arch/arm/boot/dts/sun4i-a10-cubieboard.dtb ../build/linux-armhf/dtb
-    cp arch/arm/boot/zImage ../build/linux-armhf
-    cp .config ../build/linux-armhf
+    LINUX=$PWD/linux
+    BUILD=$PWD/build/linux-armhf
+
+    cd $LINUX
+    rm -rf $BUILD
+    mkdir -p $BUILD/dtb
+    cp arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dtb $BUILD/dtb
+    cp arch/arm/boot/dts/sun7i-a20-bananapi.dtb $BUILD/dtb
+    cp arch/arm/boot/dts/sun4i-a10-cubieboard.dtb $BUILD/dtb
+    cp arch/arm/boot/zImage $BUILD/
+    cp .config $BUILD/
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
-        INSTALL_MOD_PATH=build/linux-armhf/ modules_install
+        INSTALL_MOD_PATH=$BUILD/ modules_install
 
 Bundle:
     cd build
