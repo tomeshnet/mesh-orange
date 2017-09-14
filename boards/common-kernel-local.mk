@@ -7,11 +7,12 @@
 
 LOCAL_KERNEL = ../../linux/build/linux-$(DEBIAN_ARCH)/zImage
 LOCAL_MODULES = ../../linux/build/modules-$(DEBIAN_ARCH).lzma
+LOCAL_MODULES_CPIO = $(addsuffix .cpio,$(basename $(LOCAL_MODULES)))
 
 $(LOCAL_KERNEL):
 	$(MAKE) -C ../../linux build/linux-$(DEBIAN_ARCH)/zImage DEBIAN_ARCH=$(DEBIAN_ARCH)
 
-$(addsuffix .cpio,$(basename $(LOCAL_MODULES))):
+$(LOCAL_MODULES_CPIO):
 	$(MAKE) -C ../../linux build/modules-$(DEBIAN_ARCH).cpio DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 # FIXME - this should have a dep on the extracted linux dtbs, but something in

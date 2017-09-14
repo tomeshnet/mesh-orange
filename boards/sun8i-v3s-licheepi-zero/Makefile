@@ -39,6 +39,7 @@ all: image
 include ../common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
+include ../common-kernel-local.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p ../../output
@@ -58,7 +59,7 @@ $(BUILD)/zero_imager.zip:
 $(ZIP): $(BUILD)/zero_imager.zip
 	unzip -o $(BUILD)/zero_imager.zip -d $(BUILD)
 
-$(BUILD)/root.fs: $(DEBIAN).cpio $(ZIP)
+$(BUILD)/root.fs: $(DEBIAN).cpio $(LOCAL_MODULES_CPIO) $(ZIP)
 	truncate --size=$$(( $(PART3_SIZE_MEGS)*1 ))M $@.tmp
 	/sbin/mkfs.ext4 -L root $@.tmp
 	mkdir -p $@.dir
@@ -69,9 +70,11 @@ $(BUILD)/root.fs: $(DEBIAN).cpio $(ZIP)
 	)
 	sudo rm $@.dir/init.d/01welcome.sh
 	sudo ln -s /init $@.dir/sbin/init
-	sudo mkdir -p $@.dir/lib
+	cat $(LOCAL_MODULES_CPIO) | ( \
+            cd $@.dir; \
+            sudo cpio --make-directories -i; \
+	)
 	sudo cp -r $(ZIP)/overlay_rootfs-base/lib/firmware/ $@.dir/lib/firmware/
-	sudo cp -r $(ZIP)/overlay_rootfs-base/lib/modules/ $@.dir/lib/modules/
 	sudo umount $@.dir
 	mv $@.tmp $@
 
@@ -85,8 +88,9 @@ $(BOOT)/boot.scr: boot.scr
 	cp $< $@
 CLEAN_FILES += boot.scr
 
-$(BOOT)/zImage: $(TAG)/boot $(ZIP)
-	cp $(ZIP)/zImage $(BOOT)/zImage
+$(BOOT)/zImage: $(LOCAL_KERNEL)
+	cp $< $@
+	cp $(dir $<)/.config $(dir $@)
 
 dtb: $(TAG)/dtb
 $(TAG)/dtb: $(TAG)/boot
