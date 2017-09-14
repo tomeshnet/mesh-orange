@@ -1,0 +1,65 @@
+#!/bin/sh
+# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+
+#
+# Called from udev with the debpath of a UDC interface.
+#
+# FIXME
+# - if there is more than one UDC driver, this script uses hardcoded names
+
+UDC="$1"
+GADGET=g1
+# Magic numbers were originally copied from http://isticktoit.net/?p=1383
+ID_VEND=0x1d6b # Linux Foundation
+ID_PROD=0x0104 # Multifunction Composite Gadget
+SERIAL=`hostname`
+MANU="Ramdisk Builder"
+PROD="Ramdisk Router"
+CONF="Config 1: ser/net/stor"
+
+if [ -z "$UDC" ]; then
+    echo error - need UDC name
+    exit 1
+fi
+
+modprobe libcomposite
+
+cd /sys/kernel/config/usb_gadget/
+
+mkdir "$GADGET"
+cd "$GADGET"
+
+echo "$ID_VEND" > idVendor
+echo "$ID_PROD" > idProduct
+echo 0x0200     > bcdUSB    # USB2
+
+mkdir -p strings/0x409      # English language strings
+echo "$SERIAL" > strings/0x409/serialnumber
+echo "$MANU"   > strings/0x409/manufacturer
+echo "$PROD"   > strings/0x409/product
+
+mkdir -p configs/c.1/strings/0x409
+echo "$CONF"   > configs/c.1/strings/0x409/configuration
+
+echo 250 > configs/c.1/MaxPower # basically, a lie
+
+# add the three functions
+mkdir -p functions/acm.usb0
+ln -s functions/acm.usb0 configs/c.1/
+mkdir -p functions/eem.usb0
+ln -s functions/eem.usb0 configs/c.1/
+mkdir -p functions/mass_storage.usb0
+ln -s functions/mass_storage.usb0 configs/c.1/
+
+# FIXME
+# - use the first available block storage
+# - detect a non-ramdisk startup and dont export the root filesystem?
+echo /dev/mmcblk0 >functions/mass_storage.usb0/lun.0/file
+
+echo `basename "$UDC"` >UDC
+
+# FIXME
+# - support more LED options on different boards
+echo usb-gadget > /sys/class/leds/orangepi\:red\:status/trigger
+#echo usb-gadget > /sys/class/leds/licheepi\:red\:usr/trigger
+

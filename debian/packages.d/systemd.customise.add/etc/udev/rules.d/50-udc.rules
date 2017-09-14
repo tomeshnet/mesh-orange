@@ -1,0 +1,11 @@
+# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+#
+# If we boot on a system with a USB gadget driver, set it up
+
+SUBSYSTEM!="udc", GOTO="udc_end"
+ACTION!="add", GOTO="udc_end"
+
+PROGRAM="/usr/local/sbin/udc.setup %E{DEVPATH}"
+
+LABEL="udc_end"
+
