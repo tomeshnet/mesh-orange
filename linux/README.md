@@ -46,10 +46,12 @@ Install into build dir:
     cp .config $BUILD/
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
         INSTALL_MOD_PATH=$BUILD/ modules_install
+    rm -f $BUILD/lib/modules/*/build
+    rm -f $BUILD/lib/modules/*/source
 
 Bundle:
-    cd build
-    tar -cJf linux-armhf.tar.xz linux-armhf
+    tar -C build -cJf build/linux-armhf.tar.xz linux-armhf
+
 
 ---
 Kernel features TODO:
