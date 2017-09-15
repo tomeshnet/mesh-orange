@@ -36,7 +36,7 @@ BUILD_DEPENDS = \
 
 all: image
 
-include ../common.mk
+include ../../mk/common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-kernel-local.mk

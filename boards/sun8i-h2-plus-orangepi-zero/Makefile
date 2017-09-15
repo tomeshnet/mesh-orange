@@ -26,12 +26,12 @@ BUILD_DEPENDS = \
 
 all: image
 
-include ../common.mk
+include ../../mk/common.mk
 include ../common-uboot.mk
 include ../common-allwinner.mk
 include ../common-kernel-local.mk
 include ../common-firmware-armbian.mk
-include ../common-armbian.mk
+include ../../mk/common-armbian.mk
 include ../common-cjdns-hack.mk
 include ../common-initrd.mk
 

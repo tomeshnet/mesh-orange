@@ -17,7 +17,7 @@ CLEAN_FILES =
 
 all: image
 
-include ../common.mk
+include ../../mk/common.mk
 include ../common-kernel-debian.mk
 include ../common-initrd.mk
 

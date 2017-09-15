@@ -46,9 +46,9 @@ BUILD_DEPENDS = \
 
 all: image
 
-include ../common.mk
+include ../../mk/common.mk
 include ../common-firmware-raspbian.mk
-include ../common-raspbian.mk
+include ../../mk/common-raspbian.mk
 include ../common-cjdns-hack.mk
 include ../common-initrd.mk
 
