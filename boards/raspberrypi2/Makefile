@@ -1,7 +1,7 @@
 #
 # Build a raspberry pi install
 #
-# This works on the 2b and should work for the 3b and cm3 (but I have
+# This works on the 2b and 3b and should work for the cm3 (but I have
 # not tested that) as they are all using ARMv7+ CPUs that are compatible
 # with the Debian "armhf" architecture definition.
 #
