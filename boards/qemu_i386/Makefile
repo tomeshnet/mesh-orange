@@ -15,11 +15,13 @@ BUILD_DEPENDS = qemu-system-x86
 
 CLEAN_FILES =
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-kernel-debian.mk
-include ../common-initrd.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-kernel-debian.mk
+include $(TOP_DIR)/boards/common-initrd.mk
 
 image:
 	echo as a virtual system, there is no way to build an image

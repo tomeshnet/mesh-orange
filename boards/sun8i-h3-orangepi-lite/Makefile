@@ -30,19 +30,21 @@ ARMBIAN = $(BUILD)/armbian
 BUILD_DEPENDS = \
     xz-utils \
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-uboot.mk
-include ../common-allwinner.mk
-include ../common-firmware-armbian.mk
-include ../../mk/common-armbian.mk
-include ../common-cjdns-hack.mk
-include ../common-initrd.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-allwinner.mk
+include $(TOP_DIR)/boards/common-firmware-armbian.mk
+include $(TOP_DIR)/mk/common-armbian.mk
+include $(TOP_DIR)/boards/common-cjdns-hack.mk
+include $(TOP_DIR)/boards/common-initrd.mk
 
 image: $(DISK_IMAGE)
-	mkdir -p ../../output
-	cp $< ../../output/$(BOARD).img
+	mkdir -p $(TOP_DIR)/output
+	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output
@@ -51,7 +53,7 @@ test:
 # Everything below this line is HW specific Armbian u-Boot startup code
 
 $(TAG)/armbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file

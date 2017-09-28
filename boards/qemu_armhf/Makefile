@@ -10,12 +10,14 @@ BUILD_DEPENDS = qemu-system-arm
 
 CLEAN_FILES =
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-kernel-local.mk
-include ../common-cjdns-hack.mk
-include ../common-initrd.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-kernel-local.mk
+include $(TOP_DIR)/boards/common-cjdns-hack.mk
+include $(TOP_DIR)/boards/common-initrd.mk
 
 image:
 	echo as a virtual system, there is no way to build an image

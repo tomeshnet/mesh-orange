@@ -3,13 +3,11 @@
 #
 
 SUBDIRS += debian/
+SUBDIRS += firmware/
 SUBDIRS += linux/
 
 # The boards/* subdirs should probably be controlled from a boards/Makefile
 # - maybe later
-
-SUBDIRS += boards/common-firmware-armbian/
-SUBDIRS += boards/common-firmware-raspbian/
 
 QEMUDIRS += boards/qemu_armhf/
 QEMUDIRS += boards/qemu_i386/

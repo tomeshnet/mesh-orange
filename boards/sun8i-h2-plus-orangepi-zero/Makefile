@@ -12,7 +12,6 @@ BOARD = sun8i-h2-plus-orangepi-zero
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
-SRC_DTB = ../../linux/build/linux/dtb/$(BOARD).dtb
 
 PART_SIZE_MEGS = 1000
 
@@ -24,20 +23,22 @@ ARMBIAN = $(BUILD)/armbian
 BUILD_DEPENDS = \
     xz-utils \
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-uboot.mk
-include ../common-allwinner.mk
-include ../common-kernel-local.mk
-include ../common-firmware-armbian.mk
-include ../../mk/common-armbian.mk
-include ../common-cjdns-hack.mk
-include ../common-initrd.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-allwinner.mk
+include $(TOP_DIR)/boards/common-kernel-local.mk
+include $(TOP_DIR)/boards/common-firmware-armbian.mk
+include $(TOP_DIR)/mk/common-armbian.mk
+include $(TOP_DIR)/boards/common-cjdns-hack.mk
+include $(TOP_DIR)/boards/common-initrd.mk
 
 image: $(DISK_IMAGE)
-	mkdir -p ../../output
-	cp $< ../../output/$(BOARD).img
+	mkdir -p $(TOP_DIR)/output
+	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output
@@ -46,7 +47,7 @@ test:
 # Everything below this line is HW specific u-Boot startup code
 
 $(TAG)/armbian:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG)
 	$(call tag,armbian)
 
 $(BOOT): $(TAG)/boot

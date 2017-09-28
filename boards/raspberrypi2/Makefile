@@ -44,17 +44,19 @@ BUILD_DEPENDS = \
     xz-utils \
     mtools \
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-firmware-raspbian.mk
-include ../../mk/common-raspbian.mk
-include ../common-cjdns-hack.mk
-include ../common-initrd.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-firmware-raspbian.mk
+include $(TOP_DIR)/mk/common-raspbian.mk
+include $(TOP_DIR)/boards/common-cjdns-hack.mk
+include $(TOP_DIR)/boards/common-initrd.mk
 
-image: ../../output/$(BOARD).img
+image: $(TOP_DIR)/output/$(BOARD).img
 
-../../output/$(BOARD).img: $(DISK_IMAGE)
+$(TOP_DIR)/output/$(BOARD).img: $(DISK_IMAGE)
 	mkdir -p $(dir $@)
 	cp $< $@
 
@@ -63,7 +65,7 @@ test:
 	false
 
 $(TAG)/raspberrypi:
-	../../scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_KEY) $(RASPBIAN_REPO) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_KEY) $(RASPBIAN_REPO) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
 	$(call tag,raspberrypi)
 
 # Add the kernel specific binaries to this cpio file

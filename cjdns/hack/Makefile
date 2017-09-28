@@ -28,6 +28,8 @@ CJDNS = $(BUILD)/cjdns
 
 CLEAN_FILES = $(BUILD)/cjdns.cpio
 
+TOP_DIR ?= ../..
+
 all: cjdns
 
 build-depends: Makefile
@@ -36,7 +38,7 @@ build-depends: Makefile
 cjdns: $(CJDNS).cpio
 
 $(CJDNS):
-	../../scripts/get_deb $(DEBIAN_ARCH) $(REPOKEY) $(REPO) $@ $(PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(REPOKEY) $(REPO) $@ $(PKG)
 
 $(CJDNS).cpio: $(CJDNS)
 	( \

@@ -34,16 +34,18 @@ ZIP = $(BUILD)/zero_imager
 BUILD_DEPENDS = \
     mtools \
 
+TOP_DIR ?= ../..
+
 all: image
 
-include ../../mk/common.mk
-include ../common-uboot.mk
-include ../common-allwinner.mk
-include ../common-kernel-local.mk
+include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-allwinner.mk
+include $(TOP_DIR)/boards/common-kernel-local.mk
 
 image: $(DISK_IMAGE)
-	mkdir -p ../../output
-	cp $< ../../output/$(BOARD).img
+	mkdir -p $(TOP_DIR)/output
+	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output
