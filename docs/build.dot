@@ -4,18 +4,45 @@
 
 digraph g{
 
-    debian_repo -> multistrap -> minimise -> fixup -> customise -> debian_initrd;
+    subgraph cluster_debian {
+        debian [shape=plaintext];
+        graph[style=dotted];
+        color=blue;
 
-    package_list -> multistrap;
-    delete_lists -> minimise;
-    fixup_list -> fixup;
-    add_default_config -> customise;
+        debian_repo [shape=folder];
+        package_list [shape=note];
+        delete_list [shape=note];
+        fixup_list [shape=note];
+        add_files [shape=note];
+        debian_initrd [shape=box3d];
+
+        debian_repo -> multistrap -> minimise -> fixup -> customise;
+
+        package_list -> multistrap;
+        delete_list -> minimise;
+        fixup_list -> fixup;
+        add_files -> customise;
+
+        customise -> debian_initrd;
+    }
     
-    kernel_patches -> kernel_build;
-    mainline_kernel -> kernel_build;
-    kernel_config -> kernel_build;
+    subgraph cluster_kernel {
+        kernel [shape=plaintext];
+        graph[style=dotted];
+        color=blue;
 
-    kernel_build -> github -> kernel_image;
+        kernel_config [shape=note];
+        mainline_source [shape=folder];
+        kernel_patches [shape=folder];
+        kernel_image [shape=box3d];
+
+        kernel_patches -> kernel_source;
+        mainline_source -> kernel_source;
+        kernel_source -> kernel_build;
+        kernel_config -> kernel_build;
+
+        kernel_build -> github -> kernel_image;
+    }
 
     firmware -> initrd;
     debian_initrd -> initrd;
