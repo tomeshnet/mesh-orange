@@ -1,0 +1,32 @@
+#
+# Outline how the build process works
+#
+
+digraph g{
+
+    debian_repo -> multistrap -> minimise -> fixup -> customise -> debian_initrd;
+
+    package_list -> multistrap;
+    delete_lists -> minimise;
+    fixup_list -> fixup;
+    add_default_config -> customise;
+    
+    kernel_patches -> kernel_build;
+    mainline_kernel -> kernel_build;
+    kernel_config -> kernel_build;
+
+    kernel_build -> github -> kernel_image;
+
+    firmware -> initrd;
+    debian_initrd -> initrd;
+    kernel_image -> disk_image;
+
+    spl -> disk_image;
+    uboot -> disk_image;
+    uboot_config -> disk_image;
+    initrd -> disk_image;
+    empty_config -> disk_image;
+
+    disk_image -> sdcard;
+}
+
