@@ -35,6 +35,7 @@ digraph g{
         mainline_source [shape=folder];
         kernel_patches [shape=folder];
         kernel_image [shape=box3d];
+        modules [shape=folder];
 
         kernel_patches -> kernel_source;
         mainline_source -> kernel_source;
@@ -42,18 +43,38 @@ digraph g{
         kernel_config -> kernel_build;
 
         kernel_build -> github -> kernel_image;
+        github -> modules;
+    }
+
+    armbian_firmware [shape=folder];
+    firmware [shape=folder];
+    armbian_firmware -> firmware;
+
+    subgraph cluster_boot {
+        boot [shape=plaintext];
+        graph[style=dotted];
+        color=blue;
+
+        initrd [shape=box3d];
+        conf_d [shape=folder];
+        spl [shape=note];
+        uboot [shape=note];
+        uboot_config [shape=folder];
+
+        spl -> disk_image;
+        uboot -> disk_image;
+        uboot_config -> disk_image;
+        initrd -> disk_image;
+        conf_d -> disk_image;
     }
 
     firmware -> initrd;
     debian_initrd -> initrd;
+    modules -> initrd;
     kernel_image -> disk_image;
 
-    spl -> disk_image;
-    uboot -> disk_image;
-    uboot_config -> disk_image;
-    initrd -> disk_image;
-    empty_config -> disk_image;
-
+    disk_image [shape=box3d];
+    sdcard [shape=folder];
     disk_image -> sdcard;
 }
 
