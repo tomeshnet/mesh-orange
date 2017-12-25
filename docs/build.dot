@@ -34,6 +34,7 @@ digraph g{
         kernel_config [shape=note];
         mainline_source [shape=folder];
         kernel_patches [shape=folder];
+        kernel_source [shape=folder];
         kernel_image [shape=box3d];
         modules [shape=folder];
 
@@ -42,13 +43,17 @@ digraph g{
         kernel_source -> kernel_build;
         kernel_config -> kernel_build;
 
-        kernel_build -> github -> kernel_image;
-        github -> modules;
+        kernel_build -> github_release -> kernel_image;
+        github_release -> modules;
     }
 
     armbian_firmware [shape=folder];
     firmware [shape=folder];
     armbian_firmware -> firmware;
+
+    cjdns_deb [shape=folder];
+    cjdns_extract [shape=folder];
+    cjdns_deb -> cjdns_extract;
 
     subgraph cluster_boot {
         boot [shape=plaintext];
@@ -71,6 +76,7 @@ digraph g{
     firmware -> initrd;
     debian_initrd -> initrd;
     modules -> initrd;
+    cjdns_extract -> initrd;
     kernel_image -> disk_image;
 
     disk_image [shape=box3d];
