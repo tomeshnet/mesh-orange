@@ -1,0 +1,58 @@
+#
+# Show the boot process up until userspace
+#
+# (however, not the same for raspberry pi bootup)
+#
+
+digraph g{
+    power_on -> spl;
+    spl -> uboot_config;
+
+    subgraph cluster_uboot {
+        label="U-Boot";
+        graph[style=dotted];
+        color=blue;
+
+        uboot_config [label="Load Config"];
+
+        env_txt [label="Env.txt" shape=note];
+        boot_scr [label="/boot/boot.scr" shape=note];
+        env_txt -> uboot_config;
+        boot_scr -> uboot_config;
+
+        boot_scr -> env_txt [style=dotted];
+        {rank=same boot_scr env_txt}
+
+        boot_scr -> zImage [style=dotted label="config filename"];
+        boot_scr -> uInitrd [style=dotted];
+
+        uboot_load [label="Load Blobs"];
+        zImage [label="/boot/zImage" shape=note];
+        uInitrd [label="/boot/uInitrd" shape=note];
+        zImage -> uboot_load [label="file is read"];
+        uInitrd -> uboot_load;
+
+        uboot_config -> uboot_load;
+    }
+
+    uboot_load -> jump_to_kernel -> kernel_unpack;
+
+    subgraph cluster_kernel {
+        label="Kernel";
+        graph[style=dotted];
+        color=blue;
+
+        kernel_unpack [label="Unpack Initrd"];
+        mount_root [label="Mount Root" style=dotted];
+
+        kernel_unpack -> mount_root;
+    }
+
+    subgraph cluster_userspace {
+        label="User Space";
+        graph[style=dotted];
+        color=blue;
+
+        mount_root -> systemd;
+    }
+}
