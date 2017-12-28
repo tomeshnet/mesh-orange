@@ -40,11 +40,11 @@ digraph g{
     f_mesh_rules -> f_mesh_scr;
 
     kernel_hotplug -> udev;
-    {rank=same kernel_hotplug start_userapce}
+    {rank=same kernel_hotplug start_userspace}
 
     init [label="/init"];
     init_d [label="/init.d/*" shape=folder];
-    start_userapce -> init;
+    start_userspace -> init;
     init_d -> init;
     {rank=same init init_d find_config copy_config}
 

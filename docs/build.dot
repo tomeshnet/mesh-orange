@@ -37,6 +37,7 @@ digraph g{
         kernel_source [shape=folder];
         kernel_image [shape=box3d];
         modules [shape=folder];
+        dtb [shape=folder];
 
         kernel_patches -> kernel_source;
         mainline_source -> kernel_source;
@@ -45,6 +46,7 @@ digraph g{
 
         kernel_build -> github_release -> kernel_image;
         github_release -> modules;
+        github_release -> dtb;
     }
 
     armbian_firmware [shape=folder];
@@ -61,7 +63,7 @@ digraph g{
         color=blue;
 
         initrd [shape=box3d];
-        conf_d [shape=folder];
+        conf_d [label="conf.d" shape=folder];
         spl [shape=note];
         uboot [shape=note];
         uboot_config [shape=folder];
@@ -71,6 +73,7 @@ digraph g{
         uboot_config -> disk_image;
         initrd -> disk_image;
         conf_d -> disk_image;
+        dtb -> disk_image;
     }
 
     firmware -> initrd;
