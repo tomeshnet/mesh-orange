@@ -3,5 +3,5 @@
 #
 
 RASPBIAN_KEY = https://archive.raspberrypi.org/debian/raspberrypi.gpg.key
-RASPBIAN_REPO = "deb [arch=armhf] http://archive.raspberrypi.org/debian/ jessie main"
+RASPBIAN_REPO = "deb http://archive.raspberrypi.org/debian/ jessie main"
 

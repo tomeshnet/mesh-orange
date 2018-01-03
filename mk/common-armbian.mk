@@ -3,5 +3,5 @@
 #
 
 ARMBIAN_KEY = https://apt.armbian.com/armbian.key
-ARMBIAN_REPO = "deb [arch=armhf] http://apt.armbian.com jessie main"
+ARMBIAN_REPO = "deb http://apt.armbian.com jessie main"
 
