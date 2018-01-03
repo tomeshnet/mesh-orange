@@ -70,6 +70,13 @@ $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_A
 #   be depending on all the packages.d/ scripts.  Need to add a auto
 #   dep system to do this.
 
+# TODO - use dpkg config to avoid installing the locale files:
+# eg:
+# --path-exclude=/usr/share/doc/*
+# --path-include=/usr/share/doc/*/copyright
+
+
+
 # minimise the image size
 $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.addextra $(DEBOOT) $(CONFIG_DEBIAN_ARCH) minimise
