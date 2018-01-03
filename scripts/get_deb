@@ -3,6 +3,8 @@
 # Given a repo and a list of packages, go download the latest matching deb
 #
 
+set -e
+
 ARCH="$1"
 shift
 
@@ -89,16 +91,27 @@ APT_OPTS="\
 
 apt-get $APT_OPTS update
 
-apt-get $APT_OPTS --print-uris download "$@" | while read URI DEB SIZE HASH; do
+apt-get $APT_OPTS --print-uris download "$@" >print_uris.txt
+
+while read URI DEB SIZE HASH; do
+    # if the URI is empty, dont try to download anything
+    if [ -z "$URI" ]; then
+        continue
+    fi
+
     wget -O "${DEB}.tmp" $(echo "$URI" |tr -d "'")
     if [ $? -ne 0 ]; then
         echo bad wget
-        exit
+        exit 1
     fi
     # TODO
     # - check size and hash
     mv "${DEB}.tmp" "${DEB}"
 
     dpkg -x "$DEB" ./
-done
+    if [ $? -ne 0 ]; then
+        echo bad dpkg extract
+        exit 1
+    fi
+done <print_uris.txt
 
