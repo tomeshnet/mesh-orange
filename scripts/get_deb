@@ -62,7 +62,13 @@ Dir::Etc::PreferencesParts "$ETC_PREFS_PARTS";
 EOF
 
 # provide some trust
-wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
+if [ "$REPO_KEY" == 'system_trust' ]; then
+    # use the current system for trust files
+    cp /etc/apt/trusted.gpg ${TRUSTED}
+    cp /etc/apt/trusted.gpg.d/* ${TRUSTED_PARTS}
+else
+    wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
+fi
 
 #    -o APT::Default-Release='*' \
 APT_OPTS="\
