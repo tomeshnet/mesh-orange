@@ -14,7 +14,7 @@ customisations.  These customisations are applied in several phases,
 and each package that is found installed in the rescue system will
 attempt to run its matching script during each phase.
 
-Curently the phases are:
+Currently the phases are:
 
 "minimise"
     During this phase, anything that can be removed to minimise the

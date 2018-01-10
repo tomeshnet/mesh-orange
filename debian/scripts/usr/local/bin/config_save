@@ -1,0 +1,35 @@
+# Save current configurations to partition containing conf.d
+#
+# Copyright (C) 2018 Benedict Lau <benedict.lau@groundupworks.com>
+
+CONFDIR=conf.d
+
+try_partition() {
+    # Create file system node from partition
+    #mknod /dev/$1 b $2 $3 2>/dev/null
+
+    # Mount partition as read-write
+    mount /dev/$1 /mnt
+
+    # Find conf.d in root of partition and save current configurations in /etc
+    if [ -d "/mnt/$CONFDIR" ]; then
+        echo Saving configurations to /dev/$1: "/mnt/$CONFDIR/50-node-config-save.tar.gz"
+        tar --create --gzip -f 50-node-config-save.tar.gz -C /etc .
+    fi
+
+    # Unmount partition
+    umount /mnt
+}
+
+# Mount proc if not already mounted
+#mount -t proc proc /proc
+
+cat /proc/partitions | while read major minor size name; do
+    # Check each partition matching sd*[0-9] (e.g. sda1) or mmcblk*p* (e.g. mmcblk0p1)
+    case $name in
+        sd*[0-9]|mmcblk*p*)
+            echo Checking for configuration directory on $name
+            try_partition $name $major $minor
+            ;;
+    esac
+done

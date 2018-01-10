@@ -104,6 +104,32 @@ Tests on one orange pi zero show that the time from power on until a login
 prompt on the serial console is about 1 minute.
 
 
+Applying persistent configurations
+----------------------------------
+
+Custom configurations are saved as tar.gz archives in conf.d at the root of the
+fat16 file system. After the start of userspace and before systemd is launched,
+content in each archive is extracted in alphabetical order to /etc of the ramdisk,
+so files in an archive towards the end of the list overwrite those from an earlier
+archive in case of a filename conflict, and systemd will only see the final
+(highest priority) configurations. For example:
+
+    /conf.d/00-tomesh-base.tar.gz
+            10-tomesh-wlan-mesh-top-gs07-rt5572.tar.gz
+            11-tomesh-wlan-hostap-tplink-tl-wn722n.tar.gz
+            50-node-config-save.tar.gz
+            90-user-custom-configs.tar.gz
+
+This allows local mesh communities to customize nodes by distributing archives
+of systemd.network configuration files, or any files that are to be read from
+/etc. The user simply mounts the fat filesystem like a USB key and drops tar.gz
+files into conf.d and backs them up across software updates.
+
+If the node needs to save persistent configurations while running, such as
+remembering a MAC address, it can save the current /etc directory into a
+50-node-config-save.tar.gz archive by running `config_save`. The user may
+also manually add configurations with higher priority archive names.
+
 Test the Debian image using Qemu
 --------------------------------
 
