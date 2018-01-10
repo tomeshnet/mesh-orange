@@ -14,7 +14,8 @@ try_partition() {
     # Find conf.d in root of partition and save current configurations in /etc
     if [ -d "/mnt/$CONFDIR" ]; then
         echo Saving configurations to /dev/$1: "/mnt/$CONFDIR/50-node-config-save.tar.gz"
-        tar --create --gzip -f 50-node-config-save.tar.gz -C /etc .
+        # TODO Handle symlinks properly (i.e. excluding them from the tar)
+        tar --create --gzip -f "/mnt/$CONFDIR/50-node-config-save.tar.gz" -C /etc .
     fi
 
     # Unmount partition
