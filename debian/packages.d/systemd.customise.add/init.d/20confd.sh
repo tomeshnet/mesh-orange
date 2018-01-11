@@ -6,7 +6,7 @@ CONFDIR=conf.d
 
 try_partition() {
     # Create file system node from partition
-    #mknod /dev/$1 b $2 $3 2>/dev/null
+    mknod /dev/$1 b $2 $3 2>/dev/null
 
     # Mount partition as read-only
     mount /dev/$1 /mnt -o ro
@@ -14,10 +14,9 @@ try_partition() {
     # Find conf.d in root of partition and extract in alphabetical order each
     # tar.gz archive into the ramdisk /etc, overwriting any existing file
     if [ -d "/mnt/$CONFDIR" ]; then
-        confs=$(find /mnt/$CONFDIR -name *.tar.gz)
-        for conf in $confs; do
+        for conf in /mnt/$CONFDIR/*.tar.gz; do
             echo Applying configurations from /dev/$1: $conf
-            tar --extract --gzip -f $conf -C /etc
+            tar --extract -f $conf -C /etc
         done
     fi
 
@@ -25,8 +24,8 @@ try_partition() {
     umount /mnt
 }
 
-# Mount proc if not already mounted
-#mount -t proc proc /proc
+# Mount proc
+mount -t proc proc /proc
 
 cat /proc/partitions | while read major minor size name; do
     # Check each partition matching sd*[0-9] (e.g. sda1) or mmcblk*p* (e.g. mmcblk0p1)

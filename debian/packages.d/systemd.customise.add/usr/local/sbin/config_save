@@ -5,8 +5,7 @@
 CONFDIR=conf.d
 
 try_partition() {
-    # Create file system node from partition
-    #mknod /dev/$1 b $2 $3 2>/dev/null
+    retval=1
 
     # Mount partition as read-write
     mount /dev/$1 /mnt
@@ -14,16 +13,18 @@ try_partition() {
     # Find conf.d in root of partition and save current configurations in /etc
     if [ -d "/mnt/$CONFDIR" ]; then
         echo Saving configurations to /dev/$1: "/mnt/$CONFDIR/50-node-config-save.tar.gz"
-        # TODO Handle symlinks properly (i.e. excluding them from the tar)
         tar --create --gzip -f "/mnt/$CONFDIR/50-node-config-save.tar.gz" -C /etc .
+
+        # Set function return value to successful
+        echo Configurations saved to /dev/$1: "/mnt/$CONFDIR/50-node-config-save.tar.gz"
+        retval=0
     fi
 
     # Unmount partition
     umount /mnt
-}
 
-# Mount proc if not already mounted
-#mount -t proc proc /proc
+    return $retval
+}
 
 cat /proc/partitions | while read major minor size name; do
     # Check each partition matching sd*[0-9] (e.g. sda1) or mmcblk*p* (e.g. mmcblk0p1)
@@ -31,6 +32,12 @@ cat /proc/partitions | while read major minor size name; do
         sd*[0-9]|mmcblk*p*)
             echo Checking for configuration directory on $name
             try_partition $name $major $minor
+            S=$?
+
+            # Save only to the first partition found with conf.d
+            if [ $S -eq 0 ]; then
+                break
+            fi
             ;;
     esac
 done
