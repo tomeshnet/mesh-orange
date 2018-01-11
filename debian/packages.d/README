@@ -14,6 +14,11 @@ customisations.  These customisations are applied in several phases,
 and each package that is found installed in the rescue system will
 attempt to run its matching script during each phase.
 
+If a change is needed to be made globally - regardless of which
+packages are installed, then there is a virtual package name that
+can be used.  The name "_ALWAYS" can be substituted in the above
+patterns to produce a rule that is allways applied.
+
 Curently the phases are:
 
 "minimise"
