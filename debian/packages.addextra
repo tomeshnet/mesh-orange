@@ -4,7 +4,7 @@
 # "packages.d/$PACKAGE.$STAGE.add" exists and, if so, copy those files
 # into the install dir.
 #
-# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+# Copyright (C) 2018 Hamish Coleman <hamish@zot.org>
 
 if [ $# -lt 3 ]; then
     echo "Usage: $0 DEBOOT ARCH STAGE"
@@ -21,26 +21,31 @@ else
     unset VERBOSE
 fi
 
-PACKAGEDIR=packages.d
+: ${PACKAGEDIRS=packages.d}
 PACKAGES=$(dpkg-query --admindir="${DEBOOT}/var/lib/dpkg" --show --showformat='${Package}\n')
+
+# Add an always present virtual package
+PACKAGES+=" _ALWAYS"
 
 do_package() {
     local package=$1
 
-    if [ ! -d "$PACKAGEDIR/$package.${STAGE}.add" ]; then
-        return
-    fi
+    for dir in $PACKAGEDIRS; do
+        if [ ! -d "$dir/$package.${STAGE}.add" ]; then
+            continue;
+        fi
 
-    if [ -n "$VERBOSE" ]; then
-        echo -n "$package "
-    fi
-    cp -r "$PACKAGEDIR/$package.${STAGE}.add/." "${DEBOOT}"
-    S=$?
+        if [ -n "$VERBOSE" ]; then
+            echo -n "$dir/$package "
+        fi
+        cp -r "$dir/$package.${STAGE}.add/." "${DEBOOT}"
+        S=$?
 
-    if [ $S -ne 0 ]; then
-        echo "Error: add extra files for $package failed"
-        exit $S
-    fi
+        if [ $S -ne 0 ]; then
+            echo "Error: add extra files from $dir for $package failed"
+            exit $S
+        fi
+    done
 }
 
 echo "Adding extra files for $STAGE phase"
