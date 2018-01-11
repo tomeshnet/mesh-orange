@@ -122,7 +122,7 @@ $(BUILD)/debian.$(CONFIG_DEBIAN).$(CONFIG_DEBIAN_ARCH).cpio: $(TAG)/debian.$(CON
 	lzma <$< >$@
 
 clean:
-	sudo rm -rf $(DEBOOT) $(TAG)
+	sudo rm -rf $(BUILD)/debian.$(CONFIG_DEBIAN).* $(TAG)
 
 reallyclean:
 	rm -rf $(BUILD)
