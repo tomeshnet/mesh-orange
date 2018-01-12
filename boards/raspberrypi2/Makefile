@@ -157,4 +157,5 @@ $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:
+	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d
 	mv $@.tmp $@

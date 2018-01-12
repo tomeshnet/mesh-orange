@@ -33,6 +33,14 @@ define uboot_bootdir
     MTOOLSRC=$1 mcopy $5 $2boot/dtb
 endef
 
+# Create an empty configuration directory in the boot partition
+#
+# $1 is the mtools config file
+# $2 is the mtools drive letter
+define uboot_confdir
+    MTOOLSRC=$1 mmd $2conf.d
+endef
+
 BUILD_DEPENDS += mtools
 
 
