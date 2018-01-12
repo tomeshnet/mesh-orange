@@ -81,9 +81,6 @@ $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_A
 $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.addextra $(DEBOOT) $(CONFIG_DEBIAN_ARCH) minimise
 	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) minimise
-	sudo rm -rf $(DEBOOT)/usr/share/locale/*
-	sudo rm -rf $(DEBOOT)/usr/share/zoneinfo/*
-	sudo rm -f $(DEBOOT)/lib/udev/hwdb.bin
 	sudo rm -f $(DEBOOT)/multistrap.configscript $(DEBOOT)/dev/mmcblk0
 	#sudo rm -f $(DEBOOT)/usr/bin/qemu-arm-static
 	$(call tag,minimise.$(CONFIG_DEBIAN_ARCH))
@@ -92,8 +89,6 @@ $(TAG)/minimise.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 $(TAG)/fixup.$(CONFIG_DEBIAN_ARCH): $(TAG)/multistrap.$(CONFIG_DEBIAN_ARCH)
 	sudo ./packages.addextra $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
 	sudo ./packages.runscripts $(DEBOOT) $(CONFIG_DEBIAN_ARCH) fixup
-	sudo rm -f $(DEBOOT)/etc/machine-id
-	sudo rm -f $(DEBOOT)/lib/systemd/system/getty-static.service
 	sudo rm $(DEBOOT)/usr/sbin/policy-rc.d
 	$(call tag,fixup.$(CONFIG_DEBIAN_ARCH))
 

@@ -1,0 +1,20 @@
+# The name of this file is magic:
+# Any network adaptor that matches this file (or any other *.link file that is
+# named "*hostap.link") will trigger the etc/udev/rules.d/50-hostapd.rules
+# rule to turn on the hostap service
+
+# By default, all wlan interfaces will be access points
+[Match]
+Type=wlan
+
+[Link]
+NamePolicy=kernel database
+MACAddressPolicy=persistent
+
+# this section gets appended to the hostap conf, overwriting any default
+# values from the template
+# (This is a customisation that is not part of normal systemd)
+[hostapd]
+ssid=test2
+wpa_passphrase=bbbbbbbb
+

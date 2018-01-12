@@ -1,0 +1,9 @@
+#!/bin/bash
+# Copyright (C) 2018 Hamish Coleman <hamish@zot.org>
+
+DEBOOT="$1"
+ARCH="$2"
+
+# Always fixup the image by removing these config files
+rm -f ${DEBOOT}/etc/machine-id
+rm -f ${DEBOOT}/lib/systemd/system/getty-static.service
