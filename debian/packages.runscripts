@@ -20,7 +20,23 @@ else
     unset VERBOSE
 fi
 
+# If a configs search path has been specified, construct a package.d
+# path list from it
+for dir in $CONFIGDIRS; do
+    try="$dir/packages.d"
+    if [ -d "$try" ]; then
+        PACKAGEDIRS+=" $try"
+    fi
+done
+unset try
+
+# Default to just looking in the current dir
 : ${PACKAGEDIRS=packages.d}
+
+if [ -n "$VERBOSE" ]; then
+    echo "Info: Using search path of: $PACKAGEDIRS"
+fi
+
 PACKAGES=$(dpkg-query --admindir="${DEBOOT}/var/lib/dpkg" --show --showformat='${Package}\n')
 
 # Add an always present virtual package
