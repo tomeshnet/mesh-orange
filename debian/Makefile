@@ -46,9 +46,11 @@ $(DEBOOT)/usr/sbin/policy-rc.d: policy-rc.d
 # multistrap-pre runs the basic multistrap program, installing the packages
 # until they need to run native code
 $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/usr/sbin/policy-rc.d
-$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): debian.$(CONFIG_DEBIAN).multistrap multistrap.configscript
+$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): debian.$(CONFIG_DEBIAN).multistrap
+$(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): multistrap.configscript
 $(TAG)/multistrap-pre.$(CONFIG_DEBIAN_ARCH): $(DEBOOT)/dev/urandom
-	sudo /usr/sbin/multistrap -d $(DEBOOT) --arch $(CONFIG_DEBIAN_ARCH) -f debian.$(CONFIG_DEBIAN).multistrap
+	sudo /usr/sbin/multistrap -d $(DEBOOT) --arch $(CONFIG_DEBIAN_ARCH) \
+	    -f debian.$(CONFIG_DEBIAN).multistrap
 	$(call tag,multistrap-pre.$(CONFIG_DEBIAN_ARCH))
 
 # TODO: if TARGET_ARCH == BUILD_ARCH, dont need to copy qemu
