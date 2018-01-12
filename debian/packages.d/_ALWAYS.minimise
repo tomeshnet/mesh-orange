@@ -6,6 +6,8 @@ ARCH="$2"
 
 # Always minimise the image by removing these large chunks of files
 rm -rf ${DEBOOT}/usr/share/locale/*
-rm -rf ${DEBOOT}/usr/share/zoneinfo/*
-rm -f ${DEBOOT}/lib/udev/hwdb.bin
+
+# TODO - These two lines could be done in package specific remove scripts
+rm -rf ${DEBOOT}/usr/share/zoneinfo/*   # tzdata
+rm -f ${DEBOOT}/lib/udev/hwdb.bin       # udev
 
