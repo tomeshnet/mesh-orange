@@ -126,7 +126,7 @@ $(BUILD)/mtoolsrc: Makefile
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BUILD)/root.fs
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$(PART1_BEGIN_SEC),$(BOOT_FILES),$(BOOT_DTB_FILES))
+	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(PART1_BEGIN_SEC),$(BOOT_FILES),$(BOOT_DTB_FILES))
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x82 -b $(PART2_BEGIN_SEC) y:
 	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x83 -b $(PART3_BEGIN_SEC) x:
 	truncate --size=$$(( $(PART3_BEGIN_SEC)*512 )) $@.tmp

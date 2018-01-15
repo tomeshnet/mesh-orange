@@ -19,7 +19,7 @@ packages are installed, then there is a virtual package name that
 can be used.  The name "_ALWAYS" can be substituted in the above
 patterns to produce a rule that is allways applied.
 
-Curently the phases are:
+Currently the phases are:
 
 "minimise"
     During this phase, anything that can be removed to minimise the
