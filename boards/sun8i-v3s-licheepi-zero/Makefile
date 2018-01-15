@@ -34,7 +34,7 @@ ZIP = $(BUILD)/zero_imager
 BUILD_DEPENDS = \
     mtools \
 
-TOP_DIR ?= ../..
+TOP_DIR ?= $(abspath ../..)
 
 all: image
 

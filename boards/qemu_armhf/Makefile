@@ -10,7 +10,7 @@ BUILD_DEPENDS = qemu-system-arm
 
 CLEAN_FILES =
 
-TOP_DIR ?= ../..
+TOP_DIR ?= $(abspath ../..)
 
 all: image
 
