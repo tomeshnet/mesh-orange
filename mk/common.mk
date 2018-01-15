@@ -4,7 +4,11 @@
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(DEBIAN_VER).$(DEBIAN_ARCH)
-DEBIAN = ../../debian/build/$(DEBIAN_BASENAME)
+DEBIAN = $(TOP_DIR)/debian/build/$(DEBIAN_BASENAME)
+
+CONFIGDIRS = .
+CONFIGDIRS += $(TOP_DIR)/debian-config
+export CONFIGDIRS
 
 INITRD_PARTS += $(DEBIAN).lzma
 

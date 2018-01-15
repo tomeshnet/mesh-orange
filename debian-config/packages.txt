@@ -1,0 +1,6 @@
+#
+# Any extra debian packages needed for the mesh build can be specified in this
+# file.
+
+# EG:
+iputils-ping
