@@ -3,7 +3,7 @@
 # Check the newly installed debian root dir and run any packages.d script
 # found for each package.
 #
-# Copyright (C) 2017 Hamish Coleman <hamish@zot.org>
+# Copyright (C) 2018 Hamish Coleman <hamish@zot.org>
 
 if [ $# -lt 3 ]; then
     echo "Usage: $0 DEBOOT ARCH STAGE"
@@ -20,29 +20,53 @@ else
     unset VERBOSE
 fi
 
-PACKAGEDIR=packages.d
+# If a configs search path has been specified, construct a package.d
+# path list from it
+for dir in $CONFIGDIRS; do
+    try="$dir/packages.d"
+    if [ -d "$try" ]; then
+        PACKAGEDIRS+=" $try"
+    fi
+done
+unset try
+
+# Default to just looking in the current dir
+: ${PACKAGEDIRS=packages.d}
+
+if [ -n "$VERBOSE" ]; then
+    echo "Info: Using search path of: $PACKAGEDIRS"
+fi
+
 PACKAGES=$(dpkg-query --admindir="${DEBOOT}/var/lib/dpkg" --show --showformat='${Package}\n')
+
+# Add an always present virtual package
+PACKAGES+=" _ALWAYS"
 
 do_package() {
     local package=$1
+    local retval=0
 
-    if [ ! -x "$PACKAGEDIR/$package.${STAGE}" ]; then
-        return
-    fi
+    for dir in $PACKAGEDIRS; do
+        if [ ! -x "$dir/$package.${STAGE}" ]; then
+            continue
+        fi
 
-    if [ -n "$VERBOSE" ]; then
-        echo -n "$package "
-    fi
-    "$PACKAGEDIR/$package.${STAGE}" "${DEBOOT}" "${ARCH}"
-    S=$?
+        if [ -n "$VERBOSE" ]; then
+            echo -n "$dir/$package "
+        fi
+        "$dir/$package.${STAGE}" "${DEBOOT}" "${ARCH}"
+        S=$?
 
-    if [ $S -eq 1 ]; then
-        return 1
-    fi
-    if [ $S -gt 1 ]; then
-        echo "Error: package script $package failed"
-        exit $S
-    fi
+        if [ $S -eq 1 ]; then
+            retval=1
+        fi
+        if [ $S -gt 1 ]; then
+            echo "Error: package script from $dir for $package failed"
+            exit $S
+        fi
+    done
+
+    return $retval
 }
 
 echo "Running package scripts for $STAGE phase"

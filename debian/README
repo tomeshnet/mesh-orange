@@ -6,9 +6,9 @@ system, suitable for including in a ramdisk.  It is tested and known to
 build when run on a Debian system.  It requires that you are running a
 system with the apt and dpkg software.  See below for building on Ubuntu.
 
-It currently only creates a very minimal debian system (the config file
-debian.stretch.multistrap contains the list of repositories and the
-packages to install)
+It currently only creates a very minimal debian system, however it is
+intended that additional configuration can be added for specific use
+cases (see the Configuring section, below)
 
 Usage:
 
@@ -20,9 +20,36 @@ After making sure the needed packages are installed, you just need to
 run the full build.  The resulting image can be used to build a ramdisk
 install - see the boards directory for various builders
 
+Configuring
+-----------
+
 The various fixups and customisation that are applied to the basic Debian
-installation can be seen in the packages.d directory.  See the README
-in that dir for more information.
+installation can be seen in the packages.d directory (See the README
+in that dir for more details on the layout of that directory).
+
+To customise the system built for differing use cases, it is possible to
+add a "config overlay".  This consists of a directory which optionally
+contains both a "packages.txt" file containing a list of additional
+packages and a "packages.d" subdirectory - processed just like the
+packages.d dir seen in the same dir as this README.
+
+To activate one or more config overlays, ensure that your environment has
+exported a "CONFIGDIRS" variable - this variable is a list of the
+directories to search for the overlays.  Configuration will be applied in
+the order listed in this variable and the directories will be interpreted
+relative to the builder directory - so use fully qualified pathnames to
+ensure correctness.  Finally, the normal directory is only searched if it
+is included in this list.
+
+E.G:
+To enable the normal processing and add one overlay after it:
+
+    export CONFIGDIRS=". /tmp/buildoverlay"
+    make build/debian.stretch.armhf.cpio
+
+It is expected that this build system will be embedded in a larger system
+and used as a tool - thus the larger build system will set the CONFIGDIRS
+variable correctly.
 
 Building on Ubuntu
 ------------------
