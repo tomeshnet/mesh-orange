@@ -139,8 +139,7 @@ $(BUILD)/mtoolsrc: Makefile
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	$(call uboot_bootdir,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
-	$(call uboot_confdir,$(BUILD)/mtoolsrc,z:)
+	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay
 	mv $@.tmp $@

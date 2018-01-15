@@ -14,29 +14,36 @@ endif
 # - mtools config file built for us
 # - the filesystem label and disk id are fixed as "boot" and "1"
 
-# Add a boot partition to an existing image, format it and copy the lists of
-# files
+# Create and write files to boot partition
 #
 # $1 is the mtools config file
 # $2 is the mtools drive letter
 # $3 is the start sector for the partition
 # $4 is the list of files for the /boot dir
 # $5 is the list of files for the /boot/dtb dir
-define uboot_bootdir
+define uboot_dirs
+    $(call uboot_part,$1,$2,$3,$4,$5)
+    $(call uboot_bootdir,$1,$2,$3,$4,$5)
+    $(call uboot_confdir,$1,$2,$3,$4,$5)
+endef
+
+# Add a boot partition to an existing image and format it
+define uboot_part
     MTOOLSRC=$1 mpartition -I $2
     MTOOLSRC=$1 mpartition -c -b $3 $2
     MTOOLSRC=$1 mpartition -a $2
     MTOOLSRC=$1 mformat -v boot -N 1 $2
+endef
+
+# Create boot directory and copy the lists of files
+define uboot_bootdir
     MTOOLSRC=$1 mmd $2boot
     MTOOLSRC=$1 mmd $2boot/dtb
     MTOOLSRC=$1 mcopy $4 $2boot
     MTOOLSRC=$1 mcopy $5 $2boot/dtb
 endef
 
-# Create an empty configuration directory in the boot partition
-#
-# $1 is the mtools config file
-# $2 is the mtools drive letter
+# Create an empty configuration directory
 define uboot_confdir
     MTOOLSRC=$1 mmd $2conf.d
 endef
