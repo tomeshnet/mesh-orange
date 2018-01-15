@@ -47,14 +47,17 @@ $(DEBOOT)/usr/sbin/policy-rc.d: policy-rc.d
 	sudo cp $< $@
 
 # a list of files, which contain additional packages to install
-packages_lists = $(wildcard $(addsuffix /packages.txt,$(CONFIGDIRS)))
+packages_lists := $(wildcard $(addsuffix /packages.txt,$(CONFIGDIRS)))
 
 # the actual list of these additional packages
 packages = $(shell sed -e 's/\#.*//' $(packages_lists))
 
-MULTISTRAP_CONF=$(BUILD)/debian.$(CONFIG_DEBIAN).multistrap
+multistrap_conf_base := debian.$(CONFIG_DEBIAN).multistrap
+multistrap_conf_src := $(lastword $(wildcard $(addsuffix /$(multistrap_conf_base),$(CONFIGDIRS))))
 
-$(MULTISTRAP_CONF): debian.$(CONFIG_DEBIAN).multistrap $(package_lists)
+MULTISTRAP_CONF=$(BUILD)/$(multistrap_conf_base)
+
+$(MULTISTRAP_CONF): $(multistrap_conf_src) $(package_lists)
 	cat $< >$@
 	echo >>$@
 	echo packages=$(packages) >>$@

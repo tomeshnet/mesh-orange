@@ -29,9 +29,7 @@ in that dir for more details on the layout of that directory).
 
 To customise the system built for differing use cases, it is possible to
 add a "config overlay".  This consists of a directory which optionally
-contains both a "packages.txt" file containing a list of additional
-packages and a "packages.d" subdirectory - processed just like the
-packages.d dir seen in the same dir as this README.
+extra configuration files to be used during the build.
 
 To activate one or more config overlays, ensure that your environment has
 exported a "CONFIGDIRS" variable - this variable is a list of the
@@ -50,6 +48,27 @@ To enable the normal processing and add one overlay after it:
 It is expected that this build system will be embedded in a larger system
 and used as a tool - thus the larger build system will set the CONFIGDIRS
 variable correctly.
+
+Files that will be taken from the CONFIGDIRS:
+
+debian.$(CONFIG_DEBIAN).multistrap
+    This is the main multistrap config file.  If more than one of these files
+    exists in the CONFIGDIRS then only the last defined one will be used.
+    When replacing this config file with your own, be aware that the list of
+    additional packages (from all the packages.txt files) will be simply
+    appended to the final multistrap config.
+packages.txt
+    These files contain a list of additional packages to install in the
+    buildroot.  All packages.txt files found in all the CONFIGDIRS will be
+    appended to make the complete list of packages to install.  These are
+    simply appeneded to the multistrap config file.
+packages.d
+    The files in these directories are used to apply changes to the installed
+    buildroot.  See the README in the main packages.d file for the full list
+    of what filed are loaded from here.
+    All the package minimisation/fixup/add phases will look in every CONFIGDIR
+    to find settings to apply - all matching files all the CONFIGDIRS will be
+    applied.
 
 Building on Ubuntu
 ------------------
