@@ -28,8 +28,12 @@ $(TAG)/build-depends: Makefile
 # Rules to go and make the debian installed root
 # Note: this has no dependancy checking, and will simply use what ever
 # file is there
-$(DEBIAN).cpio:
-	$(MAKE) -C ../../debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
+$(DEBIAN).cpio: $(TOP_DIR)/debian/Makefile
+	$(MAKE) -C $(TOP_DIR)/debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
+
+# Ensure that the submodule is actually present
+$(TOP_DIR)/debian/Makefile:
+	git submodule update --init
 
 %.lzma: %.cpio
 	lzma <$< >$@
