@@ -16,7 +16,7 @@ try_partition() {
     if [ -d "/mnt/$CONFDIR" ]; then
         for conf in /mnt/$CONFDIR/*.tar.gz; do
             echo Applying configurations from /dev/$1: $conf
-            tar --extract -f $conf -C /etc
+            tar --warning=no-timestamp --extract -f $conf -C /etc
         done
     fi
 
