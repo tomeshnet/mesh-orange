@@ -23,7 +23,7 @@ ARMBIAN = $(BUILD)/armbian
 BUILD_DEPENDS = \
     xz-utils \
 
-TOP_DIR ?= ../..
+TOP_DIR ?= $(abspath ../..)
 
 all: image
 

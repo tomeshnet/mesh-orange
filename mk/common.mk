@@ -4,7 +4,11 @@
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(DEBIAN_VER).$(DEBIAN_ARCH)
-DEBIAN = ../../debian/build/$(DEBIAN_BASENAME)
+DEBIAN = $(TOP_DIR)/debian/build/$(DEBIAN_BASENAME)
+
+CONFIGDIRS = .
+CONFIGDIRS += $(TOP_DIR)/debian-config
+export CONFIGDIRS
 
 INITRD_PARTS += $(DEBIAN).lzma
 
@@ -24,8 +28,12 @@ $(TAG)/build-depends: Makefile
 # Rules to go and make the debian installed root
 # Note: this has no dependancy checking, and will simply use what ever
 # file is there
-$(DEBIAN).cpio:
-	$(MAKE) -C ../../debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
+$(DEBIAN).cpio: $(TOP_DIR)/debian/Makefile
+	$(MAKE) -C $(TOP_DIR)/debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
+
+# Ensure that the submodule is actually present
+$(TOP_DIR)/debian/Makefile:
+	git submodule update --init
 
 %.lzma: %.cpio
 	lzma <$< >$@

@@ -44,7 +44,7 @@ BUILD_DEPENDS = \
     xz-utils \
     mtools \
 
-TOP_DIR ?= ../..
+TOP_DIR ?= $(abspath ../..)
 
 all: image
 
