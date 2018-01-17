@@ -33,6 +33,7 @@ build-depends clean reallyclean: $(SUBMODULES)
 image: $(SUBMODULES)
 	$(foreach dir,$(BOARDDIRS),$(MAKE) -C $(dir) $@ &&) true
 
-# Ensure that the submodules are actually present
+# Ensure that the submodules are actually present and up to date
+.PHONY: $(SUBMODULES)
 $(SUBMODULES):
 	git submodule update --init
