@@ -21,11 +21,18 @@ BOARDDIRS += boards/sun8i-h3-orangepi-lite/
 BOARDDIRS += boards/sun8i-v3s-licheepi-zero/
 SUBDIRS += $(BOARDDIRS)
 
+# This is a list of files that only exist after any submodules are initialised
+SUBMODULES += debian/Makefile
+
 all:
 	$(error This Makefile currently has no default build target)
 
-build-depends clean reallyclean:
+build-depends clean reallyclean: $(SUBMODULES)
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 
-image:
+image: $(SUBMODULES)
 	$(foreach dir,$(BOARDDIRS),$(MAKE) -C $(dir) $@ &&) true
+
+# Ensure that the submodules are actually present
+$(SUBMODULES):
+	git submodule update --init
