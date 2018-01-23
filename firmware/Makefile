@@ -10,7 +10,7 @@ CLEAN_FILES = $(TAG)
 ARMBIAN_FIRMWARE_PKG = armbian-firmware
 
 # firmware for wifi dongle (note, some overlap with armbian-firmware)
-RASPBIAN_FIRMWARE_PKG = firmware-ralink
+RASPBIAN_FIRMWARE_PKG = firmware-brcm80211 firmware-ralink firmware-atheros
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
