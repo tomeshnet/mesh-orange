@@ -50,7 +50,7 @@ $(TAG)/raspbian:
 $(BUILD)/firmware-raspbian.cpio: $(TAG)/raspbian
 	( \
             cd $(RASPBIAN); \
-	    find lib/firmware/brcm -maxdepth 1 -type f ! -name "brcmfmac43430-sdio.*" -delete; \
+            find lib/firmware/brcm -maxdepth 1 -type f ! -name "brcmfmac43430-sdio.*" -delete; \
             find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
