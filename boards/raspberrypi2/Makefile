@@ -6,6 +6,7 @@ DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
 BOARD = raspberrypi2
+BOARD_ALIAS = raspberrypi3 # try to avoid questions
 
 RASPBIAN_BOOT_PKG = raspberrypi-bootloader
 RASPBIAN_KERNEL_PKG = raspberrypi-kernel
@@ -39,6 +40,7 @@ image: $(TOP_DIR)/output/$(BOARD).img
 $(TOP_DIR)/output/$(BOARD).img: $(DISK_IMAGE)
 	mkdir -p $(dir $@)
 	cp $< $@
+	cp $< $(TOP_DIR)/output/$(BOARD_ALIAS).img
 
 test:
 	echo this board must be tested by flashing the output
