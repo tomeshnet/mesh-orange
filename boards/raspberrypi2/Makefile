@@ -1,26 +1,6 @@
 #
 # Build a raspberry pi install
 #
-# This works on the 2b and 3b and should work for the cm3 (but I have
-# not tested that) as they are all using ARMv7+ CPUs that are compatible
-# with the Debian "armhf" architecture definition.
-#
-# The other raspberry pi systems (the older ones and the Zeros) all use
-# an ARMv6+VFP cpu, which is incompatible with the Debian "armhf" - do
-# not be fooled by the fact that raspbian uses an architecture called
-# "armhf", they have simply (and confusingly) redefined their architecture
-# to match their needs.
-#
-# The most annoying bit about this is that the world now has two
-# Debian-ish architectures named armhf that are only compatible in one
-# direction (Raspbian armhf binaries should work on Debian armhf systems -
-# just slightly slower) and no clear naming to tell them apart, thus
-# making multiarch impossible to use to fix this.
-#
-# The upshot is that the build system could build images for the other
-# raspberry pi systems, but it would need the debian builder to build
-# one based on raspbian.
-#
 
 DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
