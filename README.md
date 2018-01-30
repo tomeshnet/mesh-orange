@@ -4,11 +4,21 @@ A small ramdisk system running modern Debian
 This project will create system images for installing a Debian-based
 router.
 
-The initial hardware target is to run on an Orange Pi Zero Single Board
-Computer and use the TOP-GS07 RT5572 WiFi adapter for mesh traffic.
+There are several supported target boards.
 
 In the future, it will create a fully working mesh node, with cjdns
 and IPFS software installed.
+
+
+Documentation Index
+-------------------
+
+There documentory README files in most directories with explanations as
+to what that directory is used for.  These files are located where they
+are so as to stay close to the code and config that they are documenting.
+Be sure to read this main README and all the other ones to get a full view
+of the project.
+
 
 TOP-GS07 RT5572 WiFi adapter Note
 ---------------------------------
