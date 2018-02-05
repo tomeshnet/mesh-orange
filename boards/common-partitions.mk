@@ -3,7 +3,7 @@
 # diskimages
 #
 
-PART_SIZE_MEGS ?= 1000
+PART1_SIZE_MEGS ?= 1000
 
 BUILD_DEPENDS += mtools
 
@@ -20,5 +20,5 @@ endef
 
 $(BUILD)/mtoolsrc: Makefile
 	mkdir -p $(dir $@)
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
+	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART1_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 CLEAN_FILES += $(BUILD)/mtoolsrc
