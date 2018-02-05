@@ -6,6 +6,8 @@ DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
 BOARD = raspberrypi2
+
+# raspberrypi3 uses the same image but making a copy to avoid confusion
 BOARD_ALIAS = raspberrypi3
 
 RASPBIAN_BOOT_PKG = raspberrypi-bootloader
