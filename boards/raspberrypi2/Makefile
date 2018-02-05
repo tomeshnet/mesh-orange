@@ -11,12 +11,10 @@ BOARD_ALIAS = raspberrypi3 # try to avoid questions
 RASPBIAN_BOOT_PKG = raspberrypi-bootloader
 RASPBIAN_KERNEL_PKG = raspberrypi-kernel
 
-PART_SIZE_MEGS = 1000
-
 INITRD_PARTS += $(BUILD)/modules.lzma
 CLEAN_FILES += $(BUILD)/modules.lzma
 
-CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT)
 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
@@ -127,9 +125,6 @@ BOOT_FILES = \
 boot: $(BOOT_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
-
-$(BUILD)/mtoolsrc: Makefile $(TAG)/build
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
 	$(call image_file_create,$@.tmp)

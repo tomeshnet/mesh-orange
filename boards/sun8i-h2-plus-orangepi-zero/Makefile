@@ -13,9 +13,7 @@ BOARD = sun8i-h2-plus-orangepi-zero
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
 
-PART_SIZE_MEGS = 1000
-
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT)
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -100,9 +98,6 @@ boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 # Everything below this line is packing the built boot dir into a disk image
 
 $(SRC_SPL): $(TAG)/armbian
-
-$(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
 	$(call image_file_create,$@.tmp)
