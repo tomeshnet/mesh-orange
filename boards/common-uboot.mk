@@ -18,32 +18,43 @@ endif
 #
 # $1 is the mtools config file
 # $2 is the mtools drive letter
-# $3 is the start sector for the partition
-# $4 is the list of files for the /boot dir
-# $5 is the list of files for the /boot/dtb dir
+# $3 is the list of files for the /boot dir
+# $4 is the list of files for the /boot/dtb dir
 define uboot_dirs
-    $(call uboot_part,$1,$2,$3,$4,$5)
-    $(call uboot_bootdir,$1,$2,$3,$4,$5)
-    $(call uboot_confdir,$1,$2,$3,$4,$5)
+    $(call uboot_format,$1,$2)
+    $(call uboot_bootdir,$1,$2,$3,$4)
+    $(call uboot_confdir,$1,$2)
 endef
 
-# Add a boot partition to an existing image and format it
-define uboot_part
-    MTOOLSRC=$1 mpartition -I $2
-    MTOOLSRC=$1 mpartition -c -b $3 $2
+# Completely wipe and create one partition and then format it
+#
+# FIXME - the truncate should calculate its size
+#
+# $1 is the mtools config file
+# $2 is the mtools drive letter
+define uboot_format
+    truncate --size=">1025K" $@.tmp    # ensure the FAT bootblock is mapped
     MTOOLSRC=$1 mpartition -a $2
     MTOOLSRC=$1 mformat -v boot -N 1 $2
 endef
 
 # Create boot directory and copy the lists of files
+#
+# $1 is the mtools config file
+# $2 is the mtools drive letter
+# $3 is the list of files for the /boot dir
+# $4 is the list of files for the /boot/dtb dir
 define uboot_bootdir
     MTOOLSRC=$1 mmd $2boot
     MTOOLSRC=$1 mmd $2boot/dtb
-    MTOOLSRC=$1 mcopy $4 $2boot
-    MTOOLSRC=$1 mcopy $5 $2boot/dtb
+    MTOOLSRC=$1 mcopy $3 $2boot
+    MTOOLSRC=$1 mcopy $4 $2boot/dtb
 endef
 
 # Create an empty configuration directory
+#
+# $1 is the mtools config file
+# $2 is the mtools drive letter
 define uboot_confdir
     MTOOLSRC=$1 mmd $2conf.d
 endef

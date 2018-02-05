@@ -98,8 +98,8 @@ $(SRC_SPL): $(TAG)/armbian
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) env
 	$(call image_file_create,$@.tmp)
+	$(call image_create_partitions)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	dd if=env of=$@.tmp conv=notrunc bs=$$((0x088000)) seek=1
-	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(PART1_BEGIN_SEC),$(BOOT_FILES),$(BOOT_DTB_FILES))
+	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
 	mv $@.tmp $@

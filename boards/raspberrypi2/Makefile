@@ -128,9 +128,8 @@ boot: $(BOOT_FILES)
 
 $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
 	$(call image_file_create,$@.tmp)
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $(PART1_BEGIN_SEC) z:
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
+	$(call image_create_partitions)
+	truncate --size=">1025K" $@.tmp    # ensure the FAT bootblock is mapped
 	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d

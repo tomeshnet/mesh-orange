@@ -36,6 +36,19 @@ define image_file_create
     git describe --long --dirty >>$1 # and describe the repo
 endef
 
+# Create the partitions
+#
+define image_create_partitions
+    MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
+    MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $(PART1_BEGIN_SEC) z:
+    if [ -n "$(PART2_SIZE_MEGS)" ]; then \
+        MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x82 -b $(PART2_BEGIN_SEC) y:; \
+    fi
+    if [ -n "$(PART3_SIZE_MEGS)" ]; then \
+        MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x83 -b $(PART3_BEGIN_SEC) x:; \
+    fi
+endef
+
 $(BUILD)/mtoolsrc: Makefile
 	mkdir -p $(dir $@)
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART1_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
