@@ -1,0 +1,14 @@
+# make the mesh-network devices /not/ match the default wlan hostap
+# By default, all wlan interfaces will be access points
+[Match]
+Type=wlan
+Driver=ath9k_htc rt2800usb rtl8192cu
+
+[Link]
+NamePolicy=kernel database
+MACAddressPolicy=persistent
+
+[mesh]
+country_code=CA
+ssid=tomesh
+freq=2412 HT40+
