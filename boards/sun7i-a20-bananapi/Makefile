@@ -28,6 +28,7 @@ TOP_DIR ?= $(abspath ../..)
 all: image
 
 include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-uboot.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
@@ -101,6 +102,7 @@ $(BUILD)/mtoolsrc: Makefile
 # FIXME - the env file is a hack
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) env
+	$(call image_file_create,$@.tmp)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	dd if=env of=$@.tmp conv=notrunc bs=$$((0x088000)) seek=1

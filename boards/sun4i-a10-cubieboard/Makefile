@@ -28,6 +28,7 @@ TOP_DIR ?= $(abspath ../..)
 all: image
 
 include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-uboot.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
@@ -99,6 +100,7 @@ $(BUILD)/mtoolsrc: Makefile
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
 
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
+	$(call image_file_create,$@.tmp)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
 	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
