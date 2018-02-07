@@ -1,0 +1,18 @@
+# By default, all wlan interfaces will share their internet
+# If a different .link file is added to make a wlan interface be a client,
+# mesh (or other) connection, then a similar matching .network file should
+# be added to override this setting
+#
+[Match]
+Type=wlan
+
+[Network]
+DHCPServer=yes
+LLMNR=true
+MulticastDNS=true
+LLDP=true
+EmitLLDP=true
+Address=0.0.0.0/24
+IPForward=true
+IPMasquerade=true
+
