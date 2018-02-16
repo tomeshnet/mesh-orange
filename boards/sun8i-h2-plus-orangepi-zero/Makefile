@@ -102,9 +102,10 @@ $(SRC_SPL): $(TAG)/armbian
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
 	$(call image_file_create)
 	$(call image_create_partitions)
-	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	$(call image_format_partition1)
 	$(call image_confdir)
-	$(call uboot_copyfiles,$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
+	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
+	$(call uboot_copy_bootfiles,$(BUILD)/mtoolsrc,z:,$(BOOT_FILES))
+	$(call uboot_copy_dtbfiles,$(BUILD)/mtoolsrc,z:,$(BOOT_DTB_FILES))
 	mv $@.tmp $@
 
