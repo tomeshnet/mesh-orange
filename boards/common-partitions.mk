@@ -10,6 +10,12 @@
 #       the whole sdcard.  Could contain the root filesystem on a non-ramdisk
 #       image, or just bulk persistant storage for something in the ramdisk
 #
+# There are a lot of assumptions wrapped up in these definitions
+# some of these are:
+# - MBR partitioning
+# - dosfs for uboot partition
+# - the filesystem label and disk id are fixed as "boot" and "1"
+
 
 PART1_SIZE_MEGS ?= 1000
 #PART2_SIZE_MEGS ?= 1000 # reserved for swap
@@ -29,11 +35,10 @@ BUILD_DEPENDS += mtools
 #
 # TODO - adding the build date here makes reproducible binaries impossible
 #
-# $1 is the output disk image
 define image_file_create
-    truncate --size=$$((0x200)) $1   # skip past the MBR
-    date -u "+%FT%TZ" >>$1           # add a build date
-    git describe --long --dirty >>$1 # and describe the repo
+    truncate --size=$$((0x200)) $(DISK_IMAGE).tmp   # skip past the MBR
+    date -u "+%FT%TZ" >>$(DISK_IMAGE).tmp           # add a build date
+    git describe --long --dirty >>$(DISK_IMAGE).tmp # and describe the repo
 endef
 
 # Create the partitions
@@ -57,6 +62,12 @@ define image_format_partition1
     truncate --size=">1025K" $@.tmp    # ensure the FAT bootblock is mapped
     MTOOLSRC=$(BUILD)/mtoolsrc mpartition -a z:
     MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
+endef
+
+# Create an empty configuration directory
+#
+define image_confdir
+    MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d
 endef
 
 $(BUILD)/mtoolsrc: Makefile

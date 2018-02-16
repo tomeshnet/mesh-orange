@@ -127,9 +127,9 @@ boot: $(BOOT_FILES)
 # Everything below this line is packing the built boot dir into a disk image
 
 $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
-	$(call image_file_create,$@.tmp)
+	$(call image_file_create)
 	$(call image_create_partitions)
 	$(call image_format_partition1)
+	$(call image_confdir)
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d
 	mv $@.tmp $@
