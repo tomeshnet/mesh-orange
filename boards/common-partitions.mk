@@ -70,6 +70,15 @@ define image_confdir
     MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d
 endef
 
+# Perform the "normal" image creation/partition/boot filesystem steps
+#
+define image_normal
+    $(call image_file_create)
+    $(call image_create_partitions)
+    $(call image_format_partition1)
+    $(call image_confdir)
+endef
+
 $(BUILD)/mtoolsrc: Makefile
 	mkdir -p $(dir $@)
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART1_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
