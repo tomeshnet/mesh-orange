@@ -136,6 +136,7 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BO
 	$(call image_file_create,$@.tmp)
 	$(call image_create_partitions)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
+	$(call image_format_partition1)
 	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
 	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay

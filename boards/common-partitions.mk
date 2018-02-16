@@ -49,6 +49,16 @@ define image_create_partitions
     fi
 endef
 
+# Wipe and format the first partition - used for the boot files
+#
+# FIXME - the truncate should calculate its size
+#
+define image_format_partition1
+    truncate --size=">1025K" $@.tmp    # ensure the FAT bootblock is mapped
+    MTOOLSRC=$(BUILD)/mtoolsrc mpartition -a z:
+    MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
+endef
+
 $(BUILD)/mtoolsrc: Makefile
 	mkdir -p $(dir $@)
 	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART1_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@

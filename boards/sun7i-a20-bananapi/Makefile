@@ -101,5 +101,6 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) env
 	$(call image_create_partitions)
 	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
 	dd if=env of=$@.tmp conv=notrunc bs=$$((0x088000)) seek=1
+	$(call image_format_partition1)
 	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
 	mv $@.tmp $@
