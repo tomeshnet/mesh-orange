@@ -13,12 +13,10 @@ BOARD_ALIAS = raspberrypi3
 RASPBIAN_BOOT_PKG = raspberrypi-bootloader
 RASPBIAN_KERNEL_PKG = raspberrypi-kernel
 
-PART_SIZE_MEGS = 1000
-
 INITRD_PARTS += $(BUILD)/modules.lzma
 CLEAN_FILES += $(BUILD)/modules.lzma
 
-CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT)
 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
@@ -32,6 +30,7 @@ TOP_DIR ?= $(abspath ../..)
 all: image
 
 include $(TOP_DIR)/mk/common.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-firmware-raspbian.mk
 include $(TOP_DIR)/mk/common-raspbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
@@ -129,17 +128,7 @@ boot: $(BOOT_FILES)
 
 # Everything below this line is packing the built boot dir into a disk image
 
-$(BUILD)/mtoolsrc: Makefile $(TAG)/build
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
-
 $(DISK_IMAGE): $(BUILD)/mtoolsrc $(BOOT_FILES)
-	truncate --size=$$((0x200)) $@.tmp   # skip past the MBR
-	date -u "+%FT%TZ " >>$@.tmp          # add a build date
-	git describe --long --dirty >>$@.tmp # and describe the repo
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -I z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -b $$((0x100000/512)) z:
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	MTOOLSRC=$(BUILD)/mtoolsrc mformat -v boot -N 1 z:
+	$(call image_normal)
 	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_FILES) z:
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:conf.d
 	mv $@.tmp $@

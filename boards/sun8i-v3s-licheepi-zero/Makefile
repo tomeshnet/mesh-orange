@@ -20,26 +20,17 @@ PART1_SIZE_MEGS = 100 # dosfs boot
 PART2_SIZE_MEGS = 200 # reserved for swap
 PART3_SIZE_MEGS = 500 # ext2 root
 
-PART1_BEGIN_SEC = $$((0x100000/512))
-PART2_BEGIN_SEC = $$(( $(PART1_BEGIN_SEC) + ($(PART1_SIZE_MEGS) *1024*1024) /512))
-PART3_BEGIN_SEC = $$(( $(PART2_BEGIN_SEC) + ($(PART2_SIZE_MEGS) *1024*1024) /512))
-
-IMAGE_SIZE_MEGS = $$(( 0x100000/1024/1024 + $(PART1_SIZE_MEGS) + $(PART2_SIZE_MEGS) + $(PART3_SIZE_MEGS) ))
-
-CLEAN_FILES = $(TAG) $(ZIP) $(BOOT) $(BUILD)/mtoolsrc $(BUILD)/root.fs.tmp
+CLEAN_FILES = $(TAG) $(ZIP) $(BOOT) $(BUILD)/root.fs.tmp
 
 # Directories
 ZIP = $(BUILD)/zero_imager
-
-BUILD_DEPENDS = \
-    mtools \
 
 TOP_DIR ?= $(abspath ../..)
 
 all: image
 
 include $(TOP_DIR)/mk/common.mk
-include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
 
@@ -118,17 +109,9 @@ boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
 $(SRC_SPL): $(ZIP)
 
-$(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART1_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
-	echo 'drive y: file="$(DISK_IMAGE).tmp" cylinders=$(PART2_SIZE_MEGS) heads=64 sectors=32 partition=2 mformat_only' >>$@
-	echo 'drive x: file="$(DISK_IMAGE).tmp" cylinders=$(PART3_SIZE_MEGS) heads=64 sectors=32 partition=3 mformat_only' >>$@
-
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BUILD)/root.fs
-	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$(PART1_BEGIN_SEC),$(BOOT_FILES),$(BOOT_DTB_FILES))
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x82 -b $(PART2_BEGIN_SEC) y:
-	MTOOLSRC=$(BUILD)/mtoolsrc mpartition -c -T0x83 -b $(PART3_BEGIN_SEC) x:
+	$(call image_normal)
+	$(call allwinner_normal,$@.tmp,$(SRC_SPL),$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
 	truncate --size=$$(( $(PART3_BEGIN_SEC)*512 )) $@.tmp
 	cat $(BUILD)/root.fs >> $@.tmp
 	mv $@.tmp $@

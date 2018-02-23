@@ -17,12 +17,10 @@ SRC_DTBDIR = $(ARMBIAN)/usr/lib/linux-image-dev-sun8i
 SRC_FDT = $(SRC_DTBDIR)/$(BOARD).dtb
 SRC_DTBO = $(SRC_DTBDIR)/overlay
 
-PART_SIZE_MEGS = 1000
-
 INITRD_PARTS += $(BUILD)/modules.lzma
 CLEAN_FILES += $(BUILD)/modules.lzma
 
-CLEAN_FILES += $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES += $(TAG) $(ARMBIAN) $(BOOT)
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -35,7 +33,7 @@ TOP_DIR ?= $(abspath ../..)
 all: image
 
 include $(TOP_DIR)/mk/common.mk
-include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-firmware-armbian.mk
 include $(TOP_DIR)/mk/common-armbian.mk
@@ -133,13 +131,8 @@ boot: $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
 
 $(SRC_SPL): $(TAG)/armbian
 
-$(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
-
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BOOT_DTBO_FILES)
-	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
-	MTOOLSRC=$(BUILD)/mtoolsrc mmd z:boot/dtb/overlay
-	MTOOLSRC=$(BUILD)/mtoolsrc mcopy $(BOOT_DTBO_FILES) z:boot/dtb/overlay
+	$(call image_normal)
+	$(call allwinner_normal,$@.tmp,$(SRC_SPL),$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
+	$(call uboot_copy_overlayfiles,$(BUILD)/mtoolsrc,z:,$(BOOT_DTBO_FILES))
 	mv $@.tmp $@

@@ -13,9 +13,7 @@ BOARD = sun8i-h2-plus-orangepi-zero
 
 SRC_SPL = $(ARMBIAN)/usr/lib/$(UBOOT)/u-boot-sunxi-with-spl.bin
 
-PART_SIZE_MEGS = 1000
-
-CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT) $(BUILD)/mtoolsrc
+CLEAN_FILES = $(TAG) $(ARMBIAN) $(BOOT)
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -28,7 +26,7 @@ TOP_DIR ?= $(abspath ../..)
 all: image
 
 include $(TOP_DIR)/mk/common.mk
-include $(TOP_DIR)/boards/common-uboot.mk
+include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
 include $(TOP_DIR)/boards/common-firmware-armbian.mk
@@ -100,12 +98,8 @@ boot: $(BOOT_FILES) $(BOOT_DTB_FILES)
 
 $(SRC_SPL): $(TAG)/armbian
 
-$(BUILD)/mtoolsrc: Makefile
-	echo 'drive z: file="$(DISK_IMAGE).tmp" cylinders=$(PART_SIZE_MEGS) heads=64 sectors=32 partition=1 mformat_only' >$@
-
 $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES)
-	$(call allwinner_spl,$(SRC_SPL),$@.tmp)
-	truncate --size=1025K $@.tmp    # ensure the FAT bootblock is mapped
-	$(call uboot_dirs,$(BUILD)/mtoolsrc,z:,$$((0x100000/512)),$(BOOT_FILES),$(BOOT_DTB_FILES))
+	$(call image_normal)
+	$(call allwinner_normal,$@.tmp,$(SRC_SPL),$(BUILD)/mtoolsrc,z:,$(BOOT_FILES),$(BOOT_DTB_FILES))
 	mv $@.tmp $@
 
