@@ -49,9 +49,9 @@ digraph g{
         github_release -> dtb;
     }
 
-    armbian_firmware [shape=folder];
+    upstream_firmware [shape=folder];
     firmware [shape=folder];
-    armbian_firmware -> firmware;
+    upstream_firmware -> firmware;
 
     cjdns_deb [shape=folder];
     cjdns_extract [shape=folder];
