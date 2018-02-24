@@ -10,7 +10,7 @@ digraph g{
     delete_list [shape=note];
     fixup_scripts [shape=note];
     add_files [shape=note];
-    minimal_initrd [shape=box3d];
+    userspace_initrd [shape=box3d];
 
     package_repo -> multistrap -> minimise -> fixup -> customise;
 
@@ -21,7 +21,7 @@ digraph g{
     fixup_scripts -> fixup;
     add_files -> customise;
 
-    customise -> minimal_initrd;
+    customise -> userspace_initrd;
 
     external_package_list [shape=note color=blue];
     replace_multistrap_template [shape=note color=blue];

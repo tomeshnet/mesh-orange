@@ -14,11 +14,11 @@ digraph g{
 
         debian_minimal_builder_repo [shape=folder];
         local_overrides [shape=note];
-        minimal_initrd [shape=box3d];
+        userspace_initrd [shape=box3d];
 
-        debian_minimal_builder_repo -> minimal_initrd;
+        debian_minimal_builder_repo -> userspace_initrd;
 
-        local_overrides -> minimal_initrd;
+        local_overrides -> userspace_initrd;
 
     }
     
@@ -73,7 +73,7 @@ digraph g{
     }
 
     firmware -> initrd;
-    minimal_initrd -> initrd;
+    userspace_initrd -> initrd;
     modules -> initrd;
     cjdns_extract -> initrd;
     kernel_image -> disk_image;
