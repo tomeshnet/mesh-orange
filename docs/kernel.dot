@@ -1,0 +1,25 @@
+#
+# Outline how the build process works
+#
+
+digraph g{
+
+    kernel_config [shape=note];
+    mainline_source [shape=folder];
+    kernel_patches [shape=folder];
+    kernel_source [shape=folder];
+    kernel_image [shape=box3d];
+    modules [shape=folder];
+    dtb [shape=folder];
+
+    kernel_patches -> kernel_source;
+    mainline_source -> kernel_source;
+    kernel_source -> kernel_build;
+    kernel_config -> kernel_build;
+
+    kernel_build -> github_release -> kernel_image;
+    github_release -> modules;
+    github_release -> dtb;
+
+}
+
