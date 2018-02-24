@@ -9,15 +9,17 @@ digraph g{
         graph[style=dotted];
         color=blue;
 
+        debian_minimal_builder -> debian_minimal_builder_repo [dir=none style=invisible];
+        debian_minimal_builder -> local_overrides [dir=none style=invisible];
+
         debian_minimal_builder_repo [shape=folder];
         local_overrides [shape=note];
         minimal_initrd [shape=box3d];
 
-        debian_minimal_builder_repo -> makefile;
+        debian_minimal_builder_repo -> minimal_initrd;
 
-        local_overrides -> makefile;
+        local_overrides -> minimal_initrd;
 
-        makefile -> minimal_initrd;
     }
     
     subgraph cluster_kernel {
