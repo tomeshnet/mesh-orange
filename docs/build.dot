@@ -5,18 +5,15 @@
 digraph g{
 
     subgraph cluster_debian {
-        debian_minimal_builder [shape=plaintext];
+        debian [shape=plaintext];
         graph[style=dotted];
         color=blue;
 
-        debian_minimal_builder -> debian_minimal_builder_repo [dir=none style=invisible];
-        debian_minimal_builder -> local_overrides [dir=none style=invisible];
-
-        debian_minimal_builder_repo [shape=folder];
+        debian_submodule [shape=folder];
         local_overrides [shape=note];
         userspace_initrd [shape=box3d];
 
-        debian_minimal_builder_repo -> userspace_initrd;
+        debian_submodule -> userspace_initrd;
 
         local_overrides -> userspace_initrd;
 
