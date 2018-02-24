@@ -5,25 +5,19 @@
 digraph g{
 
     subgraph cluster_debian {
-        debian [shape=plaintext];
+        debian_minimal_builder [shape=plaintext];
         graph[style=dotted];
         color=blue;
 
-        debian_repo [shape=folder];
-        package_list [shape=note];
-        delete_list [shape=note];
-        fixup_list [shape=note];
-        add_files [shape=note];
-        debian_initrd [shape=box3d];
+        debian_minimal_builder_repo [shape=folder];
+        local_overrides [shape=note];
+        minimal_initrd [shape=box3d];
 
-        debian_repo -> multistrap -> minimise -> fixup -> customise;
+        debian_minimal_builder_repo -> makefile;
 
-        package_list -> multistrap;
-        delete_list -> minimise;
-        fixup_list -> fixup;
-        add_files -> customise;
+        local_overrides -> makefile;
 
-        customise -> debian_initrd;
+        makefile -> minimal_initrd;
     }
     
     subgraph cluster_kernel {
@@ -77,7 +71,7 @@ digraph g{
     }
 
     firmware -> initrd;
-    debian_initrd -> initrd;
+    minimal_initrd -> initrd;
     modules -> initrd;
     cjdns_extract -> initrd;
     kernel_image -> disk_image;

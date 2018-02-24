@@ -1,0 +1,37 @@
+#
+# Outline how the build process works
+#
+
+digraph g{
+    package_repo [shape=folder];
+    package_list [shape=note];
+    multistrap_template [shape=note];
+    multistrap_conf [shape=note];
+    delete_list [shape=note];
+    fixup_scripts [shape=note];
+    add_files [shape=note];
+    minimal_initrd [shape=box3d];
+
+    package_repo -> multistrap -> minimise -> fixup -> customise;
+
+    multistrap_template -> multistrap_conf;
+    package_list -> multistrap_conf;
+    multistrap_conf -> multistrap;
+    delete_list -> minimise;
+    fixup_scripts -> fixup;
+    add_files -> customise;
+
+    customise -> minimal_initrd;
+
+    external_package_list [shape=note color=blue];
+    replace_multistrap_template [shape=note color=blue];
+    external_fixup_scripts [shape=note color=blue];
+    external_add_files [shape=note color=blue];
+
+    external_package_list -> multistrap_conf;
+    replace_multistrap_template -> multistrap_conf;
+    external_fixup_scripts -> fixup;
+    external_add_files -> customise;
+    
+}
+
