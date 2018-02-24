@@ -5,6 +5,8 @@
 #
 
 digraph g{
+    rankdir=LR;
+
     power_on -> spl;
     spl -> uboot_config;
 
