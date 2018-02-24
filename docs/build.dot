@@ -60,8 +60,8 @@ digraph g{
 
         initrd [shape=box3d];
         conf_d [label="conf.d" shape=folder];
-        spl [shape=note];
-        uboot [shape=note];
+        spl [shape=box3d];
+        uboot [shape=box3d];
         uboot_config [shape=folder];
 
         spl -> disk_image;
