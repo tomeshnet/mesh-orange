@@ -22,6 +22,9 @@ PART3_SIZE_MEGS = 500 # ext2 root
 
 CLEAN_FILES = $(TAG) $(ZIP) $(BOOT) $(BUILD)/root.fs.tmp
 
+ZERO_FIRMWARE = $(BUILD)/zero_firmware.cpio
+INITRD_PARTS += $(ZERO_FIRMWARE)
+
 # Directories
 ZIP = $(BUILD)/zero_imager
 
@@ -51,6 +54,13 @@ $(BUILD)/zero_imager.zip:
 
 $(ZIP): $(BUILD)/zero_imager.zip
 	unzip -o $(BUILD)/zero_imager.zip -d $(BUILD)
+
+$(ZERO_FIRMWARE): $(ZIP)
+	( \
+	    cd $</overlay_rootfs-base/; \
+	    find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
+	) >$@
+CLEAN_FILES += $(ZERO_FIRMWARE)
 
 $(BUILD)/root.fs: $(DEBIAN).cpio $(LOCAL_MODULES_CPIO) $(ZIP)
 	truncate --size=$$(( $(PART3_SIZE_MEGS)*1 ))M $@.tmp
