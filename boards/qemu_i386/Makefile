@@ -27,10 +27,14 @@ image:
 	echo as a virtual system, there is no way to build an image
 	false
 
-test: $(DEBIAN_KERNEL) $(BUILD)/combined.initrd
+$(BUILD)/persistent.storage:
+	truncate -s 2G $@
+
+test: $(DEBIAN_KERNEL) $(BUILD)/combined.initrd $(BUILD)/persistent.storage
 	qemu-system-i386 -enable-kvm -append console=ttyS0 \
 		-m 512 \
 		-kernel $(DEBIAN_KERNEL) \
 		-initrd $(BUILD)/combined.initrd \
 		-netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
+		-drive if=virtio,format=raw,file=$(BUILD)/persistent.storage \
 		-nographic
