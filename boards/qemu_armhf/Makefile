@@ -23,7 +23,12 @@ image:
 	echo as a virtual system, there is no way to build an image
 	false
 
-test: $(LOCAL_KERNEL) $(BUILD)/combined.initrd
+$(BUILD): $(TAG)/build
+$(TAG)/build:
+	mkdir -p $(BUILD)
+	$(call tag,build)
+
+test: $(LOCAL_KERNEL) $(TAG)/build $(BUILD)/combined.initrd
 	qemu-system-arm -M virt \
 		-m 512 \
 		-kernel $(LOCAL_KERNEL) \
