@@ -14,9 +14,8 @@ RASPBIAN_BOOT_PKG = raspberrypi-bootloader
 RASPBIAN_KERNEL_PKG = raspberrypi-kernel
 
 INITRD_PARTS += $(BUILD)/modules.lzma
-CLEAN_FILES += $(BUILD)/modules.lzma
 
-CLEAN_FILES += $(TAG) $(RASPBERRYPI) $(BOOT)
+CLEAN_FILES += $(TAG)
 
 # Directories
 RASPBERRYPI = $(BUILD)/raspberrypi
