@@ -68,9 +68,6 @@ $(TAG)/boot:
 	mkdir -p $(BOOT)
 	$(call tag,boot)
 
-$(BOOT)/kernel7.img: $(TAG)/boot $(TAG)/raspberrypi
-	cp $(RASPBERRYPI)/boot/kernel7.img $@
-
 $(BOOT)/initrd: $(TAG)/boot
 $(BOOT)/initrd: $(BUILD)/combined.initrd
 	cp $< $@
@@ -94,20 +91,12 @@ $(BOOT)/%: $(RASPBERRYPI)/boot/% $(TAG)/boot
 $(RASPBERRYPI)/boot/bootcode.bin: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/fixup_cd.dat: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/start_cd.elf: $(TAG)/raspberrypi
+$(RASPBERRYPI)/boot/kernel7.img: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/COPYING.linux: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/LICENCE.broadcom: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2709-rpi-2-b.dtb: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2710-rpi-3-b.dtb: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2710-rpi-cm3.dtb: $(TAG)/raspberrypi
-
-$(BOOT)/bootcode.bin: $(RASPBERRYPI)/boot/bootcode.bin
-$(BOOT)/fixup_cd.dat: $(RASPBERRYPI)/boot/fixup_cd.dat
-$(BOOT)/start_cd.elf: $(RASPBERRYPI)/boot/start_cd.elf
-$(BOOT)/COPYING.linux: $(RASPBERRYPI)/boot/COPYING.linux
-$(BOOT)/LICENCE.broadcom: $(RASPBERRYPI)/boot/LICENCE.broadcom
-$(BOOT)/bcm2709-rpi-2-b.dtb: $(RASPBERRYPI)/boot/bcm2709-rpi-2-b.dtb
-$(BOOT)/bcm2710-rpi-3-b.dtb: $(RASPBERRYPI)/boot/bcm2710-rpi-3-b.dtb
-$(BOOT)/bcm2710-rpi-cm3.dtb: $(RASPBERRYPI)/boot/bcm2710-rpi-cm3.dtb
 
 BOOT_FILES = \
     $(BOOT)/bootcode.bin \
