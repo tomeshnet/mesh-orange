@@ -9,21 +9,14 @@ digraph g{
         graph[style=dotted];
         color=blue;
 
-        debian_repo [shape=folder];
-        package_list [shape=note];
-        delete_list [shape=note];
-        fixup_list [shape=note];
-        add_files [shape=note];
-        debian_initrd [shape=box3d];
+        debian_submodule [shape=folder];
+        local_overrides [shape=note];
+        userspace_initrd [shape=box3d];
 
-        debian_repo -> multistrap -> minimise -> fixup -> customise;
+        debian_submodule -> userspace_initrd;
 
-        package_list -> multistrap;
-        delete_list -> minimise;
-        fixup_list -> fixup;
-        add_files -> customise;
+        local_overrides -> userspace_initrd;
 
-        customise -> debian_initrd;
     }
     
     subgraph cluster_kernel {
@@ -31,27 +24,18 @@ digraph g{
         graph[style=dotted];
         color=blue;
 
-        kernel_config [shape=note];
-        mainline_source [shape=folder];
-        kernel_patches [shape=folder];
-        kernel_source [shape=folder];
         kernel_image [shape=box3d];
         modules [shape=folder];
         dtb [shape=folder];
 
-        kernel_patches -> kernel_source;
-        mainline_source -> kernel_source;
-        kernel_source -> kernel_build;
-        kernel_config -> kernel_build;
-
-        kernel_build -> github_release -> kernel_image;
+        github_release -> kernel_image;
         github_release -> modules;
         github_release -> dtb;
     }
 
-    armbian_firmware [shape=folder];
+    upstream_firmware [shape=folder];
     firmware [shape=folder];
-    armbian_firmware -> firmware;
+    upstream_firmware -> firmware;
 
     cjdns_deb [shape=folder];
     cjdns_extract [shape=folder];
@@ -64,8 +48,8 @@ digraph g{
 
         initrd [shape=box3d];
         conf_d [label="conf.d" shape=folder];
-        spl [shape=note];
-        uboot [shape=note];
+        spl [shape=box3d];
+        uboot [shape=box3d];
         uboot_config [shape=folder];
 
         spl -> disk_image;
@@ -77,7 +61,7 @@ digraph g{
     }
 
     firmware -> initrd;
-    debian_initrd -> initrd;
+    userspace_initrd -> initrd;
     modules -> initrd;
     cjdns_extract -> initrd;
     kernel_image -> disk_image;

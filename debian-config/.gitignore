@@ -1,0 +1,3 @@
+
+# Ignore the dependancies file that the debian builder automatically creates
+.configdir.deps

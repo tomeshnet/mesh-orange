@@ -26,9 +26,10 @@ $(TAG)/build-depends: Makefile
 	$(call tag,build-depends)
 
 # Rules to go and make the debian installed root
-# Note: this has no dependancy checking, and will simply use what ever
-# file is there
-$(DEBIAN).cpio: $(TOP_DIR)/debian/Makefile
+# Note: as this has no local dependency checks, we force it to always
+# run the make command, so the debian submodule can do some checks.
+.FORCE:
+$(DEBIAN).cpio: $(TOP_DIR)/debian/Makefile .FORCE
 	$(MAKE) -C $(TOP_DIR)/debian build/$(DEBIAN_BASENAME).cpio CONFIG_DEBIAN_ARCH=$(DEBIAN_ARCH)
 
 # Ensure that the submodule is actually present
