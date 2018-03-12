@@ -36,10 +36,11 @@ include $(TOP_DIR)/mk/common.mk
 include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
+include $(TOP_DIR)/boards/common-xd.mk
 
 image: $(DISK_IMAGE)
 	mkdir -p $(TOP_DIR)/output
-	cp $< $(TOP_DIR)/output/$(BOARD).img
+	cp $< $(TOP_DIR)/output/$(BOARD).xd.img
 
 test:
 	echo this board must be tested by flashing the output
@@ -61,25 +62,6 @@ $(ZERO_FIRMWARE): $(ZIP)
 	    find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
 	) >$@
 CLEAN_FILES += $(ZERO_FIRMWARE)
-
-$(BUILD)/root.fs: $(DEBIAN).cpio $(LOCAL_MODULES_CPIO) $(ZIP)
-	truncate --size=$$(( $(PART3_SIZE_MEGS)*1 ))M $@.tmp
-	/sbin/mkfs.ext4 -L root $@.tmp
-	mkdir -p $@.dir
-	sudo mount -oloop $@.tmp $@.dir
-	cat $(DEBIAN).cpio | ( \
-            cd $@.dir; \
-            sudo cpio --make-directories -i; \
-	)
-	sudo rm $@.dir/init.d/01welcome.sh
-	sudo ln -s /init $@.dir/sbin/init
-	cat $(LOCAL_MODULES_CPIO) | ( \
-            cd $@.dir; \
-            sudo cpio --make-directories -i; \
-	)
-	sudo cp -r $(ZIP)/overlay_rootfs-base/lib/firmware/ $@.dir/lib/firmware/
-	sudo umount $@.dir
-	mv $@.tmp $@
 
 $(BOOT): $(TAG)/boot
 $(TAG)/boot:
@@ -128,6 +110,9 @@ $(DISK_IMAGE): $(SRC_SPL) $(BUILD)/mtoolsrc $(BOOT_FILES) $(BOOT_DTB_FILES) $(BU
 
 # Misc make infrastructure below here
 
+# TODO
+# - improve the normal clean target to handle the root.fs.dir
+# - move the root.fs.dir stuff into the common-xd.mk file
 clean:
 	rm -rf $(CLEAN_FILES)
 	sudo rm -rf $(BUILD)/root.fs.dir
