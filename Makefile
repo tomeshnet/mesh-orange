@@ -27,9 +27,17 @@ SUBMODULES += debian/Makefile
 all:
 	$(error This Makefile currently has no default build target)
 
+# Perform simple tests that this repository is building correctly
+# TODO
+# - boot up all the emulatable platforms and confirm that they work
+.PHONY: test
+test: image
+	@echo Everything builds ok
+
 build-depends clean reallyclean: $(SUBMODULES)
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 
+.PHONY: image
 image: $(SUBMODULES)
 	$(foreach dir,$(BOARDDIRS),$(MAKE) -C $(dir) $@ &&) true
 

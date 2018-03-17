@@ -1,0 +1,23 @@
+sudo: enabled
+
+language: c
+
+install:
+    - make build-depends
+    - sudo apt-get install debian-archive-keyring
+
+# See the Ubuntu section in the debian/README file for more details, but this
+# is a good example of why CI is useful /before/ shipping a product..
+#
+# Also, the age of the debian-archive-keyring (2012) is simply concerning. So,
+# I have to manually add the debian stable release keys
+before_script:
+    - sudo sed -i '989s/$forceyes//' /usr/sbin/multistrap
+    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010
+    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EF0F382A1A7B6500
+
+script:
+    - make test CONFIG_DISABLE_KVM=yes
+
+# TODO
+# - auto deploy the output files to a github release if this is a tagged commit
