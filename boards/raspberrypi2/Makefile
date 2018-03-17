@@ -35,13 +35,12 @@ include $(TOP_DIR)/mk/common-raspbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
 
-# TODO - convert this to using the image target defined in mk/common.mk
-image: $(TOP_DIR)/output/$(BOARD).img
+# Add the alias to the normal image target
+image: $(TOP_DIR)/output/$(BOARD_ALIAS).img
 
-$(TOP_DIR)/output/$(BOARD).img: $(DISK_IMAGE)
-	mkdir -p $(dir $@)
+$(TOP_DIR)/output/$(BOARD_ALIAS).img: $(DISK_IMAGE)
+	@mkdir -p $(dir $@)
 	cp $< $@
-	cp $< $(TOP_DIR)/output/$(BOARD_ALIAS).img
 
 test:
 	echo this board must be tested by flashing the output
