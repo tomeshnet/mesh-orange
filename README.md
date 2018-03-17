@@ -4,7 +4,10 @@ A small ramdisk system running modern Debian
 This project will create system images for installing a Debian-based
 router.
 
-There are several supported target boards.
+There are several supported target boards - for a quick list, look at
+the subdirectories in the boards directory.  Note that with the standard
+ramdisk confg used (using "tmpfs"), the images will not work with boards
+that have less than 512Meg of RAM.
 
 In the future, it will create a fully working mesh node, with cjdns
 and IPFS software installed.
@@ -17,7 +20,8 @@ There documentory README files in most directories with explanations as
 to what that directory is used for.  These files are located where they
 are so as to stay close to the code and config that they are documenting.
 Be sure to read this main README and all the other ones to get a full view
-of the project.
+of the project.  There are also some diagrams showing some of the build
+process in the docs directory.
 
 
 TOP-GS07 RT5572 WiFi adapter Note
@@ -50,19 +54,34 @@ it will placed in the `output` dir.
 Starting a clean build
 ----------------------
 
-During development, not all the makefile dependancies are always working.
-Whilst this should always be considered a bug, it is important to know
-how to do a clean build from scratch.
+Most of the files in this repository have dependancy tracking, so that
+changing one of them will rebuild just the appropriate parts.  Due to
+the interaction with downloading external packages and building entire
+Debian root dirs, those dependancies do not cover all possible changes.
 
-One simple answer is to completely delete your repository and do a new
-clone from upstream, however that can be a little excessive.  The following
-commands will remove all the build artifacts:
+Therefore, it is sometimes important to "clean" the repository to force
+a full build to be done.  Note though that it should always be considered
+a bug when a missing dependancy is found.
+
+You should never need to completely delete your repository and do a new
+clone from upstream!
+
+There are two different targets provided to clean out the repository:
+
+    make clean
+    make reallyclean
+
+If both are to be run, they should be done in that order, or just combined
+into one command:
 
     make clean reallyclean
 
-The "clean" target removes some files one-by-one from the build dir,
-wheras the "reallyclean" target just nukes each build dir - so this is
-kind of a belt-and-suspender approach.
+The "clean" target trys to remove the minimum set of files to produce
+a clean rebuild.  It trys not to delete any large downloads, thus
+speeding up the following build.  It also takes care to use sudo to
+remove some files that will have been created with different owners.
+
+The "reallyclean" target just nukes everything from each build dir.
 
 
 Using the image
