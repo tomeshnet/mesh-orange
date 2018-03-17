@@ -35,6 +35,7 @@ all:
 test: image
 	$(MAKE) -C docs
 	@echo Everything builds ok
+	$(MAKE) -C debian test
 
 build-depends clean reallyclean: $(SUBMODULES)
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
