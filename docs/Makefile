@@ -8,6 +8,9 @@ DIAGRAMS := boot-1 boot-2 \
 all: $(addsuffix .svg,$(DIAGRAMS))
 all: $(addsuffix .pdf,$(DIAGRAMS))
 
+build-depends:
+	sudo apt install graphviz
+
 clean:
 	rm -f $(addsuffix .svg,$(DIAGRAMS))  $(addsuffix .pdf,$(DIAGRAMS))
 

@@ -2,6 +2,7 @@
 # A master make file - currently just to help with build-depends and clean
 #
 
+SUBDIRS += docs/
 SUBDIRS += debian/
 SUBDIRS += firmware/
 SUBDIRS += linux/
