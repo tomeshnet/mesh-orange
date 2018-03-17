@@ -38,10 +38,6 @@ include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-kernel-local.mk
 include $(TOP_DIR)/boards/common-xd.mk
 
-image: $(DISK_IMAGE)
-	mkdir -p $(TOP_DIR)/output
-	cp $< $(TOP_DIR)/output/$(BOARD).xd.img
-
 test:
 	echo this board must be tested by flashing the output
 	false

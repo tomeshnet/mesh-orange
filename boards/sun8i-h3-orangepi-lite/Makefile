@@ -40,10 +40,6 @@ include $(TOP_DIR)/mk/common-armbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
 
-image: $(DISK_IMAGE)
-	mkdir -p $(TOP_DIR)/output
-	cp $< $(TOP_DIR)/output/$(BOARD).img
-
 test:
 	echo this board must be tested by flashing the output
 	false
