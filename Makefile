@@ -32,6 +32,7 @@ all:
 # - boot up all the emulatable platforms and confirm that they work
 .PHONY: test
 test: image
+	$(MAKE) -C docs
 	@echo Everything builds ok
 
 build-depends clean reallyclean: $(SUBMODULES)

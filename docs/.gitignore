@@ -1,0 +1,4 @@
+
+# Ignore generated output
+*.pdf
+*.svg

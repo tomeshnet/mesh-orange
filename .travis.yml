@@ -21,3 +21,4 @@ script:
 
 # TODO
 # - auto deploy the output files to a github release if this is a tagged commit
+# - Push the rendered document svg + pdf output to somewhere
