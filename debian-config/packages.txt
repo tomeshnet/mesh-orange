@@ -4,3 +4,5 @@
 
 # EG:
 iputils-ping
+
+dosfstools
