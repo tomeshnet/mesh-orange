@@ -38,7 +38,7 @@ BUILD_DEPENDS += mtools
 define image_file_create
     truncate --size=$$((0x200)) $(DISK_IMAGE).tmp   # skip past the MBR
     date -u "+%FT%TZ" >>$(DISK_IMAGE).tmp           # add a build date
-    git describe --long --dirty >>$(DISK_IMAGE).tmp # and describe the repo
+    git describe --long --dirty --always >>$(DISK_IMAGE).tmp # describe the repo
 endef
 
 # Create the partitions

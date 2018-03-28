@@ -6,6 +6,9 @@ Compute Module 1, Raspberry Pi 1A or Raspberry Pi 1B boards without major
 changes to the debian-minimal-builder submodule - this is due to hardware
 incompatibilities and is unlikely to change.
 
+It should be possible to support the Raspberry Pi 3B+, however we need
+some testing to confirm that.
+
 Supported Boards
 ----------------
 

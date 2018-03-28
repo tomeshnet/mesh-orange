@@ -7,7 +7,7 @@ DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 ARMBIAN_UBOOT_PKG = linux-u-boot-bananapi-dev
-UBOOT = linux-u-boot-dev-bananapi_5.31_armhf
+UBOOT = linux-u-boot-dev-bananapi_5.38_armhf
 BOARD = sun7i-a20-bananapi
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
@@ -33,10 +33,6 @@ include $(TOP_DIR)/boards/common-firmware-armbian.mk
 include $(TOP_DIR)/mk/common-armbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
-
-image: $(DISK_IMAGE)
-	mkdir -p $(TOP_DIR)/output
-	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output

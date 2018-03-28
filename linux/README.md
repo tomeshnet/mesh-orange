@@ -30,7 +30,7 @@ Update with new Config (if needed):
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- nconfig
 
 Build:
-    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j2 zImage LOADADDR=0x42000000 dtbs modules
+    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j2 LOADADDR=0x42000000 zImage modules dtbs
 
 Install into build dir:
     LINUX=$PWD/linux
@@ -41,14 +41,17 @@ Install into build dir:
     mkdir -p $BUILD/dtb
     cp arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dtb $BUILD/dtb
     cp arch/arm/boot/dts/sun7i-a20-bananapi.dtb $BUILD/dtb
-    cp arch/arm/boot/dts/sun4i-a10-cubieboard.dtb $BUILD/dtb
     cp arch/arm/boot/zImage $BUILD/
     cp .config $BUILD/
+    mkdir -p $BUILD/lib/modules
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
         INSTALL_MOD_PATH=$BUILD/ modules_install
     rm -f $BUILD/lib/modules/*/build
     rm -f $BUILD/lib/modules/*/source
+    # Ensure the build system doesnt download/unpack the old bundle
+    touch --date="jan 1 1990" $BUILD/linux-armhf.tar.xz
 
+After testing, make a bundle - ready to upload to a github release
 Bundle:
     tar -C build -cJf build/linux-armhf.tar.xz linux-armhf
 
@@ -64,6 +67,7 @@ bananapi:
     video out / audio out - untested, not needed in a router build
 
 cubieboard:
+    Kernel support disabled - this is a very old board!
     cpufreq not working
     USB OTG not working
     NAND not detected

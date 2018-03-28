@@ -1,5 +1,5 @@
 #
-# functions and definitions expected to be used my many or all systems
+# functions and definitions expected to be used by many or all systems
 #
 
 # Calculate the basename of the debian build file
@@ -18,6 +18,11 @@ TAG = $(BUILD)/tags
 BOOT = $(BUILD)/boot
 
 DISK_IMAGE = $(BUILD)/disk.img
+
+.PHONY: image
+image: $(DISK_IMAGE)
+	@mkdir -p $(TOP_DIR)/output
+	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 # install any packages needed for the builder
 build-depends: $(TAG)/build-depends

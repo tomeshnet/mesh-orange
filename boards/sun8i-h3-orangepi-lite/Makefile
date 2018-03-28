@@ -7,8 +7,8 @@ DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 ARMBIAN_UBOOT_PKG = linux-u-boot-orangepilite-dev
-ARMBIAN_KERNEL_PKG = linux-image-dev-sun8i=5.26
-UBOOT = linux-u-boot-dev-orangepilite_5.31_armhf
+ARMBIAN_KERNEL_PKG = linux-image-dev-sun8i=5.35
+UBOOT = linux-u-boot-dev-orangepilite_5.38_armhf
 BOARD = sun8i-h3-orangepi-lite
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
@@ -39,10 +39,6 @@ include $(TOP_DIR)/boards/common-firmware-armbian.mk
 include $(TOP_DIR)/mk/common-armbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
-
-image: $(DISK_IMAGE)
-	mkdir -p $(TOP_DIR)/output
-	cp $< $(TOP_DIR)/output/$(BOARD).img
 
 test:
 	echo this board must be tested by flashing the output
@@ -104,7 +100,8 @@ $(TAG)/dtbo: $(TAG)/dtb
 	$(call tag,dtbo)
 
 $(BOOT)/dtb/overlay/%.dtbo: $(TAG)/armbian $(TAG)/dtbo
-	cp $< $@
+	touch $@ # FIXME
+	#cp $< $@
 
 $(BOOT)/uInitrd: $(TAG)/boot
 $(BOOT)/uInitrd: $(BUILD)/combined.uInitrd

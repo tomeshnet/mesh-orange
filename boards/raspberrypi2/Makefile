@@ -35,12 +35,12 @@ include $(TOP_DIR)/mk/common-raspbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
 
-image: $(TOP_DIR)/output/$(BOARD).img
+# Add the alias to the normal image target
+image: $(TOP_DIR)/output/$(BOARD_ALIAS).img
 
-$(TOP_DIR)/output/$(BOARD).img: $(DISK_IMAGE)
-	mkdir -p $(dir $@)
+$(TOP_DIR)/output/$(BOARD_ALIAS).img: $(DISK_IMAGE)
+	@mkdir -p $(dir $@)
 	cp $< $@
-	cp $< $(TOP_DIR)/output/$(BOARD_ALIAS).img
 
 test:
 	echo this board must be tested by flashing the output
@@ -72,15 +72,16 @@ $(BOOT)/initrd: $(TAG)/boot
 $(BOOT)/initrd: $(BUILD)/combined.initrd
 	cp $< $@
 
-$(BOOT)/cmdline.txt: $(TAG)/boot Makefile
-	echo "dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 elevator=deadline" >$@
+$(BOOT)/cmdline.txt: $(TAG)/boot
+$(BOOT)/cmdline.txt: cmdline.txt
+	cp $< $@
 
-$(BOOT)/config.txt: $(TAG)/boot Makefile
-	echo "" >$@
-	echo "initramfs initrd followkernel" >>$@
-	echo "gpu_mem=16" >>$@
-	echo "enable_uart=1" >>$@
-	echo "dtdebug=1" >>$@
+$(BOOT)/config.txt: $(TAG)/boot
+$(BOOT)/config.txt: config.txt
+	cp $< $@
+
+# TODO
+# - add and enable the pi3-miniuart-bt and pi3-disable-bt overlay files
 
 $(BOOT)/%: $(RASPBERRYPI)/boot/% $(TAG)/boot
 	cp $< $@

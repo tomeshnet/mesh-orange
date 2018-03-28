@@ -2,6 +2,7 @@
 # A master make file - currently just to help with build-depends and clean
 #
 
+SUBDIRS += docs/
 SUBDIRS += debian/
 SUBDIRS += firmware/
 SUBDIRS += linux/
@@ -14,7 +15,7 @@ QEMUDIRS += boards/qemu_i386/
 SUBDIRS += $(QEMUDIRS)
 
 BOARDDIRS += boards/raspberrypi2/
-BOARDDIRS += boards/sun4i-a10-cubieboard/
+#BOARDDIRS += boards/sun4i-a10-cubieboard/
 BOARDDIRS += boards/sun7i-a20-bananapi/
 BOARDDIRS += boards/sun8i-h2-plus-orangepi-zero/
 BOARDDIRS += boards/sun8i-h3-orangepi-lite/
@@ -27,9 +28,19 @@ SUBMODULES += debian/Makefile
 all:
 	$(error This Makefile currently has no default build target)
 
+# Perform simple tests that this repository is building correctly
+# TODO
+# - boot up all the emulatable platforms and confirm that they work
+.PHONY: test
+test: image
+	$(MAKE) -C docs
+	@echo Everything builds ok
+	$(MAKE) -C debian test
+
 build-depends clean reallyclean: $(SUBMODULES)
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 
+.PHONY: image
 image: $(SUBMODULES)
 	$(foreach dir,$(BOARDDIRS),$(MAKE) -C $(dir) $@ &&) true
 
