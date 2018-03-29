@@ -14,6 +14,8 @@ build-depends:
 clean:
 	rm -f $(addsuffix .svg,$(DIAGRAMS))  $(addsuffix .pdf,$(DIAGRAMS))
 
+reallyclean: clean
+
 %.svg: %.dot
 	dot -Tsvg >$@ $<
 
