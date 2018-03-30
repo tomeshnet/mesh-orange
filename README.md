@@ -178,6 +178,14 @@ configuration and customisation is the same as the armhf architecture.
 
     make -C boards/qemu_i386 test
 
+The i386 test also creates a 2G persistent storage that shows up as
+`/dev/vda`. To use this virtual disk, create and format a partition, any
+data written to that partition will persist across `systemctl reboot`.
+
+    fdisk /dev/vda        # Follow instructions to create a partition
+    mkfs.vfat /dev/vda1   # Format the created partition as vfat
+    mount /dev/vda1 /mnt  # Mount the formatted partition onto /mnt
+
 To exit the emulator, use `Ctrl-A` then `x`.
 
 Debian ramdisk builder
