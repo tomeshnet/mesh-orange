@@ -1,6 +1,8 @@
 A small ramdisk system running modern Debian
 ============================================
 
+[![Build Status](https://travis-ci.org/tomeshnet/mesh-orange.svg?branch=master)](https://travis-ci.org/tomeshnet/mesh-orange)
+
 This project will create system images for installing a Debian-based
 router.
 
