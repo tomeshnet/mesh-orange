@@ -9,7 +9,7 @@ all: $(addsuffix .svg,$(DIAGRAMS))
 all: $(addsuffix .pdf,$(DIAGRAMS))
 
 build-depends:
-	sudo apt install graphviz
+	sudo apt install -y graphviz
 
 clean:
 	rm -f $(addsuffix .svg,$(DIAGRAMS))  $(addsuffix .pdf,$(DIAGRAMS))
