@@ -29,6 +29,7 @@ CJDNS = $(BUILD)/cjdns
 CLEAN_FILES = $(BUILD)/cjdns.cpio
 
 TOP_DIR ?= ../..
+export TOP_DIR
 
 all: cjdns
 

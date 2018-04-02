@@ -29,6 +29,7 @@ INITRD_PARTS += $(ZERO_FIRMWARE)
 ZIP = $(BUILD)/zero_imager
 
 TOP_DIR ?= $(abspath ../..)
+export TOP_DIR
 
 all: image
 

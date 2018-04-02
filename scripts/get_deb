@@ -22,6 +22,11 @@ if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; th
     exit 1
 fi
 
+if [ -z "$TOP_DIR" ]; then
+    echo "Need env TOP_DIR set"
+    exit 1
+fi
+
 mkdir -p "$OUTDIR"
 cd  "$OUTDIR"
 

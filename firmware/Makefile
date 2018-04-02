@@ -20,6 +20,8 @@ BUILD_DEPENDS = \
     xz-utils \
 
 TOP_DIR ?= ..
+export TOP_DIR
+
 all: firmware
 
 include $(TOP_DIR)/mk/common.mk

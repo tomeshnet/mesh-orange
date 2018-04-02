@@ -22,6 +22,7 @@ BUILD_DEPENDS = \
     xz-utils \
 
 TOP_DIR ?= $(abspath ../..)
+export TOP_DIR
 
 all: image
 
