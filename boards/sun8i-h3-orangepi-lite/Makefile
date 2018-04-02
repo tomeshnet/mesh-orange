@@ -37,7 +37,6 @@ include $(TOP_DIR)/mk/common.mk
 include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-allwinner.mk
 include $(TOP_DIR)/boards/common-firmware-armbian.mk
-include $(TOP_DIR)/mk/common-armbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
 
@@ -48,7 +47,7 @@ test:
 # Everything below this line is HW specific Armbian u-Boot startup code
 
 $(TAG)/armbian:
-	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) armbian $(ARMBIAN) $(ARMBIAN_UBOOT_PKG) $(ARMBIAN_KERNEL_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file

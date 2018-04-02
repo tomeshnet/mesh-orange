@@ -25,13 +25,11 @@ export TOP_DIR
 all: firmware
 
 include $(TOP_DIR)/mk/common.mk
-include $(TOP_DIR)/mk/common-armbian.mk
-include $(TOP_DIR)/mk/common-raspbian.mk
 
 firmware: $(BUILD)/firmware-raspbian.cpio $(BUILD)/firmware-armbian.cpio
 
 $(TAG)/armbian:
-	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(ARMBIAN_KEY) $(ARMBIAN_REPO) $(ARMBIAN) $(ARMBIAN_FIRMWARE_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) armbian $(ARMBIAN) $(ARMBIAN_FIRMWARE_PKG)
 	$(call tag,armbian)
 
 # Add the kernel specific binaries to this cpio file
@@ -45,7 +43,7 @@ CLEAN_FILES += $(ARMBIAN) $(BUILD)/firmware-armbian.cpio $(BUILD)/firmware-armbi
 
 
 $(TAG)/raspbian:
-	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_KEY) $(RASPBIAN_REPO) $(RASPBIAN) $(RASPBIAN_FIRMWARE_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) raspbian $(RASPBIAN) $(RASPBIAN_FIRMWARE_PKG)
 	$(call tag,raspbian)
 
 # Add the kernel specific binaries to this cpio file

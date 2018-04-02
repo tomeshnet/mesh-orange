@@ -32,7 +32,6 @@ all: image
 include $(TOP_DIR)/mk/common.mk
 include $(TOP_DIR)/boards/common-partitions.mk
 include $(TOP_DIR)/boards/common-firmware-raspbian.mk
-include $(TOP_DIR)/mk/common-raspbian.mk
 include $(TOP_DIR)/boards/common-cjdns-hack.mk
 include $(TOP_DIR)/boards/common-initrd.mk
 
@@ -48,7 +47,7 @@ test:
 	false
 
 $(TAG)/raspberrypi:
-	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(RASPBIAN_KEY) $(RASPBIAN_REPO) $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) raspbian $(RASPBERRYPI) $(RASPBIAN_BOOT_PKG) $(RASPBIAN_KERNEL_PKG)
 	$(call tag,raspberrypi)
 
 # Add the kernel specific binaries to this cpio file

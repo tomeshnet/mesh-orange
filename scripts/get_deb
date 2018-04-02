@@ -8,22 +8,30 @@ set -e
 ARCH="$1"
 shift
 
-REPO_KEY="$1"
-shift
-
-REPO_SRC="$1"
+REPO="$1"
 shift
 
 OUTDIR="$1"
 shift
 
-if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO_SRC" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo "Usage: $0 arch repo_key repo_sources unpackdir pkg..."
+if [ -z "$ARCH" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; then
+    echo "Usage: $0 arch repo unpackdir pkg..."
     exit 1
 fi
 
 if [ -z "$TOP_DIR" ]; then
     echo "Need env TOP_DIR set"
+    exit 1
+fi
+
+if [ ! -r "$TOP_DIR/apt.sources/$REPO.conf" ]; then
+    echo "No definition found for repo called $REPO"
+    exit 1
+fi
+
+. "$TOP_DIR/apt.sources/$REPO.conf"
+if [ -z "$REPO_KEY" -o -z "$REPO_SRC" ]; then
+    echo "repo definition file did not define correct vars"
     exit 1
 fi
 
