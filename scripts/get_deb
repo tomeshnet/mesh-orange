@@ -35,23 +35,23 @@ if [ -z "$REPO_KEY" -o -z "$REPO_SRC" ]; then
     exit 1
 fi
 
+CACHEDIR="$TOP_DIR/apt.cache/$ARCH/$REPO"
+mkdir -p "$CACHEDIR"
+
 mkdir -p "$OUTDIR"
 cd  "$OUTDIR"
 
-TMP=./meta
-#rm -rf "$TMP"
-mkdir -p "$TMP"
+mkdir -p $CACHEDIR/etc/apt/sources.list.d
+# TODO - convert apt.sources/$REPO.conf to an actual source file
+echo "$REPO_SRC" >$CACHEDIR/etc/apt/sources.list.d/repo.list
 
-mkdir -p $TMP/etc/apt/sources.list.d
-echo "$REPO_SRC" >$TMP/etc/apt/sources.list.d/repo.list
-
-TRUSTED=$TMP/etc/apt/trusted.gpg
+TRUSTED=$CACHEDIR/etc/apt/trusted.gpg
 # It would be nice to fill the keyring..
 
 TRUSTED_PARTS=${TRUSTED}.d/
 mkdir -p $TRUSTED_PARTS
 
-ETC=$TMP/etc/apt
+ETC=$CACHEDIR/etc/apt
 mkdir -p $ETC
 ETC_PARTS=$ETC/apt.conf.d/
 mkdir -p $ETC_PARTS
@@ -59,17 +59,17 @@ mkdir -p $ETC_PARTS
 ETC_PREFS_PARTS=$ETC/preferences.d/
 mkdir -p $ETC_PREFS_PARTS
 
-STATE=$TMP/var/lib/apt/
+STATE=$CACHEDIR/var/lib/apt/
 mkdir -p $STATE
 
-STATUS=$TMP/var/lib/dpkg/status
+STATUS=$CACHEDIR/var/lib/dpkg/status
 mkdir -p "$(dirname $STATUS)"
 touch $STATUS
 
-CACHE=$TMP/var/cache/apt
+CACHE=$CACHEDIR/var/cache/apt
 mkdir -p $CACHE
 
-export APT_CONFIG=$TMP/apt_config
+export APT_CONFIG=$CACHEDIR/apt_config
 cat >$APT_CONFIG <<EOF
 Dir::Etc "$ETC";
 Dir::Etc::Parts "$ETC_PARTS";
@@ -82,7 +82,11 @@ if [ "$REPO_KEY" == 'system_trust' ]; then
     cp /etc/apt/trusted.gpg ${TRUSTED}
     cp /etc/apt/trusted.gpg.d/* ${TRUSTED_PARTS}
 else
-    wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
+    # if we dont have the key yet, get the key
+    # TODO - convert the apt.sources/$REPO.conf to have the key pre-stored
+    if [ ! -r "${TRUSTED_PARTS}/repo.key.asc" ]; then
+        wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
+    fi
 fi
 
 #    -o APT::Default-Release='*' \
@@ -93,7 +97,7 @@ APT_OPTS="\
     -o Apt::Install-Recommends=false \
     -o Dir::Etc::TrustedParts=$TRUSTED_PARTS \
     -o Dir::Etc::Trusted=$TRUSTED \
-    -o Dir=$TMP \
+    -o Dir=$CACHEDIR \
     -o Dir::Etc=$ETC \
     -o Dir::Etc::Parts=$ETC_PARTS \
     -o Dir::Etc::PreferencesParts=$ETC_PREFS_PARTS \
@@ -104,7 +108,7 @@ APT_OPTS="\
 
 apt-get $APT_OPTS update
 
-apt-get $APT_OPTS --print-uris download "$@" >print_uris.txt
+apt-get $APT_OPTS --print-uris download "$@" >$CACHEDIR/print_uris.txt
 
 while read URI DEB SIZE HASH; do
     # if the URI is empty, dont try to download anything
@@ -112,19 +116,24 @@ while read URI DEB SIZE HASH; do
         continue
     fi
 
-    wget -O "${DEB}.tmp" $(echo "$URI" |tr -d "'")
+    # If we already have this file, skip it
+    if [ -r "$CACHEDIR/${DEB}" ]; then
+        continue
+    fi
+
+    wget -O "$CACHEDIR/${DEB}.tmp" $(echo "$URI" |tr -d "'")
     if [ $? -ne 0 ]; then
         echo bad wget
         exit 1
     fi
     # TODO
     # - check size and hash
-    mv "${DEB}.tmp" "${DEB}"
+    mv "$CACHEDIR/${DEB}.tmp" "$CACHEDIR/${DEB}"
 
-    dpkg -x "$DEB" ./
+    dpkg -x "$CACHEDIR/$DEB" ./
     if [ $? -ne 0 ]; then
         echo bad dpkg extract
         exit 1
     fi
-done <print_uris.txt
+done <$CACHEDIR/print_uris.txt
 
