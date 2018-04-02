@@ -11,14 +11,14 @@ shift
 REPO_KEY="$1"
 shift
 
-REPO="$1"
+REPO_SRC="$1"
 shift
 
 OUTDIR="$1"
 shift
 
-if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo "Usage: $0 arch repo_key repo unpackdir pkg..."
+if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO_SRC" -o -z "$OUTDIR" -o -z "$1" ]; then
+    echo "Usage: $0 arch repo_key repo_sources unpackdir pkg..."
     exit 1
 fi
 
@@ -35,7 +35,7 @@ TMP=./meta
 mkdir -p "$TMP"
 
 mkdir -p $TMP/etc/apt/sources.list.d
-echo "$REPO" >$TMP/etc/apt/sources.list.d/repo.list
+echo "$REPO_SRC" >$TMP/etc/apt/sources.list.d/repo.list
 
 TRUSTED=$TMP/etc/apt/trusted.gpg
 # It would be nice to fill the keyring..
