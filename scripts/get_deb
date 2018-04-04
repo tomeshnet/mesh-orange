@@ -2,6 +2,11 @@
 #
 # Given a repo and a list of packages, go download the latest matching deb
 #
+# TODO
+# - with the new apt.cache subdir, some of this file can be cleaned up into
+#   templated files that are copied into place
+# - the print_uris.txt file is not very useful now that it gets overwritten
+# - Check the hash of the downloaded file!
 
 set -e
 
@@ -29,7 +34,7 @@ if [ ! -r "$TOP_DIR/apt.sources/$REPO.list" ]; then
     exit 1
 fi
 
-CACHEDIR="$TOP_DIR/apt.cache/$ARCH/$REPO"
+CACHEDIR="$TOP_DIR/apt.cache/"
 mkdir -p "$CACHEDIR"
 
 mkdir -p "$OUTDIR"
