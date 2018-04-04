@@ -24,14 +24,8 @@ if [ -z "$TOP_DIR" ]; then
     exit 1
 fi
 
-if [ ! -r "$TOP_DIR/apt.sources/$REPO.conf" ]; then
-    echo "No definition found for repo called $REPO"
-    exit 1
-fi
-
-. "$TOP_DIR/apt.sources/$REPO.conf"
-if [ -z "$REPO_KEY" -o -z "$REPO_SRC" ]; then
-    echo "repo definition file did not define correct vars"
+if [ ! -r "$TOP_DIR/apt.sources/$REPO.list" ]; then
+    echo "No dpkg source list found for repo called $REPO"
     exit 1
 fi
 
@@ -42,8 +36,7 @@ mkdir -p "$OUTDIR"
 cd  "$OUTDIR"
 
 mkdir -p $CACHEDIR/etc/apt/sources.list.d
-# TODO - convert apt.sources/$REPO.conf to an actual source file
-echo "$REPO_SRC" >$CACHEDIR/etc/apt/sources.list.d/repo.list
+cp "$TOP_DIR/apt.sources/$REPO.list" $CACHEDIR/etc/apt/sources.list.d/
 
 TRUSTED=$CACHEDIR/etc/apt/trusted.gpg
 # It would be nice to fill the keyring..
@@ -77,16 +70,12 @@ Dir::Etc::PreferencesParts "$ETC_PREFS_PARTS";
 EOF
 
 # provide some trust
-if [ "$REPO_KEY" == 'system_trust' ]; then
+if [ -r "$TOP_DIR/apt.sources/$REPO.key.asc" ]; then
+    cp "$TOP_DIR/apt.sources/$REPO.key.asc" "${TRUSTED_PARTS}/"
+else
     # use the current system for trust files
     cp /etc/apt/trusted.gpg ${TRUSTED}
     cp /etc/apt/trusted.gpg.d/* ${TRUSTED_PARTS}
-else
-    # if we dont have the key yet, get the key
-    # TODO - convert the apt.sources/$REPO.conf to have the key pre-stored
-    if [ ! -r "${TRUSTED_PARTS}/repo.key.asc" ]; then
-        wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
-    fi
 fi
 
 #    -o APT::Default-Release='*' \
@@ -116,20 +105,21 @@ while read URI DEB SIZE HASH; do
         continue
     fi
 
-    # If we already have this file, skip it
-    if [ -r "$CACHEDIR/${DEB}" ]; then
-        continue
+    # only download the file if we dont have it
+    if [ ! -e "$CACHEDIR/${DEB}" ]; then
+        wget -O "$CACHEDIR/${DEB}.tmp" $(echo "$URI" |tr -d "'")
+        if [ $? -ne 0 ]; then
+            echo bad wget
+            exit 1
+        fi
+
+        # TODO
+        # - check size and hash
+        mv "$CACHEDIR/${DEB}.tmp" "$CACHEDIR/${DEB}"
     fi
 
-    wget -O "$CACHEDIR/${DEB}.tmp" $(echo "$URI" |tr -d "'")
-    if [ $? -ne 0 ]; then
-        echo bad wget
-        exit 1
-    fi
-    # TODO
-    # - check size and hash
-    mv "$CACHEDIR/${DEB}.tmp" "$CACHEDIR/${DEB}"
-
+    # always extract the deb to ensure that the destination dir has the
+    # correct files
     dpkg -x "$CACHEDIR/$DEB" ./
     if [ $? -ne 0 ]; then
         echo bad dpkg extract

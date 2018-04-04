@@ -1,0 +1,7 @@
+#
+# A cjdns custom build package repo provided by a third party
+#
+# This is only used by the cjdns package install hack
+#
+
+deb https://ban.ai/raspbian/ cjdns cjdns
