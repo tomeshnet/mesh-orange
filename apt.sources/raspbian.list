@@ -1,0 +1,7 @@
+#
+# The raspbian package repo
+# 
+# This is used to download the raspberry pi bootloader blob and kernel images
+#
+
+deb http://archive.raspberrypi.org/debian/ jessie main

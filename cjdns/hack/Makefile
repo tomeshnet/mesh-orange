@@ -17,9 +17,6 @@ endif
 BUILD_DEPENDS = \
     apt-transport-https
 
-REPOKEY = https://ban.ai/raspbian/brrpi.pubkey
-REPO = "deb https://ban.ai/raspbian/ cjdns cjdns"
-
 PKG = cjdns
 
 # Directories
@@ -29,6 +26,7 @@ CJDNS = $(BUILD)/cjdns
 CLEAN_FILES = $(BUILD)/cjdns.cpio
 
 TOP_DIR ?= ../..
+export TOP_DIR
 
 all: cjdns
 
@@ -38,7 +36,7 @@ build-depends: Makefile
 cjdns: $(CJDNS).cpio
 
 $(CJDNS):
-	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) $(REPOKEY) $(REPO) $@ $(PKG)
+	$(TOP_DIR)/scripts/get_deb $(DEBIAN_ARCH) cjdns $@ $(PKG)
 
 $(CJDNS).cpio: $(CJDNS)
 	( \

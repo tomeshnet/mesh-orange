@@ -2,13 +2,15 @@
 #
 # Given a repo and a list of packages, go download the latest matching deb
 #
+# TODO
+# - with the new apt.cache subdir, some of this file can be cleaned up into
+#   templated files that are copied into place
+# - the print_uris.txt file is not very useful now that it gets overwritten
+# - Check the hash of the downloaded file!
 
 set -e
 
 ARCH="$1"
-shift
-
-REPO_KEY="$1"
 shift
 
 REPO="$1"
@@ -17,28 +19,37 @@ shift
 OUTDIR="$1"
 shift
 
-if [ -z "$ARCH" -o -z "$REPO_KEY" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; then
-    echo "Usage: $0 arch repo_key repo unpackdir pkg..."
+if [ -z "$ARCH" -o -z "$REPO" -o -z "$OUTDIR" -o -z "$1" ]; then
+    echo "Usage: $0 arch repo unpackdir pkg..."
     exit 1
 fi
+
+if [ -z "$TOP_DIR" ]; then
+    echo "Need env TOP_DIR set"
+    exit 1
+fi
+
+if [ ! -r "$TOP_DIR/apt.sources/$REPO.list" ]; then
+    echo "No dpkg source list found for repo called $REPO"
+    exit 1
+fi
+
+CACHEDIR="$TOP_DIR/apt.cache/"
+mkdir -p "$CACHEDIR"
 
 mkdir -p "$OUTDIR"
 cd  "$OUTDIR"
 
-TMP=./meta
-#rm -rf "$TMP"
-mkdir -p "$TMP"
+mkdir -p $CACHEDIR/etc/apt/sources.list.d
+cp "$TOP_DIR/apt.sources/$REPO.list" $CACHEDIR/etc/apt/sources.list.d/
 
-mkdir -p $TMP/etc/apt/sources.list.d
-echo "$REPO" >$TMP/etc/apt/sources.list.d/repo.list
-
-TRUSTED=$TMP/etc/apt/trusted.gpg
+TRUSTED=$CACHEDIR/etc/apt/trusted.gpg
 # It would be nice to fill the keyring..
 
 TRUSTED_PARTS=${TRUSTED}.d/
 mkdir -p $TRUSTED_PARTS
 
-ETC=$TMP/etc/apt
+ETC=$CACHEDIR/etc/apt
 mkdir -p $ETC
 ETC_PARTS=$ETC/apt.conf.d/
 mkdir -p $ETC_PARTS
@@ -46,17 +57,17 @@ mkdir -p $ETC_PARTS
 ETC_PREFS_PARTS=$ETC/preferences.d/
 mkdir -p $ETC_PREFS_PARTS
 
-STATE=$TMP/var/lib/apt/
+STATE=$CACHEDIR/var/lib/apt/
 mkdir -p $STATE
 
-STATUS=$TMP/var/lib/dpkg/status
+STATUS=$CACHEDIR/var/lib/dpkg/status
 mkdir -p "$(dirname $STATUS)"
 touch $STATUS
 
-CACHE=$TMP/var/cache/apt
+CACHE=$CACHEDIR/var/cache/apt
 mkdir -p $CACHE
 
-export APT_CONFIG=$TMP/apt_config
+export APT_CONFIG=$CACHEDIR/apt_config
 cat >$APT_CONFIG <<EOF
 Dir::Etc "$ETC";
 Dir::Etc::Parts "$ETC_PARTS";
@@ -64,12 +75,12 @@ Dir::Etc::PreferencesParts "$ETC_PREFS_PARTS";
 EOF
 
 # provide some trust
-if [ "$REPO_KEY" == 'system_trust' ]; then
+if [ -r "$TOP_DIR/apt.sources/$REPO.key.asc" ]; then
+    cp "$TOP_DIR/apt.sources/$REPO.key.asc" "${TRUSTED_PARTS}/"
+else
     # use the current system for trust files
     cp /etc/apt/trusted.gpg ${TRUSTED}
     cp /etc/apt/trusted.gpg.d/* ${TRUSTED_PARTS}
-else
-    wget -O "${TRUSTED_PARTS}/repo.key.asc" "$REPO_KEY"
 fi
 
 #    -o APT::Default-Release='*' \
@@ -80,7 +91,7 @@ APT_OPTS="\
     -o Apt::Install-Recommends=false \
     -o Dir::Etc::TrustedParts=$TRUSTED_PARTS \
     -o Dir::Etc::Trusted=$TRUSTED \
-    -o Dir=$TMP \
+    -o Dir=$CACHEDIR \
     -o Dir::Etc=$ETC \
     -o Dir::Etc::Parts=$ETC_PARTS \
     -o Dir::Etc::PreferencesParts=$ETC_PREFS_PARTS \
@@ -91,7 +102,7 @@ APT_OPTS="\
 
 apt-get $APT_OPTS update
 
-apt-get $APT_OPTS --print-uris download "$@" >print_uris.txt
+apt-get $APT_OPTS --print-uris download "$@" >$CACHEDIR/print_uris.txt
 
 while read URI DEB SIZE HASH; do
     # if the URI is empty, dont try to download anything
@@ -99,19 +110,25 @@ while read URI DEB SIZE HASH; do
         continue
     fi
 
-    wget -O "${DEB}.tmp" $(echo "$URI" |tr -d "'")
-    if [ $? -ne 0 ]; then
-        echo bad wget
-        exit 1
-    fi
-    # TODO
-    # - check size and hash
-    mv "${DEB}.tmp" "${DEB}"
+    # only download the file if we dont have it
+    if [ ! -e "$CACHEDIR/${DEB}" ]; then
+        wget -O "$CACHEDIR/${DEB}.tmp" $(echo "$URI" |tr -d "'")
+        if [ $? -ne 0 ]; then
+            echo bad wget
+            exit 1
+        fi
 
-    dpkg -x "$DEB" ./
+        # TODO
+        # - check size and hash
+        mv "$CACHEDIR/${DEB}.tmp" "$CACHEDIR/${DEB}"
+    fi
+
+    # always extract the deb to ensure that the destination dir has the
+    # correct files
+    dpkg -x "$CACHEDIR/$DEB" ./
     if [ $? -ne 0 ]; then
         echo bad dpkg extract
         exit 1
     fi
-done <print_uris.txt
+done <$CACHEDIR/print_uris.txt
 

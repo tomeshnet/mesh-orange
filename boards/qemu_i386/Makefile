@@ -16,6 +16,7 @@ BUILD_DEPENDS = qemu-system-x86
 CLEAN_FILES =
 
 TOP_DIR ?= $(abspath ../..)
+export TOP_DIR
 
 all: image
 

@@ -1,0 +1,8 @@
+#
+# The armbian package repo
+#
+# This is used to download u-boot binaries (and some kernel images)
+#
+
+deb http://apt.armbian.com jessie main
+

@@ -1,3 +1,6 @@
 
 # dont track the directory where all the created image files are placed
 output
+
+# this is a cache dir, ignore its contents
+apt.cache

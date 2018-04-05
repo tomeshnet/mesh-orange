@@ -25,6 +25,9 @@ SUBDIRS += $(BOARDDIRS)
 # This is a list of files that only exist after any submodules are initialised
 SUBMODULES += debian/Makefile
 
+# A place that we needs to be removed during reallyclean
+CACHEDIR = apt.cache/
+
 all:
 	$(error This Makefile currently has no default build target)
 
@@ -36,6 +39,11 @@ test: image
 	$(MAKE) -C docs
 	@echo Everything builds ok
 	$(MAKE) -C debian test
+
+remove_cache:
+	rm -rf $(CACHEDIR)
+
+reallyclean: remove_cache
 
 build-depends clean reallyclean: $(SUBMODULES)
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
