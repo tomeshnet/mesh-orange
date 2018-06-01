@@ -18,6 +18,8 @@ before_script:
 
 script:
     - make test CONFIG_DISABLE_KVM=yes
+    - sha1sum output/*
+    - ls -al output/*
 
 # TODO
 # - auto deploy the output files to a github release if this is a tagged commit
