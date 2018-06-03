@@ -10,7 +10,7 @@ CLEAN_FILES = $(TAG)
 ARMBIAN_FIRMWARE_PKG = armbian-firmware
 
 # firmware for wifi dongle (note, some overlap with armbian-firmware)
-RASPBIAN_FIRMWARE_PKG = firmware-brcm80211 firmware-ralink firmware-atheros
+RASPBIAN_FIRMWARE_PKG = firmware-brcm80211 firmware-atheros
 
 # Directories
 ARMBIAN = $(BUILD)/armbian
@@ -50,7 +50,6 @@ $(TAG)/raspbian:
 $(BUILD)/firmware-raspbian.cpio: $(TAG)/raspbian
 	( \
             cd $(RASPBIAN); \
-            find lib/firmware/brcm -maxdepth 1 -type f ! -name "brcmfmac43430-sdio.*" -delete; \
             find lib/firmware -print0 | cpio -0 -H newc -R 0:0 -o \
 	) > $@
 
