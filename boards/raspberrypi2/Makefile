@@ -97,6 +97,7 @@ $(RASPBERRYPI)/boot/COPYING.linux: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/LICENCE.broadcom: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2709-rpi-2-b.dtb: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2710-rpi-3-b.dtb: $(TAG)/raspberrypi
+$(RASPBERRYPI)/boot/bcm2710-rpi-3-b-plus.dtb: $(TAG)/raspberrypi
 $(RASPBERRYPI)/boot/bcm2710-rpi-cm3.dtb: $(TAG)/raspberrypi
 
 BOOT_FILES = \
@@ -111,6 +112,7 @@ BOOT_FILES = \
     $(BOOT)/LICENCE.broadcom \
     $(BOOT)/bcm2709-rpi-2-b.dtb \
     $(BOOT)/bcm2710-rpi-3-b.dtb \
+    $(BOOT)/bcm2710-rpi-3-b-plus.dtb \
     $(BOOT)/bcm2710-rpi-cm3.dtb \
 
 boot: $(BOOT_FILES)

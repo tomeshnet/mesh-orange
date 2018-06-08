@@ -6,13 +6,10 @@ Compute Module 1, Raspberry Pi 1A or Raspberry Pi 1B boards without major
 changes to the debian-minimal-builder submodule - this is due to hardware
 incompatibilities and is unlikely to change.
 
-It should be possible to support the Raspberry Pi 3B+, however we need
-some testing to confirm that.
-
 Supported Boards
 ----------------
 
-This works on the 2b and 3b and should work for the cm3 (but I have
+This works on the 2b, 3b and 3b+ - it should also work for the cm3 (but I have
 not tested that) as they are all using ARMv7+ CPUs that are compatible
 with the Debian "armhf" architecture definition.
 
