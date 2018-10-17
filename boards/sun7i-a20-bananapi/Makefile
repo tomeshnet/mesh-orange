@@ -7,7 +7,7 @@ DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
 ARMBIAN_UBOOT_PKG = linux-u-boot-bananapi-dev
-UBOOT = linux-u-boot-dev-bananapi_5.60_armhf
+UBOOT = linux-u-boot-dev-bananapi_5.38_armhf
 BOARD = sun7i-a20-bananapi
 # FIXME - it would be nice if the uboot name was related to the dtb name
 

@@ -8,7 +8,7 @@ DEBIAN_ARCH = armhf
 # which uboot and device tree is this being built for
 ARMBIAN_UBOOT_PKG = linux-u-boot-orangepilite-dev
 ARMBIAN_KERNEL_PKG = linux-image-dev-sun8i=5.35
-UBOOT = linux-u-boot-dev-orangepilite_5.60_armhf
+UBOOT = linux-u-boot-dev-orangepilite_5.38_armhf
 BOARD = sun8i-h3-orangepi-lite
 # FIXME - it would be nice if the uboot name was related to the dtb name
 
