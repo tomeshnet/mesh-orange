@@ -6,7 +6,7 @@ DEBIAN_VER = stretch
 DEBIAN_ARCH = armhf
 
 # which uboot and device tree is this being built for
-ARMBIAN_UBOOT_PKG = linux-u-boot-orangepilite-dev
+ARMBIAN_UBOOT_PKG = linux-u-boot-orangepilite-dev=5.38
 ARMBIAN_KERNEL_PKG = linux-image-dev-sun8i=5.35
 UBOOT = linux-u-boot-dev-orangepilite_5.38_armhf
 BOARD = sun8i-h3-orangepi-lite
