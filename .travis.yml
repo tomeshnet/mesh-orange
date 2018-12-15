@@ -22,7 +22,6 @@ script:
 
 after_success:
   - rename "s/.img/-$TRAVIS_TAG.img/" output/*.img
-  - cp -r docs "$HOME/docs"
 
 deploy:
   - provider: releases
@@ -37,7 +36,7 @@ deploy:
   - provider: pages
     github-token:
       secure: FIKQFkf9xcBvom8Chf/NMtrb1hTNHScZSORBWKbq0gBU0fQZDvOvxXFPWuyq98g0uFaj7Tk9t6+g/fxrkZ76ZINSDZ6aIZBPLWU8iChMiG4kOgCvwN5zQyK4Xbr0wlNNaAdz1UQySIbKhpbd8MV5tHbU1HHskDDAi0nznKO9kVk+Fw/lTYzjAr/NrNZfyAgdaflVLgFr4UEoIx3pxlcm3RJbzApdrCSdgz1WzIQxtCCDHXWbAwDMxvyh42al1E11rbFSXJgQp1fjo4h3I6FplOd+4BRotYNcLEwJYEQBKbwyGgIcvjMlXosGjQhPxeSN5/525XRwn8C9mB5uFFMbkO5X24cEc9JYqpQg+ArbxSvDmNEu14up3jztSb72Eo7HlPZP3JZPp6uWk6fyZReBd20QvQYOTEb7JHr/yfJsUCYPIp/AsAKW0D85HHjVXcKZ1q3J4pRHMDJZS4QB9MmYyAknRD+EWDuD9Hu+v+TgX/F1TSPov4yRojI1LI5T16vqwAuBNkLzQpTy5OWx4ikOgqYZqjV1oVgITtkrQP5wUjezLe8mVrsDl8SyGfPvbnbnbSqplEcjjrbREVDeFesRMtwauRBQNZR16fS7OG6GWp1GporiFqrW10wpVM11xRqbiZurKbyi1mhYqGTjQhXPrToJUP+8fSw6zXoFAdDQPWQ=
-    local-dir: "$HOME/docs"
+    local-dir: "output-docs"
     target-branch: gh-pages
     keep-history: false
     skip-cleanup: true
