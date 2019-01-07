@@ -10,6 +10,8 @@ script:
   - make test CONFIG_DISABLE_KVM=yes
   - sha1sum output/*
   - ls -al output/*
+  - sha1sum output-docs/*
+  - ls -al output-docs/*
 
 deploy:
   - provider: releases
