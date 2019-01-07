@@ -11,9 +11,6 @@ script:
   - sha1sum output/*
   - ls -al output/*
 
-after_success:
-  - rename "s/.img/-$TRAVIS_TAG.img/" output/*.img
-
 deploy:
   - provider: releases
     api_key:
