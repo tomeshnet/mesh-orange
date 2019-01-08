@@ -5,20 +5,26 @@
 DIAGRAMS := boot-1 boot-2 \
     build kernel debian_minimal_builder \
 
-all: $(addsuffix .svg,$(DIAGRAMS))
-all: $(addsuffix .pdf,$(DIAGRAMS))
+TOP_DIR ?= $(abspath ..)
+OUT_DIR ?= $(TOP_DIR)/output-docs
+
+all: $(addprefix $(OUT_DIR)/,$(addsuffix .svg,$(DIAGRAMS)))
+all: $(addprefix $(OUT_DIR)/,$(addsuffix .pdf,$(DIAGRAMS)))
 
 build-depends:
 	sudo apt install -y graphviz
 
 clean:
-	rm -f $(addsuffix .svg,$(DIAGRAMS))  $(addsuffix .pdf,$(DIAGRAMS))
+	rm -rf $(OUT_DIR)
 
 reallyclean: clean
 
-%.svg: %.dot
+$(OUT_DIR)/%.svg: %.dot $(OUT_DIR)
 	dot -Tsvg >$@ $<
 
-%.pdf: %.dot
+$(OUT_DIR)/%.pdf: %.dot $(OUT_DIR)
 	dot -Tpdf >$@ $<
 
+$(OUT_DIR): $(addsuffix .dot,$(DIAGRAMS)) index.html
+	mkdir -p $(OUT_DIR)
+	cp -f $^ $@
