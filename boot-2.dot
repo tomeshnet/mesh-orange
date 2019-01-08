@@ -1,0 +1,54 @@
+#
+# Show how startup proceeds in userspace
+#
+
+digraph g{
+    systemd -> udev;
+    systemd -> networkd;
+    systemd -> resolved;
+
+    {rank=same resolved networkd}
+    networkd -> resolved [constraint=false];
+
+    f_link [label="/etc/systemd/network/*.link" shape=note];
+    f_network [label="/etc/systemd/network/*.network" shape=note];
+    f_link -> networkd;
+    f_network -> networkd;
+
+    f_hostap_conf [label="/etc/hostapd/hostapd.template.conf" shape=note];
+
+    f_hostapd_svc [label="/etc/systemd/system/hostapd@.service" shape=note];
+
+    f_hostapd_rules [label="/etc/udev/rules.d/50-hostapd.rules" shape=note];
+    udev -> f_hostapd_rules;
+    f_hostapd_rules -> f_hostapd_svc;
+
+    f_hostapd_scr [label="/usr/local/sbin/hostapd.template"];
+    f_hostapd_rules -> f_hostapd_scr;
+    f_hostap_conf -> f_hostapd_scr;
+
+    hostap_conf [label="Generated hostapd.conf" shape=note];
+    f_hostapd_scr -> hostap_conf;
+    hostap_conf -> f_hostapd_svc;
+
+    f_hostapd_svc -> hostapd;
+
+    f_mesh_rules [label="/etc/udev/rules.d/50-mesh.rules" shape=note];
+    udev -> f_mesh_rules;
+
+    f_mesh_scr [label="/usr/local/sbin/mesh.setup"];
+    f_mesh_rules -> f_mesh_scr;
+
+    kernel_hotplug -> udev;
+    {rank=same kernel_hotplug start_userspace}
+
+    init [label="/init"];
+    init_d [label="/init.d/*" shape=folder];
+    start_userspace -> init;
+    init_d -> init;
+    {rank=same init init_d find_config copy_config}
+
+    init -> find_config -> copy_config;
+
+    init -> systemd;
+}
